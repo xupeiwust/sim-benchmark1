@@ -16,24 +16,48 @@ model run completes.
 | MVP scored gate | 20 | LTspice oracle-verified |
 | OpenFOAM public tasks | 16 | Public catalog; base image/oracle packaging still needs release work |
 
-### Current Results
+### Current Results · v0.1 (2026-05-06)
 
-| Run | Agent / Model | Scope | Tasks | Completed | Errors | **Mean** | Notes |
-|---|---|---|---:|---:|---:|---:|---|
-| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | LTspice circuits | 20 | 20/20 | 0 | **1.000** | reference upper bound |
-| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | LTspice circuits | 20 | 20/20 | 1 | **0.936** | non-reasoning (16×1.0, 1×0.78, 2×0.7, 1×0.55) |
-| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | LTspice circuits | 20 | 20/20 | 3 | **0.776** | reasoning (15×1.0, 1×0.33, 1×0.20, **3×0.0**) |
-| `release-v0.1-openfoam3-oracle-20260503` | oracle | OpenFOAM oracle-available | 3 | 0/3 | n/a | n/a | environment build failed before solver: `svd-ai-lab/sim-benchmark-base:latest` not pullable |
+#### LTspice circuits (20 tasks)
 
-Per-case scores in [`results/v0.1/README.md`](./results/v0.1/README.md). Machine-readable
-artifacts at `results/v0.1/{summary.json, ltspice20-{run}-*.csv, ltspice20-{run}-*.json}`.
+| Run | Agent / Model | Tasks | Errors | **Mean** | Notes |
+|---|---|---:|---:|---:|---|
+| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20/20 | 0 | **1.000** | reference upper bound |
+| `release-v0.1-ltspice20-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** (non-reasoning) | 20/20 | 1 | **0.936** | original 80-turn harness; per-case audit shows ~0.948 expected with v0.1-final harness |
+| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** (reasoning) | 19/20 | 2 | **0.930** | v0.1-final harness (300-turn cap, ccr reasoning-block fix, Pass-2 hook). Up from 0.776 in 80-turn run. 1 case (bridge_rectifier_ripple) terminated at wall-time cap |
 
-**v0.1 read.** M2.5-highspeed (non-reasoning) wins by 16 points over M2.7 (reasoning) on
-this LTspice suite, contrary to the usual reasoning-helps prior. M2.7's three zero-score
-cases (`bridge_rectifier_ripple`, `half_wave_rectifier`, `rl_lowpass_ac`) failed to submit
-`/tmp/agent/result.json` at all — likely consumed reasoning budget under the 80-turn cap.
-Both models bottom out on the upgraded design tasks (sweep + select capacitor) — leakage 1
-cases discriminate as designed.
+#### OpenFOAM fluids (3 oracle-available tasks)
+
+| Run | Agent / Model | Tasks | Errors | **Mean** | Notes |
+|---|---|---:|---:|---:|---|
+| `release-v0.1-openfoam3-oracle-20260506` | oracle (deterministic) | 3/3 | 0 | **0.999** | reference upper bound; flatplate cf_x097 = 0.997 (within numerical noise) |
+| `release-v0.1-openfoam3-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** | 3/3 | 1 | **0.408** | cavity_re100 1.0 / cavity_re1000 0.225 / flatplate 0.0 |
+| `release-v0.1-openfoam3-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** | 3/3 | 0 | **0.284** | cavity_re100 0.0 (extract paperwork bug — see caveat) / cavity_re1000 0.390 / flatplate 0.462 |
+
+Per-case scores in [`results/v0.1/README.md`](./results/v0.1/README.md). JSON artifacts in
+`results/v0.1/`.
+
+### v0.1 reads (corrected after harness audit)
+
+The v0.1 first-cut leaderboard (M2.5-highspeed 0.936 vs M2.7 0.776 on LTspice) **was
+mostly an artifact of two harness limitations** that have since been fixed:
+
+1. **ccr-plugins reasoning-block translation bug** (commit `b8d7372`): claude-code-router's
+   OpenAI→Anthropic response translator could not map `reasoning_content` blocks to a valid
+   Anthropic content type, exiting trials with `API Error: Content block is not a text
+   block`. M2.7 hit this on 3/20 LTspice cases; M2.5-highspeed (non-reasoning) never hit it.
+   After fix: those 3 cases now score 1.000 each. M2.7 mean rose **0.776 → 0.930** on the
+   same suite.
+2. **`max_turns: 80`** was tight enough for M2.5-highspeed (median ~25 turns) but cut off
+   M2.5-highspeed's bridge_rectifier_ripple at turn 81 (0.7) and several M2.7 cases. Bumped
+   to 300 in commit `df37b24`.
+
+**Real model-capability finding** (only after harness fixes): M2.5-highspeed and M2.7 are
+within ~0.6 % on LTspice (0.936 vs 0.930) — close to noise. M2.7 reasoning gives no
+measurable LTspice headroom over fast non-reasoning, while costing ~10× per-turn latency.
+**OpenFOAM tells a different story** that v0.2 needs more data to resolve — the M2.7 cases
+that scored 0 are paperwork-related (relative paths in `extract` pipelines), not physics
+failures, and v0.1's new Pass-2 Stop hook should fix that for v0.2.
 
 The historical tables below are development history (v3 / v4 / v5 / v7 / v9–v18 OpenFOAM
 work). They should not be presented as the v0.1 public result.

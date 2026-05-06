@@ -49,16 +49,34 @@ verifier 已定义 + 任意模型可跑，但 oracle baseline 推迟到 v0.2）�
 每个 case 都 ship 一个确定性 `solution/solve.sh`（**oracle**）。Oracle 跑
 出的分数 = 当前 verifier 下可达的上限；任何模型的分数都对它读。
 
-| 运行 | Agent / 模型 | 题数 | Errors | **Mean reward** | 说明 |
-|---|---|---:|---:|---:|---|
-| `release-v0.1-ltspice20-oracle-20260503` | oracle（确定性） | 20 | 0 | **1.000** | 参考上限 |
-| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | 20 | 1 | **0.936** | 非推理 |
-| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 20 | 3 | **0.776** | 推理 |
+**LTspice 电路（20 题）**
 
-**v0.1 读法。** 非推理的 M2.5-highspeed 比推理的 M2.7 高 16 个百分点（反直觉）。
-M2.7 有 3 个 0 分 case 直接没提交 `result.json`——很可能 80-turn 上限里推理预算
-烧光了。两个模型都在升级版设计题（`bridge_rectifier_ripple` / `rc_lowpass_ac` /
-`rlc_notch` / `lc_lowpass_2nd`）上踩坑——这类题要扫参选参数而不是直接测量。
+| 运行 | Agent / 模型 | 题数 | Errors | **Mean** |
+|---|---|---:|---:|---:|
+| oracle（确定性）| — | 20/20 | 0 | **1.000** |
+| **MiniMax-M2.5-highspeed**（非推理） | claude-code | 20/20 | 1 | **0.936** |
+| **MiniMax-M2.7**（推理） | claude-code | 19/20 | 2 | **0.930** |
+
+**OpenFOAM 流体（3 个有 oracle 的题）**
+
+| 运行 | Agent / 模型 | 题数 | Errors | **Mean** |
+|---|---|---:|---:|---:|
+| oracle（确定性）| — | 3/3 | 0 | **0.999** |
+| **MiniMax-M2.5-highspeed** | claude-code | 3/3 | 1 | **0.408** |
+| **MiniMax-M2.7** | claude-code | 3/3 | 0 | **0.284** |
+
+**v0.1 读法。** LTspice 上 **M2.5-highspeed 和 M2.7 差 ~0.6 %**（0.936 vs 0.930）——
+reasoning 没给可测量提升，单 turn 延迟却是 10 倍。两个模型都在升级版设计题
+（`bridge_rectifier_ripple` / `rc_lowpass_ac` / `rlc_notch` / `lc_lowpass_2nd`）
+上踩坑——这类题要扫参选参数而不是直接测量。
+
+**OpenFOAM 都更难**：agent 要从零写 blockMeshDict / system/ / 0/ / constant/，
+跑 blockMesh + simpleFoam + checkMesh + postProcess，再解析多种格式 log。
+M2.7 那个 `cavity_re100 = 0.0` **不是物理算错**——cavity 确实算对了
+（u_centerline 跟 Ghia 1982 GT 误差 <2 %），但 extract 命令用了相对路径，
+verifier cwd 不一样所以重抽取不到。v0.1 新加的 Pass-2 Stop hook（见
+[`docs/hooks.md`](docs/hooks.md)）会拦这种 paperwork 错误。v0.2 会带着这个
+hook 重测 OpenFOAM。
 
 逐 case 分数和机读 artifact 见 [`results/v0.1/`](results/v0.1/)；
 [`LEADERBOARD.md`](LEADERBOARD.md) 跟踪历史和 ablation 结果。

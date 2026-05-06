@@ -1,0 +1,60 @@
+{
+    "id": "c5655b20-dac0-4ec3-b3da-9ff81e8c694e",
+    "started_at": "2026-05-06T22:06:27.975267",
+    "finished_at": null,
+    "n_total_trials": 20,
+    "stats": {
+        "n_trials": 19,
+        "n_errors": 2,
+        "evals": {
+            "claude-code__circuits": {
+                "n_trials": 19,
+                "n_errors": 2,
+                "metrics": [
+                    {
+                        "mean": 0.930321052631579
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "score": {
+                        "1.0": [
+                            "opamp_buffer__tRXYyzf",
+                            "rl_step__jTf6qic",
+                            "half_wave_rectifier__4Qg8ysd",
+                            "rlc_step_overdamped__xsjaqDF",
+                            "opamp_summer__ZdFebBc",
+                            "rlc_bandpass__Esz7rVR",
+                            "rlc_step_underdamped__yVYfny9",
+                            "inv_amp__JEGxp8V",
+                            "rl_lowpass_ac__UzXMhWT",
+                            "rc_pulse_response__EkSqzQk",
+                            "diff_amp__M5TErwG",
+                            "sallen_key_lp__spDHa2o",
+                            "noninv_amp__ARxJpBm",
+                            "lc_lowpass_2nd__J9Rk4ms",
+                            "lc_resonator__FRFAjgr",
+                            "rc_highpass_ac__UNQTipz"
+                        ],
+                        "0.2011": [
+                            "opamp_integrator__gyH9itw"
+                        ],
+                        "0.7": [
+                            "rlc_notch__zkgzKhi"
+                        ],
+                        "0.775": [
+                            "rc_lowpass_ac__yD3uG7b"
+                        ]
+                    }
+                },
+                "exception_stats": {
+                    "NonZeroAgentExitCodeError": [
+                        "opamp_summer__ZdFebBc",
+                        "noninv_amp__ARxJpBm"
+                    ]
+                }
+            }
+        }
+    },
+    "trial_results": []
+}

@@ -59,17 +59,35 @@ Every task ships with a deterministic `solution/solve.sh` (the *oracle*).
 Running the oracle produces the maximum reachable score under the current
 verifier; any model's score is read against this upper bound.
 
-| Run | Agent / Model | Tasks | Errors | **Mean reward** | Notes |
-|---|---|---:|---:|---:|---|
-| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 0 | **1.000** | reference upper bound |
-| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | 20 | 1 | **0.936** | non-reasoning |
-| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 20 | 3 | **0.776** | reasoning |
+**LTspice circuits (20 tasks)**
 
-**v0.1 read.** M2.5-highspeed (non-reasoning) wins by 16 points over M2.7 (reasoning).
-M2.7 had three zero-score cases that failed to submit `result.json` at all — likely
-consumed reasoning budget under the 80-turn cap. Both models bottom out on the upgraded
-design tasks (`bridge_rectifier_ripple`, `rc_lowpass_ac`, `rlc_notch`, `lc_lowpass_2nd`)
-where the model has to sweep a parameter and choose by spec rather than just measure.
+| Run | Agent / Model | Tasks | Errors | **Mean** |
+|---|---|---:|---:|---:|
+| oracle (deterministic) | — | 20/20 | 0 | **1.000** |
+| **MiniMax-M2.5-highspeed** (non-reasoning) | claude-code | 20/20 | 1 | **0.936** |
+| **MiniMax-M2.7** (reasoning) | claude-code | 19/20 | 2 | **0.930** |
+
+**OpenFOAM fluids (3 oracle-available tasks)**
+
+| Run | Agent / Model | Tasks | Errors | **Mean** |
+|---|---|---:|---:|---:|
+| oracle (deterministic) | — | 3/3 | 0 | **0.999** |
+| **MiniMax-M2.5-highspeed** | claude-code | 3/3 | 1 | **0.408** |
+| **MiniMax-M2.7** | claude-code | 3/3 | 0 | **0.284** |
+
+**v0.1 read.** On LTspice, **M2.5-highspeed and M2.7 are within ~0.6 %** (0.936 vs
+0.930) — reasoning gives no measurable LTspice headroom over fast non-reasoning, at
+~10 × the per-turn latency. Both models bottom out on the upgraded design tasks
+(`bridge_rectifier_ripple`, `rc_lowpass_ac`, `rlc_notch`, `lc_lowpass_2nd`) where the
+model has to sweep a parameter and choose by spec rather than just measure.
+
+**OpenFOAM is harder** for both: the agent has to write blockMeshDict, system/, 0/,
+constant/ from scratch, run blockMesh + simpleFoam + checkMesh + postProcess, and
+parse multi-format logs. M2.7's `cavity_re100 = 0.0` is **not a physics failure** —
+it solved the cavity correctly (u_centerline within 2 % of Ghia 1982 GT) but wrote
+extract pipelines using relative paths that the verifier cannot replay. v0.1's new
+Pass-2 Stop hook ([`docs/hooks.md`](docs/hooks.md)) catches this paperwork failure
+mode in future runs. v0.2 will revisit OpenFOAM with that hook in place.
 
 Per-case scores and machine-readable artifacts live in
 [`results/v0.1/`](results/v0.1/). [`LEADERBOARD.md`](LEADERBOARD.md) tracks
