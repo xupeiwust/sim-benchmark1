@@ -1,15 +1,25 @@
-"""openai_usage_proxy.py — minimal pass-through proxy for an OpenAI-compatible
-chat-completions endpoint that recovers per-request token usage data that
-intermediate routers (e.g. claude-code-router) drop.
+"""openai_usage_proxy.py — proxy for an OpenAI-compatible chat-completions
+endpoint that (a) recovers per-request token usage data and (b) sanitises
+upstream-specific fields that downstream Anthropic-protocol consumers
+cannot map to a valid content-block type.
 
 Why this exists. ccr 2.0 has a `streamoptions` transformer that *should*
 inject `stream_options.include_usage=true` into outbound OpenAI requests,
 but it runs as `transformRequestIn` (mutates the inbound Anthropic body)
 and its mutation is dropped by the Anthropic→OpenAI translator. Custom
 transformers can't fix this either: ccr's hook surface doesn't expose
-`transformRequestOut` for the OpenAI body. Verified empirically by probing
-ccr's transformer pipeline with markers — see
-sim-benchmark/IMPROVEMENTS.md for the trace.
+`transformRequestOut` for the OpenAI body.
+
+Reasoning-block sanitisation. Reasoning models (MiniMax-M2.7, DeepSeek-R1,
+Qwen3-Thinking, ...) emit `reasoning_content` deltas separately from
+`content` deltas in their OpenAI-format SSE stream. ccr's OpenAI→Anthropic
+response converter forwards these as a non-`text` content block; claude-code
+then errors out with `API Error: Content block is not a text block` on
+the very first turn that contains a pure-reasoning chunk. The bug
+manifests as 1-/5-/11-turn early-exits with stop_reason=stop_sequence.
+We strip reasoning_content from every SSE delta before it reaches ccr.
+Reasoning is ephemeral anyway (not part of the model's own context after
+the turn ends), so dropping it is loss-free for downstream behaviour.
 
 This proxy sits between ccr and the real upstream. It:
 
@@ -19,8 +29,11 @@ This proxy sits between ccr and the real upstream. It:
      appends one JSONL record per request to USAGE_LOG. cost_meter.py
      consumes this file to populate agent token counts on ccr-routed trials
      (where Claude Code itself sees `usage: {input_tokens: 0, ...}`).
-  3. Otherwise passes the request and response through unchanged — including
-     SSE chunk boundaries — so it's transparent to ccr's stream parser.
+  3. Strips `reasoning_content` from streaming SSE deltas + non-streaming
+     `choices[*].message`, so reasoning models don't break Anthropic-protocol
+     downstream consumers.
+  4. Otherwise passes the request and response through unchanged — including
+     SSE event framing — so it's transparent to ccr's stream parser.
 
 Usage:
   UPSTREAM_BASE=https://llmapi.paratera.com/v1/chat/completions \\
@@ -86,6 +99,29 @@ def _append_usage(usage: dict, model: str) -> None:
         print(f"[proxy] usage log write failed: {exc}", file=sys.stderr)
 
 
+def _strip_reasoning_content(evt: dict) -> bool:
+    """Drop `reasoning_content` from streaming delta or non-streaming message.
+
+    OpenAI-compat upstreams that expose reasoning models emit a separate
+    `reasoning_content` field alongside `content` and `tool_calls`.
+    ccr's OpenAI→Anthropic translator then forwards this as a content block
+    that claude-code refuses with `API Error: Content block is not a text
+    block`. Stripping the field before ccr sees it is loss-free at the
+    behavioural level — reasoning chunks are not part of the model's
+    next-turn context anyway.
+
+    Returns True iff the event was modified.
+    """
+    modified = False
+    for choice in evt.get("choices") or []:
+        for key in ("delta", "message"):
+            block = choice.get(key)
+            if isinstance(block, dict) and "reasoning_content" in block:
+                del block["reasoning_content"]
+                modified = True
+    return modified
+
+
 async def handle_completions(request: web.Request) -> web.StreamResponse:
     raw = await request.read()
     try:
@@ -125,28 +161,32 @@ async def handle_completions(request: web.Request) -> web.StreamResponse:
                 buffer = b""
 
                 async for chunk in upstream.content.iter_any():
-                    # Pass-through immediately so the downstream stream parser
-                    # (ccr) sees byte-identical chunks.
-                    await resp.write(chunk)
-
-                    # Sniff for usage in any complete `data: …\n` line.
                     buffer += chunk
+                    # Emit every complete line; rewrite any `data: <json>` line
+                    # whose payload includes a reasoning-content field. SSE
+                    # framing (line-delimited, double-newline event separator)
+                    # stays valid since we preserve trailing newlines.
                     while b"\n" in buffer:
                         line, buffer = buffer.split(b"\n", 1)
-                        line = line.strip()
-                        if not line.startswith(b"data: "):
-                            continue
-                        payload = line[6:].strip()
-                        if not payload or payload == b"[DONE]":
-                            continue
-                        try:
-                            evt = json.loads(payload)
-                        except json.JSONDecodeError:
-                            continue
-                        if isinstance(evt.get("usage"), dict):
-                            final_usage = evt["usage"]
-                            model = evt.get("model", model)
+                        out = line + b"\n"
+                        stripped = line.strip()
+                        if stripped.startswith(b"data: "):
+                            payload = stripped[6:]
+                            if payload and payload != b"[DONE]":
+                                try:
+                                    evt = json.loads(payload)
+                                except json.JSONDecodeError:
+                                    evt = None
+                                if isinstance(evt, dict):
+                                    if _strip_reasoning_content(evt):
+                                        out = b"data: " + json.dumps(evt).encode() + b"\n"
+                                    if isinstance(evt.get("usage"), dict):
+                                        final_usage = evt["usage"]
+                                        model = evt.get("model", model)
+                        await resp.write(out)
 
+                if buffer:
+                    await resp.write(buffer)
                 await resp.write_eof()
 
                 if final_usage:
@@ -156,8 +196,10 @@ async def handle_completions(request: web.Request) -> web.StreamResponse:
 
             # ── non-streaming JSON branch ──
             data = await upstream.json()
-            if isinstance(data, dict) and isinstance(data.get("usage"), dict):
-                _append_usage(data["usage"], data.get("model", body.get("model", "")))
+            if isinstance(data, dict):
+                _strip_reasoning_content(data)
+                if isinstance(data.get("usage"), dict):
+                    _append_usage(data["usage"], data.get("model", body.get("model", "")))
             return web.json_response(data, status=upstream.status)
 
 
