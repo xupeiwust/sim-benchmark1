@@ -1,0 +1,48 @@
+# v0.1 MVP reference run: MiniMax-M2.5-highspeed on all 20 LTspice circuit tasks.
+#
+# Companion to release-v0.1-ltspice20-minimax-m27.yaml. M2.5-highspeed is the
+# non-reasoning fast variant; expect dramatically lower per-trial latency than
+# M2.7 (~minutes vs ~25 minutes per case). Concurrency bumped accordingly.
+
+jobs_dir: jobs/release-v0.1-ltspice20-minimax-m25
+n_concurrent_trials: 5
+timeout_multiplier: 3.0
+
+environment:
+  type: docker
+  delete: false
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeViaCcr
+    model_name: MiniMax-M2.5-highspeed
+    kwargs:
+      max_turns: 80
+    env:
+      ANTHROPIC_API_KEY: 'harbor-ccr-2026'
+      ANTHROPIC_BASE_URL: 'http://127.0.0.1:3456'
+      CCR_UPSTREAM_BASE: 'https://api.minimaxi.com/v1/chat/completions'
+      CCR_UPSTREAM_KEY: '${MINIMAX_API_KEY}'
+
+datasets:
+  - path: cases/circuits
+    task_names:
+      - bridge_rectifier_ripple
+      - diff_amp
+      - half_wave_rectifier
+      - inv_amp
+      - lc_lowpass_2nd
+      - lc_resonator
+      - noninv_amp
+      - opamp_buffer
+      - opamp_integrator
+      - opamp_summer
+      - rc_highpass_ac
+      - rc_lowpass_ac
+      - rc_pulse_response
+      - rl_lowpass_ac
+      - rl_step
+      - rlc_bandpass
+      - rlc_notch
+      - rlc_step_overdamped
+      - rlc_step_underdamped
+      - sallen_key_lp
