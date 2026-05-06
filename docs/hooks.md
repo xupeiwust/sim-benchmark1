@@ -11,7 +11,7 @@ exposed.
 
 | Hook | Event | What it does | Why |
 |---|---|---|---|
-| `result_json_check.py` | `Stop` | Schema-validates `/tmp/agent/result.json` before letting `claude` stop. Blocks termination on missing file or schema problems with a per-KPI error list. | v17 had 16 / 20 trials stop with no `result.json`. Without an in-trial signal, agents learn nothing about the contract until the post-hoc verifier scores 0. |
+| `result_json_check.py` | `Stop` | Two-pass validation of `/tmp/agent/result.json` before letting `claude` stop. **Pass 1**: schema (file present, JSON parses, KPI shape, source.kind, extract allow-list, run_id history). **Pass 2** (file_extract only): re-runs each KPI's extract pipeline with source.path's contents piped via stdin, blocks if stdout is empty or the pipeline errors. Reveals empty-vs-non-empty only — never the extracted value or whether it matches the agent's claim. | v17 had 16 / 20 trials stop with no `result.json`. v0.1 OF rerun showed M2.7 cavity_re100 ran the solver correctly (u_centerline within 2 % of Ghia 1982) but used relative paths in extract pipelines that failed when verifier replayed them with a different cwd, scoring 0 / 5 KPIs despite physics-correct simulation. Pass 2 catches this paperwork bug before the agent commits, without leaking any GT-adjacent semantics. |
 | `bash_timeout.py` | `PreToolUse` (matcher: `Bash`) | Transparently rewrites every Bash `command` to `timeout --kill-after=5s 90s bash -c <orig>`. | Claude Code's own 2-min default Bash timeout failed to clean up daemonized children (wineserver) in v18e — a single `wine-ltspice -?` wedged the trial for 75 minutes. GNU `timeout(1)` runs in a new session group and signals the whole group on expiry. |
 
 The first one teaches the agent how to satisfy the contract; the second
@@ -100,18 +100,31 @@ Per-KPI checks:
 - For `sim_run_stdout` / `sim_run_kpi`: `source.run_id` exists in
   `sim --json logs` history (queried at hook fire time)
 
+### What Pass 2 checks (added in v0.1)
+
+For every KPI with `source.kind == "file_extract"`:
+1. `source.path` is absolute and exists.
+2. Read the file's contents.
+3. Run `bash -c <extract>` with the file as STDIN (verifier's exact behaviour).
+4. Block if stdout is empty or the pipeline returned non-zero.
+
+The error message names the most common cause: relative paths inside the
+pipeline (e.g. `grep foo log.checkMesh` when verifier's cwd isn't your case
+dir). Tells the agent to either use absolute paths or rely on stdin.
+
 ### What it deliberately doesn't check
 
 - **`value` correctness** — that's the verifier's `T_decay` job; revealing
   any signal here would let the agent reverse-engineer `gt_value`.
-- **`extract` actually re-derives the claim** — that's the verifier's
-  source-verification job; revealing the extracted value (even just
-  pass/fail) would tell the agent whether their `value` is consistent
-  with their own sim run, which is a step away from leaking the
-  measured magnitude.
+- **Whether the extracted value matches the agent's claim** — Pass 2 reveals
+  empty-vs-non-empty only. The actual extracted value is never compared
+  against the claim, never returned to the agent, never printed in the
+  block reason. Telling the agent "extracted 5.4e-3 vs your claim 5.0e-3
+  off by 8 %" would be a semantic leak; saying "your pipeline returned
+  nothing" is just paperwork triage.
 - **`physics_min`/`physics_max` bounds** — also verifier-side.
 
-The line is: **schema yes, semantics no.**
+The line is: **schema + bookkeeping yes, semantics no.**
 
 ### Sentinel for forensics
 
