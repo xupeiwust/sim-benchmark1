@@ -1,0 +1,1462 @@
+[
+  {
+    "case_id": "bridge_rectifier_ripple",
+    "trial": "bridge_rectifier_ripple__VqLP3Zv",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 1,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "selected_cap_uF",
+          "vout_avg",
+          "vrip_pp"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "selected_cap_uF": {
+        "value": 470.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "470"
+      },
+      "vout_avg": {
+        "value": 9.66899615062,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "9.66899615062"
+      },
+      "vrip_pp": {
+        "value": 1.33914756775,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1.33914756775"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12241,
+      "per_run_duration_ms": {
+        "001": 12241
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "diff_amp",
+    "trial": "diff_amp__VTNVXkK",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vout_pk",
+          "gain_diff"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vout_pk": {
+        "value": 0.499955415726,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.499955415726"
+      },
+      "gain_diff": {
+        "value": 9.99910831451,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "9.99910831451"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12317,
+      "per_run_duration_ms": {
+        "001": 12317
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "half_wave_rectifier",
+    "trial": "half_wave_rectifier__SKUL2VV",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "S",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vout_avg",
+          "vrip_pp"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vout_avg": {
+        "value": 9.68094270587,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "9.68094270587"
+      },
+      "vrip_pp": {
+        "value": 2.94858551025,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "2.94858551025"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12078,
+      "per_run_duration_ms": {
+        "001": 12078
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "inv_amp",
+    "trial": "inv_amp__jJrrnSJ",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 3,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vout_pk",
+          "gain"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vout_pk": {
+        "value": 0.999893188477,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.999893188477"
+      },
+      "gain": {
+        "value": 9.99893188477,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "9.99893188477"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12242,
+      "per_run_duration_ms": {
+        "001": 12242
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "lc_lowpass_2nd",
+    "trial": "lc_lowpass_2nd__jqhQUNP",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "gain_dc",
+          "f_3db"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "gain_dc": {
+        "value": 0.000300043912303,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.000300043912303"
+      },
+      "f_3db": {
+        "value": 2363.21082014,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "2363.21082014"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12147,
+      "per_run_duration_ms": {
+        "001": 12147
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "lc_resonator",
+    "trial": "lc_resonator__pYoNxox",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "f_resonance",
+          "v_peak"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "f_resonance": {
+        "value": 5011.87233627,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "5011.87233627"
+      },
+      "v_peak": {
+        "value": 79.7042943608,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "79.7042943608"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12000,
+      "per_run_duration_ms": {
+        "001": 12000
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "noninv_amp",
+    "trial": "noninv_amp__WY9Q3FW",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 3,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vout_pk",
+          "gain"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vout_pk": {
+        "value": 0.999927341938,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.999927341938"
+      },
+      "gain": {
+        "value": 9.99927341938,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "9.99927341938"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 11996,
+      "per_run_duration_ms": {
+        "001": 11996
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "opamp_buffer",
+    "trial": "opamp_buffer__zNLjmQk",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "S",
+      "leakage_risk": 3,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vout_pk",
+          "gain"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vout_pk": {
+        "value": 0.499986767769,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.499986767769"
+      },
+      "gain": {
+        "value": 0.999973535538,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.999973535538"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 11995,
+      "per_run_duration_ms": {
+        "001": 11995
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "opamp_integrator",
+    "trial": "opamp_integrator__Kozrx8i",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vout_pp",
+          "vout_avg"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vout_pp": {
+        "value": 0.504269543104,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.504269543104"
+      },
+      "vout_avg": {
+        "value": -0.244948395452,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "-0.244948395452"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12447,
+      "per_run_duration_ms": {
+        "001": 12447
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "opamp_summer",
+    "trial": "opamp_summer__RFS3XZv",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vout_pk",
+          "vout_avg"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vout_pk": {
+        "value": 0.352023810148,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.352023810148"
+      },
+      "vout_avg": {
+        "value": 1.29855650984e-08,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1.29855650984e-08"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12493,
+      "per_run_duration_ms": {
+        "001": 12493
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "rc_highpass_ac",
+    "trial": "rc_highpass_ac__TQNzmtU",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "S",
+      "leakage_risk": 3,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "gain_hf",
+          "f_3db"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "gain_hf": {
+        "value": -1.1000793806e-05,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "-1.1000793806e-05"
+      },
+      "f_3db": {
+        "value": 159.180351831,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "159.180351831"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12157,
+      "per_run_duration_ms": {
+        "001": 12157
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "rc_lowpass_ac",
+    "trial": "rc_lowpass_ac__RPHagEz",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 1,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "selected_cap_uF",
+          "gain_10hz",
+          "atten_1khz",
+          "f_3db"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "selected_cap_uF": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "gain_10hz": {
+        "value": -0.842000273305,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "-0.842000273305"
+      },
+      "atten_1khz": {
+        "value": -16.0947080022,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "-16.0947080022"
+      },
+      "f_3db": {
+        "value": 175.644111077,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "175.644111077"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 11818,
+      "per_run_duration_ms": {
+        "001": 11818
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "rc_pulse_response",
+    "trial": "rc_pulse_response__GMuF8Fg",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "S",
+      "leakage_risk": 3,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vout_settled",
+          "t_rise"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vout_settled": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "t_rise": {
+        "value": 0.00021972240809,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.00021972240809"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12317,
+      "per_run_duration_ms": {
+        "001": 12317
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "rl_lowpass_ac",
+    "trial": "rl_lowpass_ac__DdSpPA7",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "S",
+      "leakage_risk": 3,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "gain_dc",
+          "f_3db"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "gain_dc": {
+        "value": -0.000258304238174,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "-0.000258304238174"
+      },
+      "f_3db": {
+        "value": 1591.66404927,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1591.66404927"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12394,
+      "per_run_duration_ms": {
+        "001": 12394
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "rl_step",
+    "trial": "rl_step__bGsLSva",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "S",
+      "leakage_risk": 3,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "i_settled",
+          "t_rise"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "i_settled": {
+        "value": 0.00099999899976,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.00099999899976"
+      },
+      "t_rise": {
+        "value": 0.000219723106173,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.000219723106173"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12092,
+      "per_run_duration_ms": {
+        "001": 12092
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "rlc_bandpass",
+    "trial": "rlc_bandpass__rFAfS3s",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "S",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "peak_freq",
+          "peak_gain"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "peak_freq": {
+        "value": 5011.87233627,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "5011.87233627"
+      },
+      "peak_gain": {
+        "value": -0.0123612803867,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "-0.0123612803867"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 11939,
+      "per_run_duration_ms": {
+        "001": 11939
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "rlc_notch",
+    "trial": "rlc_notch__ZRtwyKT",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 1,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "selected_cap_nF",
+          "dc_gain",
+          "notch_depth"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "selected_cap_nF": {
+        "value": 110.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "110"
+      },
+      "dc_gain": {
+        "value": -0.844993210973,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "-0.844993210973"
+      },
+      "notch_depth": {
+        "value": -30.8394300093,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "-30.8394300093"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 11897,
+      "per_run_duration_ms": {
+        "001": 11897
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "rlc_step_overdamped",
+    "trial": "rlc_step_overdamped__vdNazkH",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vss",
+          "t90"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vss": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "t90": {
+        "value": 0.000453901624939,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.000453901624939"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 11614,
+      "per_run_duration_ms": {
+        "001": 11614
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "rlc_step_underdamped",
+    "trial": "rlc_step_underdamped__sBesBEy",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "vmax",
+          "vss"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "vmax": {
+        "value": 1.90538191795,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1.90538191795"
+      },
+      "vss": {
+        "value": 0.996422572494,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "0.996422572494"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 12551,
+      "per_run_duration_ms": {
+        "001": 12551
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  },
+  {
+    "case_id": "sallen_key_lp",
+    "trial": "sallen_key_lp__QY5bTLW",
+    "score": 1.0,
+    "metadata": {
+      "domain": "circuits",
+      "solver": "ltspice",
+      "difficulty_tier": "M",
+      "leakage_risk": 2,
+      "score_template": "measurement"
+    },
+    "groups": {
+      "setup": {
+        "weight": 0.1,
+        "members": [
+          "sim_completed"
+        ],
+        "group_score": 1.0
+      },
+      "outputs": {
+        "weight": 0.9,
+        "members": [
+          "gain_dc",
+          "f_3db"
+        ],
+        "group_score": 1.0
+      }
+    },
+    "kpis": {
+      "sim_completed": {
+        "value": 1.0,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1"
+      },
+      "gain_dc": {
+        "value": -0.000354313258794,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "-0.000354313258794"
+      },
+      "f_3db": {
+        "value": 1024.6516876,
+        "kpi_score": 1.0,
+        "source_verified": 1.0,
+        "physics_pass": 1.0,
+        "physics_why": "ok",
+        "t_decay": 1.0,
+        "extracted": "1024.6516876"
+      }
+    },
+    "meta_detail": {
+      "exec_ok": 1.0,
+      "process_ok": 1.0,
+      "n_runs": 1,
+      "n_ok_runs": 1,
+      "total_solver_ms": 11903,
+      "per_run_duration_ms": {
+        "001": 11903
+      },
+      "solvers": [
+        "ltspice"
+      ]
+    }
+  }
+]

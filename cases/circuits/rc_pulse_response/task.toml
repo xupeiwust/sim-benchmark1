@@ -1,0 +1,36 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/rc-pulse-response"
+description = "First-order RC step response — measure settled output and 10-90% rise time."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["circuit", "analog", "transient", "rc", "step-response"]
+
+[environment]
+docker_image    = "sim-benchmark-wine-base:latest"
+cpus            = 2
+memory_gb       = 2
+internet_access = true
+
+[agent]
+timeout_s      = 1200
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "Hayt, Kemmerly, Durbin (2018). Engineering Circuit Analysis, 9th ed., Ch.7 — RC step response. τ = RC; 10-90% rise time t_r = 2.197·τ."
+source_url      = "https://www.mheducation.com/highered/product/engineering-circuit-analysis-hayt-kemmerly/M9780073545516.html"
+difficulty_tier = "S"
+gt_type         = "high-fidelity-solver"
+range_value     = 1.0
+tags            = ["solver-neutral", "scalar-kpi", "transient", "spice", "first-order"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+score_template  = "measurement"
+leakage_risk    = 3
+capability_target = "postprocess"

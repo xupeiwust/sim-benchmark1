@@ -1,0 +1,116 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "bump_in_channel_2d",
+  "source": {
+    "primary_url":  "https://turbmodels.larc.nasa.gov/bump.html",
+    "data_source":  "CFL3D Spalart-Allmaras solution on TMR's 1409x641 grid (~901k cells), the finest in the verification suite.",
+    "raw_data_url": "vv-sources/benchmarks/SU2-VandV/rans/bump_in_channel_2d/plot_data/cfl3d_gridconv_sa.csv",
+    "reference_grid": "1409 x 641, 901120 cells",
+    "cross_code_check": "Both CFL3D and FUN3D published values; FUN3D matches CFL3D within ~3rd significant figure on Cf and ~5th on CD.",
+    "su2_vandv_url": "https://su2code.github.io/vandv/Bump_Channel/"
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the channel-and-bump mesh",
+      "gt_value":      60000,
+      "T_good":        40000,
+      "T_bad":         200000,
+      "physics_min":   3000,
+      "physics_max":   5000000,
+      "T_good_source": "TMR coarsest grid is 89x41 (~3.6k cells); a wall-resolved RANS at Re=3e6 typically requires ~50k cells in 2D. Hand-set."
+    },
+
+    "final_residual_U": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final residual of the momentum equation",
+      "gt_value":      0,
+      "T_good":        1e-4,
+      "T_bad":         1e-2,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Hand-set; subsonic RANS routinely reaches 1e-5 on this geometry."
+    },
+
+    "cd_total": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Total drag coefficient (pressure + viscous) integrated over the lower wall, normalised by 0.5 rho_inf U_inf^2 L_ref",
+      "gt_value":      0.003572,
+      "T_good":        0.0003,
+      "T_bad":         0.0010,
+      "physics_min":   0.001,
+      "physics_max":   0.010,
+      "T_good_source": "CFL3D-SA on 1409x641 grid: CD=3.572e-3 (= 35.7 drag-counts). T_good=3 dc / ~8% allows for turbulence-model variation between SA, SST, etc."
+    },
+
+    "cd_pressure": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Pressure-drag component of cd_total",
+      "gt_value":      0.000382,
+      "T_good":        0.0001,
+      "T_bad":         0.0003,
+      "physics_min":   0.00005,
+      "physics_max":   0.005,
+      "T_good_source": "CFL3D-SA on 1409x641 grid: C_Dp=3.82e-4 (~11% of total). T_good wider relative to magnitude because pressure-drag separation is sensitive to bump pressure-gradient capture."
+    },
+
+    "cd_viscous": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Viscous (skin-friction) drag component of cd_total",
+      "gt_value":      0.003191,
+      "T_good":        0.00025,
+      "T_bad":         0.00080,
+      "physics_min":   0.001,
+      "physics_max":   0.008,
+      "T_good_source": "CFL3D-SA on 1409x641 grid: C_Dv=3.191e-3 (~89% of total). T_good ~8% of gt allows turbulence-model + grid-resolution scatter."
+    },
+
+    "cf_at_x_063": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Local skin-friction coefficient C_f at x=0.63 m (mid-acceleration on bump)",
+      "gt_value":      0.005185,
+      "T_good":        0.0005,
+      "T_bad":         0.0015,
+      "physics_min":   0.001,
+      "physics_max":   0.012,
+      "T_good_source": "CFL3D-SA on 1409x641 grid: C_f63=5.185e-3. T_good ~10% of gt."
+    },
+
+    "cf_at_x_075": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Local C_f at x=0.75 m (apex of bump, peak shear)",
+      "gt_value":      0.006149,
+      "T_good":        0.0006,
+      "T_bad":         0.0018,
+      "physics_min":   0.001,
+      "physics_max":   0.015,
+      "T_good_source": "CFL3D-SA on 1409x641 grid: C_f75=6.149e-3 (peak). T_good ~10% of gt."
+    },
+
+    "cf_at_x_087": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Local C_f at x=0.87 m (deceleration region downstream of apex)",
+      "gt_value":      0.002678,
+      "T_good":        0.0003,
+      "T_bad":         0.0008,
+      "physics_min":   0.0005,
+      "physics_max":   0.008,
+      "T_good_source": "CFL3D-SA on 1409x641 grid: C_f87=2.678e-3. Adverse-pressure-gradient region; sensitive to turbulence-model anisotropy. T_good ~11% of gt."
+    }
+  }
+}

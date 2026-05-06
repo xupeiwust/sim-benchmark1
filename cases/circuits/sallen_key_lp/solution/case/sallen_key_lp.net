@@ -1,0 +1,19 @@
+* Sallen-Key 2nd-order active low-pass — unity-gain config.
+* f0 ≈ 1/(2π·R·C) for R1=R2, C1=C2 → ≈1592 Hz.
+.lib LTC.lib
+
+V1    in  0    AC 1
+V_pos vcc 0    15
+V_neg vee 0    -15
+
+R1 in   a    10k
+R2 a    b    10k
+C1 a    out  10n     ; positive-feedback path
+C2 b    0    10n
+
+XU1 b out vcc vee out LT1001    ; vin+=b, vin-=out (unity-gain follower)
+
+.ac dec 100 10 100k
+.meas AC gain_dc FIND mag(V(out)) AT 10
+.meas AC f_3db   WHEN mag(V(out))=gain_dc*0.7071 CROSS=1
+.end

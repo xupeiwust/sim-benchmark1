@@ -1,0 +1,51 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "lc_resonator",
+  "source": {
+    "primary_url": "https://global.oup.com/academic/product/microelectronic-circuits-9780199339136",
+    "citation": "Sedra & Smith (2014). §17.4 — parallel LC tank."
+  },
+  "kpi_groups": {
+    "setup": {
+      "weight": 0.1
+    },
+    "outputs": {
+      "weight": 0.9
+    }
+  },
+  "kpis": {
+    "sim_completed": {
+      "group": "setup",
+      "shape": "scalar",
+      "description": "1 if AC sweep ran, else 0",
+      "gt_value": 1,
+      "T_good": 0.5,
+      "T_bad": 0.5,
+      "physics_min": 0,
+      "physics_max": 1,
+      "T_good_source": "Binary flag"
+    },
+    "f_resonance": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Frequency at which |V(tank)| is maximum",
+      "gt_value": 5011.87,
+      "T_good": 100.0,
+      "T_bad": 500.0,
+      "physics_min": 1000.0,
+      "physics_max": 20000.0,
+      "T_good_source": "Closed-form 1/(2π√LC) ≈ 5033 Hz. Oracle measured 5011.87 on wine LTspice 26 (2026-04-28)."
+    },
+    "v_peak": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Peak |V(tank)| at resonance (dB form per LTspice .meas AC mag(...))",
+      "gt_value": 79.7,
+      "T_good": 2.0,
+      "T_bad": 10.0,
+      "physics_min": 40.0,
+      "physics_max": 100.0,
+      "T_good_source": "At resonance LC is high-Z → V ≈ I·R_par = 1·10k = 10000 V → 80 dB. Replaced with oracle GT. Oracle measured 79.7 on wine LTspice 26 (2026-04-28)."
+    }
+  }
+}

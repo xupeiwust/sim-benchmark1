@@ -1,0 +1,81 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "30p30n_three_element_highlift",
+  "source": {
+    "primary_url":   "https://su2code.github.io/vandv/30p30n/",
+    "data_source":   "JAXA Aerodynamics Prediction Challenge IV (APC-IV), 30P30N three-element high-lift airfoil with modified-slat configuration F. Stowed reference chord c_stow = 0.5588 m. Test point: M=0.17, Re=1.71e6 based on c_stow, alpha=5.5 deg (linear-regime point used for SU2 V&V cross-code comparison).",
+    "data_status":   "JAXA APC-IV experimental reference data is distributed in tar.gz archives at https://cfdws.chofu.jaxa.jp/apc/apc4/ and is NOT directly accessible via WebFetch. KPI gt_values for cl/cd/cp_min are PLOT-DERIVED from the SU2 V&V case-study figures and the JAXA-SP-18-008 published proceedings (2019). Tolerances are set generously (~10-15% on Cl/Cd, similar to other multi-element high-lift workshops AIAA HLPW-3 / HLPW-4). DO NOT treat these gt_values as paper-tabulated; they are deferred-citation pending direct extraction from the JAXA tar.gz archive in a future Phase E refinement.",
+    "su2_mesh_family": "/opt/vv/30p30n/2D_L{1,2,3,4,5}_*.su2.gz; L1 ~0.3M, L2 ~0.6M, L3 ~1.4M, L4 ~3.0M, L5 ~5.6M cells (post-gunzip).",
+    "jaxa_url":       "https://cfdws.chofu.jaxa.jp/apc/apc4/",
+    "jaxa_grids_url": "https://cfdws.chofu.jaxa.jp/apc/grids/3element_highlift_airfoil/30P30N_modified_slat_configF/cgns/",
+    "proceedings":    "JAXA-SP-18-008, 'Proceedings of the Aerodynamics Prediction Challenge (APC-IV)', 2019."
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the 30P30N mesh (post-import / post-conversion if a non-SU2 solver is used).",
+      "gt_value":      600000,
+      "T_good":        1500000,
+      "T_bad":         5000000,
+      "physics_min":   200000,
+      "physics_max":   8000000,
+      "T_good_source": "SU2 V&V mesh family: L1=0.3M, L2=0.6M, L3=1.4M, L4=3.0M, L5=5.6M. gt_value=600k anchors at L2 (medium); T_good=1.5M wide enough to admit any of L1, L2, L3 without penalty (L4-L5 incur small T_decay but do not 'fail'). T_bad=5M starts to bias toward over-resolved super-fine. Hand-set."
+    },
+
+    "final_residual_U": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final residual of the streamwise momentum equation at end of the alpha=5.5 deg solve.",
+      "gt_value":      0,
+      "T_good":        1e-4,
+      "T_bad":         1e-2,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Hand-set; multi-element low-speed RANS routinely reaches 1e-5 to 1e-6 over 4-5 decades on L2-L3 meshes. 1e-4 is a conservative cross-solver convergence bar (cove recirculations sometimes stall residual decay)."
+    },
+
+    "cl_at_alpha_5p5": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Total lift coefficient (slat + main + flap) at alpha=5.5 deg, normalised by 0.5*rho_inf*U_inf^2*c_stow with c_stow=0.5588 m.",
+      "gt_value":      2.85,
+      "T_good":        0.30,
+      "T_bad":         0.80,
+      "physics_min":   1.5,
+      "physics_max":   4.5,
+      "T_good_source": "PLOT-DERIVED from SU2 V&V CL-vs-alpha figure (https://su2code.github.io/vandv/30p30n/): at alpha=5.5 deg both SA-neg and SST-2003m on L3-L5 meshes cluster near CL=2.80-2.95; JAXA APC-IV experimental reference at alpha=5.5 deg sits in the same band (deferred-citation pending direct extraction from JAXA-SP-18-008 / the JAXA tar.gz archive). gt_value=2.85 plot-derived, T_good=0.30 (~10% of gt) absorbs SA-vs-SST-vs-experiment spread typical for HLPW-class multi-element cases; T_bad=0.80 catches single-element-equivalent predictions (CL ~ 2*pi*alpha ~ 0.6) or fully-stalled (CL < 2.0)."
+    },
+
+    "cd_at_alpha_5p5": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Total drag coefficient on the configuration at alpha=5.5 deg, same normalisation as cl.",
+      "gt_value":      0.045,
+      "T_good":        0.010,
+      "T_bad":         0.030,
+      "physics_min":   0.020,
+      "physics_max":   0.150,
+      "T_good_source": "PLOT-DERIVED from SU2 V&V CD-vs-alpha figure: at alpha=5.5 deg both SA-neg and SST-2003m on L3-L5 cluster near CD=0.040-0.050. Multi-element CD is dominated by viscous + cove dissipation and is intrinsically more turbulence-model-sensitive (~15-20% spread is normal at HLPW-class workshops). gt_value=0.045 plot-derived, T_good=0.010 (~22% of gt) is generous in line with HLPW-3/HLPW-4 cross-code spread; T_bad=0.030 rejects inviscid (CD too low) or fully-separated (CD too high). Deferred-citation pending JAXA-SP-18-008 direct extraction."
+    },
+
+    "cp_min_slat_at_alpha_5p5": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Minimum (most negative) wall pressure coefficient Cp on the slat upper surface at alpha=5.5 deg (slat leading-edge suction peak).",
+      "gt_value":      -10.5,
+      "T_good":        2.0,
+      "T_bad":         5.0,
+      "physics_min":   -25,
+      "physics_max":   -3,
+      "T_good_source": "PLOT-DERIVED from SU2 V&V slat-Cp figure: the slat upper-surface suction peak at alpha=5.5 deg sits around Cp_min ~ -10 to -11 across SA-neg / SST-2003m on L3-L5 meshes. The peak is highly leading-edge-mesh-sensitive: coarse slat LE meshes (L1) under-resolve the peak by 1-2 in Cp, fine meshes (L4-L5) recover -10 to -11. JAXA APC-IV experiment (deferred-citation, JAXA-SP-18-008) reports Cp_min in the same band. gt_value=-10.5 plot-derived; T_good=2.0 absorbs slat-LE-mesh spread between L2-L5 plus model-vs-experiment offset; T_bad=5.0 rejects single-element (Cp_min ~ -3 to -4) or grossly under-resolved (Cp_min ~ -6) predictions."
+    }
+  }
+}

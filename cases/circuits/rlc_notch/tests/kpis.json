@@ -1,0 +1,62 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "rlc_notch",
+  "source": {
+    "primary_url": "https://global.oup.com/academic/product/microelectronic-circuits-9780199339136",
+    "citation": "Sedra & Smith (2014). Section 17.4 LC notch filter, extended here as a loaded nonideal capacitor-selection task."
+  },
+  "kpi_groups": {
+    "setup": {
+      "weight": 0.1
+    },
+    "outputs": {
+      "weight": 0.9
+    }
+  },
+  "kpis": {
+    "sim_completed": {
+      "group": "setup",
+      "shape": "scalar",
+      "description": "1 if AC sweep ran, else 0",
+      "gt_value": 1,
+      "T_good": 0.5,
+      "T_bad": 0.5,
+      "physics_min": 0,
+      "physics_max": 1,
+      "T_good_source": "Binary flag"
+    },
+    "selected_cap_nF": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Capacitor from {75, 91, 110, 130} nF that gives the deepest 5033 Hz notch with the loaded nonideal trap",
+      "gt_value": 110.0,
+      "T_good": 2.0,
+      "T_bad": 20.0,
+      "physics_min": 20.0,
+      "physics_max": 200.0,
+      "T_good_source": "LTspice stepped Ctrap list shows the 110 nF candidate gives the deepest 5033 Hz notch once 10 kOhm load and 0.35 ohm inductor DCR are included; no candidate is exactly at the ideal resonance."
+    },
+    "dc_gain": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "|V(out)| at 100 Hz for selected_cap_nF, including 10 kOhm load",
+      "gt_value": -0.845,
+      "T_good": 0.3,
+      "T_bad": 1.5,
+      "physics_min": -3.0,
+      "physics_max": 0.0,
+      "T_good_source": "Oracle stepped LTspice 26.0.1 run at selected C=110 nF measured -0.845 dB at 100 Hz with the 10 kOhm load included."
+    },
+    "notch_depth": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "|V(out)| at 5033 Hz for selected_cap_nF, including 10 kOhm load and inductor DCR",
+      "gt_value": -30.839,
+      "T_good": 5.0,
+      "T_bad": 20.0,
+      "physics_min": -80.0,
+      "physics_max": -10.0,
+      "T_good_source": "Series LC trap at resonance is no longer ideal because no candidate lands exactly on 5033 Hz and because load plus 0.35 ohm inductor DCR limit the notch; oracle stepped LTspice 26.0.1 measured -30.839 dB for C=110 nF."
+    }
+  }
+}

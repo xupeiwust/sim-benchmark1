@@ -1,0 +1,35 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+.sim/
+/logs/
+/tmp/
+/jobs/
+.DS_Store
+Thumbs.db
+
+# Sub-agent / dev scratch scripts. Convention: anything prefixed `tmp_`
+# at repo root or in tools/ is a one-shot script not meant for the tree.
+tmp_*.py
+tmp_*.sh
+
+# uv lockfiles for sub-packages: not adopted as canonical yet.
+lib/*/uv.lock
+
+# Local API credentials (never commit)
+API
+_attic/
+*.bak
+# vv-sources/: working scratch space for case-source mining (PDFs, papers,
+# v&v library snapshots, mined inventories). Local-only — not tracked.
+vv-sources/
+
+# Build-context symlinks pointing at sibling repos (sim-cli, sim-ltspice,
+# sim-plugin-ltspice, sim-skills). These are recreated locally on each
+# build host via README instructions; not portable across Win/Linux.
+/sim-cli
+/sim-ltspice
+/sim-plugin-ltspice
+/sim-skills

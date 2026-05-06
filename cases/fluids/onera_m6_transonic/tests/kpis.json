@@ -1,0 +1,79 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "onera_m6_transonic",
+  "source": {
+    "primary_url":   "https://tmbwg.github.io/turbmodels/onerawingnumerics_val.html",
+    "data_source":   "Schmitt, V. & Charpin, F., AGARD AR-138 (1979) Test 2308 (M=0.8395, alpha=3.06 deg, Re_root=11.72e6). NASA TMR ONERA M6 numerics page tabulates force coefficients and Cp profiles from CFL3D / FUN3D using SA-neg, SA-RC-QCR2000, and SST-2003m turbulence models on a 3.5M-cell structured grid.",
+    "schmitt_charpin_geometry": "Swept tapered untwisted wing, ONERA D section: c_root=0.8059 m, c_tip=0.4561 m, b=1.1963 m semi-span, LE sweep 30 deg, TE sweep 15.8 deg, taper 0.562, S_ref(semi)=0.7532 m^2, c_ref=0.6463 m.",
+    "tmr_force_band": "NASA TMR force-coefficient compilation (SA-neg / SST-2003m on 3.5M-cell grid): CL = 0.265-0.275, CD = 0.0165-0.0180. AGARD experimental balance values (test 2308): CL ~ 0.262, CD ~ 0.0170 (with ~5% balance uncertainty).",
+    "cp_probe_basis": "Schmitt-Charpin probe spanwise stations include 2y/b = 0.20, 0.44, 0.65, 0.80, 0.90, 0.95, 0.99. The 2y/b=0.44 station is in the inboard band where the rear lambda-shock is well-defined. At x/c=0.50, the upper (suction) surface Cp from Schmitt-Charpin is in the band Cp = -0.40 to -0.50 (just upstream of the rear shock foot, plot-derived from AGARD AR-138 figure 7 / TMR Cp comparison plots)."
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the ONERA M6 semi-span volume mesh.",
+      "gt_value":      3500000,
+      "T_good":        2500000,
+      "T_bad":         8000000,
+      "physics_min":   500000,
+      "physics_max":   20000000,
+      "T_good_source": "NASA TMR baseline grid family (3.5M-cell hex) is the canonical anchor; published AIAA-style ONERA M6 grids span 0.9M (coarse) to ~13M (fine). Hand-set: T_good=2.5M absorbs coarse-fine grid choice; T_bad=8M starts to bias toward over-refined."
+    },
+
+    "final_residual_U": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final residual of the streamwise momentum equation at end of solve.",
+      "gt_value":      0,
+      "T_good":        1e-4,
+      "T_bad":         1e-2,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Hand-set; transonic RANS on ONERA M6 routinely reaches 1e-5 to 1e-6 over 4-5 decades on the 3.5M grid. 1e-4 is a conservative cross-solver convergence bar."
+    },
+
+    "cl": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Lift coefficient on the wing (S_ref = 0.7532 m^2 semi-span area).",
+      "gt_value":      0.270,
+      "T_good":        0.025,
+      "T_bad":         0.080,
+      "physics_min":   0.15,
+      "physics_max":   0.40,
+      "T_good_source": "NASA TMR SA-neg / SST-2003m on 3.5M grid: CL band 0.265-0.275; AGARD experimental CL ~ 0.262 (test 2308). gt_value=0.270 anchored at TMR mid-band. T_good ~9% of gt absorbs SA-vs-SST spread (~0.010) plus experimental balance uncertainty (~0.013)."
+    },
+
+    "cd": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Drag coefficient on the wing (same normalisation as cl).",
+      "gt_value":      0.0170,
+      "T_good":        0.0030,
+      "T_bad":         0.0080,
+      "physics_min":   0.008,
+      "physics_max":   0.040,
+      "T_good_source": "NASA TMR SA-neg / SST-2003m on 3.5M grid: CD band 0.0165-0.0180 (mostly wave-drag from the lambda-shock, ~80-90 drag-counts). AGARD experimental CD ~ 0.0170. T_good=30 dc / ~18% admits both SA and SST families; T_bad=80 dc rejects inviscid (CD too low) or massively-separated (CD too high) runs. Wider relative tolerance than 2D airfoil cases because 3D shock-induced trailing-edge separation is highly turbulence-model-sensitive."
+    },
+
+    "cp_at_2y_b_044_xc_05": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Wall pressure coefficient Cp on the suction (upper) surface at spanwise 2y/b=0.44, chordwise x/c=0.50.",
+      "gt_value":      -0.45,
+      "T_good":        0.10,
+      "T_bad":         0.30,
+      "physics_min":   -1.5,
+      "physics_max":   0.5,
+      "T_good_source": "Plot-derived from AGARD AR-138 figure 7 (Schmitt-Charpin upper-surface Cp vs x/c at 2y/b=0.44) and NASA TMR Cp-comparison plots (SA-neg / SST-2003m / SA-RC-QCR2000 on 3.5M grid). At x/c=0.50 the upper-surface Cp clusters in [-0.40, -0.50] just upstream of the rear lambda-shock foot; the shock itself is at x/c ~ 0.55-0.60 at this span station and produces a strong Cp jump (~0.5 in magnitude). gt_value=-0.45 plot-derived (not paper-tabulated), T_good=0.10 spans the experimental + RANS-model band; T_bad=0.30 rejects subcritical / fully-attached predictions that put the shock at the wrong x/c."
+    }
+  }
+}

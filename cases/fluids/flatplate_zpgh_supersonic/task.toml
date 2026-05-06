@@ -1,0 +1,36 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/flatplate-zpgh-supersonic"
+description = "Supersonic ZPG flat plate at M=5, Re/L=15e6, three iso-thermal Tw/T_inf cases (1.090/2.725/5.450). Cf at fixed Re_theta vs Van Driest II."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "compressible", "supersonic", "boundary-layer", "heat-transfer", "vv"]
+
+[environment]
+docker_image    = "sim-benchmark-base:latest"
+cpus            = 4
+memory_gb       = 8
+internet_access = true
+
+[agent]
+timeout_s      = 5400
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "NASA Turbulence Modeling Resource ZPG supersonic validation; Van Driest II compressibility transformation of Karman-Schoenherr."
+source_url      = "https://tmbwg.github.io/turbmodels/ZPGflatplateSS_val.html"
+difficulty_tier = "L"
+gt_type         = "high-fidelity"
+range_value     = 0.005
+tags            = ["solver-neutral", "scalar-kpi", "compressible", "iso-thermal-wall", "multi-Tw"]
+release_status  = "public_runnable"
+oracle_status   = "deferred"
+score_template  = "numerical"
+leakage_risk    = 2
+capability_target = "numerical"

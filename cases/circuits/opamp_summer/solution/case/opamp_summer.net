@@ -1,0 +1,18 @@
+* Inverting summing amplifier — V_out = -V1·R_f/R1 - V2·R_f/R2.
+.lib LTC.lib
+
+V1   v1  0   SINE(0 200m 1k)
+V2   v2  0   SINE(0 100m 2k)
+V_pos vcc 0  15
+V_neg vee 0  -15
+
+R1 v1      invnode 10k
+R2 v2      invnode 5k
+R_f invnode out    10k
+
+XU1 0 invnode vcc vee out LT1001    ; vin+=0, vin-=invnode
+
+.tran 5m
+.meas tran vout_pk  MAX abs(V(out)) FROM 2m TO 5m
+.meas tran vout_avg AVG V(out) FROM 2m TO 5m
+.end

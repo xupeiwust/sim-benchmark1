@@ -1,0 +1,91 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "flatplate_zpgh_supersonic",
+  "source": {
+    "primary_url":  "https://tmbwg.github.io/turbmodels/ZPGflatplateSS_val.html",
+    "data_source":  "Van Driest II compressibility transformation of Karman-Schoenherr Cf(Re_theta) baseline. Reference values from NASA TMR data file cf_vandriestII.dat.",
+    "raw_data_url": "https://tmbwg.github.io/turbmodels/ZPGflatplateSS_validation/cf_vandriestII.dat",
+    "values_extracted_at": "Re_theta = 5000 and 10000 from each ZONE in cf_vandriestII.dat",
+    "physics": "M=5 supersonic ZPG turbulent flat plate, three iso-thermal wall temperature ratios (Tw/T_inf = 1.090, 2.725, 5.450 corresponding to Tw/Taw = 0.2, 0.5, 1.0 respectively at recovery factor 0.89)."
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the plate mesh (single mesh used across all 3 Tw cases)",
+      "gt_value":      80000,
+      "T_good":        50000,
+      "T_bad":         300000,
+      "physics_min":   5000,
+      "physics_max":   10000000,
+      "T_good_source": "Wall-resolved compressible RANS at Re/L=15e6 reaching Re_theta=10k typically requires ~50k-200k cells in 2D with y+<0.5. Hand-set."
+    },
+
+    "final_residual_U": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final momentum residual at end of Tw/T_inf=2.725 solve (representative middle case)",
+      "gt_value":      0,
+      "T_good":        1e-4,
+      "T_bad":         1e-2,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Hand-set; compressible RANS on ZPG flat plate with iso-thermal wall routinely reaches 1e-5 over 4 decades of decay."
+    },
+
+    "cf_at_retheta_10000_tw1p090": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Local skin-friction coefficient C_f at Re_theta=10000 for cold-wall case (Tw/T_inf=1.090, Tw/Taw=0.2)",
+      "gt_value":      0.001538,
+      "T_good":        0.00015,
+      "T_bad":         0.00045,
+      "physics_min":   0.0008,
+      "physics_max":   0.003,
+      "T_good_source": "Van Driest II at Re_theta=10000, M=5, Tw/Tini=1.090: Cf=1.5380e-3 (extracted from cf_vandriestII.dat zone 2). T_good ~10% of gt to allow for turbulence-model spread (SA/SST/SSG-LRR scatter ~5-8% on Cf at supersonic conditions per TMR cross-code comparisons)."
+    },
+
+    "cf_at_retheta_10000_tw2p725": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Local skin-friction coefficient C_f at Re_theta=10000 for intermediate-wall case (Tw/T_inf=2.725, Tw/Taw=0.5)",
+      "gt_value":      0.001220,
+      "T_good":        0.00012,
+      "T_bad":         0.00036,
+      "physics_min":   0.0006,
+      "physics_max":   0.003,
+      "T_good_source": "Van Driest II at Re_theta=10000, M=5, Tw/Tini=2.725: Cf=1.2199e-3 (extracted from cf_vandriestII.dat zone 3)."
+    },
+
+    "cf_at_retheta_10000_tw5p450": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Local skin-friction coefficient C_f at Re_theta=10000 for warm-wall (near-adiabatic) case (Tw/T_inf=5.450, Tw/Taw=1.0)",
+      "gt_value":      0.000933,
+      "T_good":        0.0001,
+      "T_bad":         0.0003,
+      "physics_min":   0.0005,
+      "physics_max":   0.002,
+      "T_good_source": "Van Driest II at Re_theta=10000, M=5, Tw/Tini=5.450: Cf=9.327e-4 (extracted from cf_vandriestII.dat zone 4). Adiabatic-recovery limit; smallest Cf magnitude of the three."
+    },
+
+    "cf_at_retheta_5000_tw2p725": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Local skin-friction coefficient C_f at Re_theta=5000 for intermediate-wall case (anchor at lower Re_theta)",
+      "gt_value":      0.001406,
+      "T_good":        0.00014,
+      "T_bad":         0.00040,
+      "physics_min":   0.0007,
+      "physics_max":   0.003,
+      "T_good_source": "Van Driest II at Re_theta=5000, M=5, Tw/Tini=2.725: Cf=1.4060e-3 (extracted from cf_vandriestII.dat zone 3). Lower-Re_theta anchor confirms streamwise Cf decay is captured, not just one point."
+    }
+  }
+}

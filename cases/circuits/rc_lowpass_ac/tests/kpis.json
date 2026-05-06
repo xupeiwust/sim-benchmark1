@@ -1,0 +1,73 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "rc_lowpass_ac",
+  "source": {
+    "primary_url": "https://global.oup.com/academic/product/microelectronic-circuits-9780199339136",
+    "citation": "Sedra & Smith (2014). Microelectronic Circuits, 7th ed., section 17.2, extended here as a loaded capacitor-selection design task."
+  },
+  "kpi_groups": {
+    "setup": {
+      "weight": 0.1
+    },
+    "outputs": {
+      "weight": 0.9
+    }
+  },
+  "kpis": {
+    "sim_completed": {
+      "group": "setup",
+      "shape": "scalar",
+      "description": "1 if LTspice AC sweep ran without errors, else 0",
+      "gt_value": 1,
+      "T_good": 0.5,
+      "T_bad": 0.5,
+      "physics_min": 0,
+      "physics_max": 1,
+      "T_good_source": "Binary flag"
+    },
+    "selected_cap_uF": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Smallest capacitor from {0.22, 0.47, 1.0, 2.2} uF that meets both AC specs",
+      "gt_value": 1.0,
+      "T_good": 0.05,
+      "T_bad": 0.5,
+      "physics_min": 0.1,
+      "physics_max": 5.0,
+      "T_good_source": "LTspice stepped Cval list shows 0.47 uF gives -9.97 dB at 1 kHz and 1.0 uF gives -16.09 dB while keeping 10 Hz gain above -1 dB."
+    },
+    "gain_10hz": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Loaded pass-band gain at 10 Hz for selected_cap_uF, in dB",
+      "gt_value": -0.842,
+      "T_good": 0.3,
+      "T_bad": 1.5,
+      "physics_min": -3.0,
+      "physics_max": 0.0,
+      "T_good_source": "Oracle stepped LTspice 26.0.1 run at selected C=1.0 uF measured -0.842 dB at 10 Hz with the 10 kOhm load included."
+    },
+    "atten_1khz": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Loaded attenuation at 1 kHz for selected_cap_uF, in dB",
+      "gt_value": -16.095,
+      "T_good": 0.5,
+      "T_bad": 3.0,
+      "physics_min": -40.0,
+      "physics_max": -3.0,
+      "T_good_source": "Oracle stepped LTspice 26.0.1 run at selected C=1.0 uF measured -16.095 dB at 1 kHz."
+    },
+    "f_3db": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Loaded frequency at which |V(out)| drops to 1/sqrt(2) of its 10 Hz value for selected_cap_uF",
+      "gt_value": 175.64,
+      "T_good": 5.0,
+      "T_bad": 25.0,
+      "physics_min": 50.0,
+      "physics_max": 500.0,
+      "T_good_source": "Oracle stepped LTspice 26.0.1 run at selected C=1.0 uF measured 175.64 Hz; the 10 kOhm load shifts the effective resistance from the unloaded textbook value."
+    }
+  }
+}

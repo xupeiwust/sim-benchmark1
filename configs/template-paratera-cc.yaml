@@ -1,0 +1,19 @@
+jobs_dir: jobs/v9-paratera-of-cc
+n_concurrent_trials: 8
+timeout_multiplier: 3.0
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeAnthropicDirect
+    model_name: Kimi-K2.5
+    kwargs: {max_turns: 80}
+    env: &pa_cc_env
+      ANTHROPIC_API_KEY: 'harbor-ccr-2026'
+      ANTHROPIC_BASE_URL: 'http://172.17.0.1:3456'
+
+  - import_path: tools.agent_harness:ClaudeCodeAnthropicDirect
+    model_name: GLM-5.1
+    kwargs: {max_turns: 80}
+    env: *pa_cc_env
+
+datasets:
+  - path: cases/fluids

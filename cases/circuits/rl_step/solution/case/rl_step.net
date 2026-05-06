@@ -1,0 +1,11 @@
+* First-order RL step response — τ = L/R = 100 µs.
+V1 in  0   PULSE(0 1 0 1n 1n 1 2)
+R1 in  a   1k
+L1 a   0   100m
+
+.tran 0 2m 0 100n
+.meas tran i_settled AVG I(L1) FROM 1.8m TO 2m
+.meas tran t10  WHEN I(L1)=0.0001 RISE=1
+.meas tran t90  WHEN I(L1)=0.0009 RISE=1
+.meas tran t_rise PARAM t90-t10
+.end

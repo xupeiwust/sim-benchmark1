@@ -1,0 +1,36 @@
+jobs_dir: jobs/v9-minimax-of
+n_concurrent_trials: 12
+timeout_multiplier: 2.0
+
+agents:
+  - name: terminus-2
+    model_name: anthropic/MiniMax-M2.7
+    kwargs: &mm_t2_kwargs
+      api_base: https://api.minimaxi.com/anthropic
+      max_turns: 80
+      temperature: 1.0
+      model_info:
+        max_tokens: 204800
+        max_input_tokens: 190000
+        max_output_tokens: 16000
+        input_cost_per_token: 0.0
+        output_cost_per_token: 0.0
+
+  - name: terminus-2
+    model_name: anthropic/MiniMax-M2.5
+    kwargs: *mm_t2_kwargs
+
+  - import_path: tools.agent_harness:ClaudeCodeAnthropicDirect
+    model_name: MiniMax-M2.7
+    kwargs: {max_turns: 80}
+    env: &mm_cc_env
+      ANTHROPIC_API_KEY: '${MINIMAX_API_KEY}'  # see ../API
+      ANTHROPIC_BASE_URL: 'https://api.minimaxi.com/anthropic'
+
+  - import_path: tools.agent_harness:ClaudeCodeAnthropicDirect
+    model_name: MiniMax-M2.5
+    kwargs: {max_turns: 80}
+    env: *mm_cc_env
+
+datasets:
+  - path: cases/circuits

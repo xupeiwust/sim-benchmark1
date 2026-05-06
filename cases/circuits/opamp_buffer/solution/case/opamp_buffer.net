@@ -1,0 +1,13 @@
+* Voltage follower (unity-gain buffer) with LT1001.
+.lib LTC.lib
+
+V_in  in  0  SINE(0 500m 1k)
+V_pos vcc 0  15
+V_neg vee 0  -15
+
+XU1 in out vcc vee out LT1001    ; vin+=in, vin-=out (unity-gain)
+
+.tran 5m
+.meas tran vout_pk MAX V(out) FROM 2m TO 5m
+.meas tran gain    PARAM vout_pk/0.5
+.end

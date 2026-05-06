@@ -1,0 +1,75 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Oracle mesh for flatplate_zpg_subsonic.
+| Domain: 0 <= x <= 2, 0 <= y <= 1, unit z-thickness.
+| Clustered at the wall (y=0) and at the leading edge (x=0).
+| Target y+ < 1 on the finest wall cells.
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+scale   1;
+
+// z-thickness = 1.0 so per-unit-span force integration matches Aref = L.
+vertices
+(
+    (0   0     0)    // 0
+    (2   0     0)    // 1
+    (2   1     0)    // 2
+    (0   1     0)    // 3
+    (0   0     1)    // 4
+    (2   0     1)    // 5
+    (2   1     1)    // 6
+    (0   1     1)    // 7
+);
+
+blocks
+(
+    // 320 cells in x (clustered toward leading edge),
+    // 96 cells in y (clustered toward wall), 1 cell in z (2D slab).
+    // simpleGrading in y = 10000 gives first cell ~ 2e-5 at wall,
+    // which at Re=5e6 and U=1 yields y+ ~ 3-4 at x=0.97. Acceptable
+    // with low-Re SST (no wall function).
+    hex (0 1 2 3 4 5 6 7) (320 96 1) simpleGrading (1 10000 1)
+);
+
+edges ();
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ((0 4 7 3));
+    }
+    outlet
+    {
+        type patch;
+        faces ((1 2 6 5));
+    }
+    wall
+    {
+        type wall;
+        faces ((0 1 5 4));
+    }
+    top
+    {
+        type symmetry;
+        faces ((3 7 6 2));
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+
+mergePatchPairs ();

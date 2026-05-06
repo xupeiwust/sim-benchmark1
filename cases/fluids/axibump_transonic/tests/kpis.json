@@ -1,0 +1,95 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "axibump_transonic",
+  "source": {
+    "primary_url":  "https://tmbwg.github.io/turbmodels/axibump_val.html",
+    "data_source":  "Bachalo & Johnson 1986 experimental wall Cp (cp.exp.dat) for shock_location_xc and cp_post_shock; TMR/CFL3D Spalart-Allmaras prediction (axibump_val_sa.html, axibump_cfl3d_cf_sa.dat) for separation_xc and reattachment_xc.",
+    "raw_data_urls": [
+      "https://tmbwg.github.io/turbmodels/Axi_Bump_validation/cp.exp.dat",
+      "https://tmbwg.github.io/turbmodels/Axi_Bump_validation/axibump_cfl3d_cp_sa.dat",
+      "https://tmbwg.github.io/turbmodels/Axi_Bump_validation/axibump_cfl3d_cf_sa.dat"
+    ],
+    "primary_reference": "Bachalo, W. D., and Johnson, D. A. (1986). 'Transonic, Turbulent Boundary-Layer Separation Generated on an Axisymmetric Flow Model.' AIAA Journal 24(3), pp. 437-443.",
+    "physics": "Axisymmetric circular-arc bump (chord c=0.2032 m, t/c=0.094) on a 6-inch-diameter cylinder at M_inf=0.875, Re_c=2.763e6. A supersonic pocket terminates in a shock on the bump's downstream face; the shock separates the turbulent boundary layer near x/c=0.69; the flow reattaches downstream on the cylinder near x/c=1.10-1.16."
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the axisymmetric mesh (single-wedge or 2D r-z plane)",
+      "gt_value":      90000,
+      "T_good":        50000,
+      "T_bad":         300000,
+      "physics_min":   5000,
+      "physics_max":   5000000,
+      "T_good_source": "Wall-resolved (y+~1) compressible RANS at Re_c=2.76e6 with shock + separated region typically requires ~60-200k cells in 2D/axisymmetric. TMR finest grid for this case is 705x257 (~181k); coarse 89x33 (~2.9k). Hand-set midpoint."
+    },
+
+    "final_residual_U": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final residual of the momentum equation",
+      "gt_value":      0,
+      "T_good":        1e-3,
+      "T_bad":         1e-1,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Hand-set; transonic RANS with shock + separation typically stalls at 1e-4 to 1e-3 due to shock-foot unsteadiness and quasi-steady recirculation. T_good loosened relative to attached-flow cases (1e-4) for this reason."
+    },
+
+    "shock_location_xc": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Streamwise location x/c of the shock on the bump's downstream face, defined as the midpoint between the local Cp minimum just upstream of the shock and the first sample showing post-shock recovery",
+      "gt_value":      0.66,
+      "T_good":        0.04,
+      "T_bad":         0.12,
+      "physics_min":   0.50,
+      "physics_max":   0.85,
+      "T_good_source": "Bachalo & Johnson 1986 cp.exp.dat shows the Cp minimum at x/c=0.625 (Cp=-0.7824) and the next-downstream point at x/c=0.6563 (Cp=-0.5235), placing the shock at x/c=0.64-0.66. CFL3D-SA on TMR's fine grid resolves the jump at x/c=0.661-0.663 (axibump_cfl3d_cp_sa.dat). gt set to 0.66 (consensus). T_good=0.04 (~6% of x/c) accommodates turbulence-model spread on shock position (SA/SST/k-w shock-location scatter ~2-5% chord per TMR cross-code comparisons)."
+    },
+
+    "cp_post_shock": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Wall Cp value just downstream of the shock at x/c=0.6563 (the first experimental sample station inside the separated region)",
+      "gt_value":      -0.524,
+      "T_good":        0.060,
+      "T_bad":         0.180,
+      "physics_min":   -0.80,
+      "physics_max":   -0.20,
+      "T_good_source": "Bachalo & Johnson 1986 cp.exp.dat: Cp(x/c=0.6563)=-0.5235. CFL3D-SA at the same station predicts -0.589 (axibump_cfl3d_cp_sa.dat) - the SA model puts the shock slightly later. T_good=0.06 (~11% of |gt|) covers both experimental scatter and turbulence-model post-shock recovery spread (SA/SST differ by ~0.05 in Cp on the bump's downstream face per TMR plots)."
+    },
+
+    "separation_xc": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Streamwise location x/c at which wall C_f first crosses zero from positive to negative (separation point on the bump's downstream face)",
+      "gt_value":      0.69,
+      "T_good":        0.04,
+      "T_bad":         0.12,
+      "physics_min":   0.55,
+      "physics_max":   0.90,
+      "T_good_source": "TMR axibump_val_sa.html quotes 'CFD codes predict the flow separation to occur at x/c = 0.69 ... in experiment 0.7'. CFL3D-SA cf data (axibump_cfl3d_cf_sa.dat) shows last-positive Cf at x/c=0.68734 (3.78e-5) and first-negative at x/c=0.68845 (-3.12e-5), placing zero-crossing at x/c~0.688. gt set to 0.69 (TMR convention). T_good=0.04 (~6% chord) covers experimental spacing + RANS turbulence-model spread (SA earlier, SST later, both within ~0.04 chord)."
+    },
+
+    "reattachment_xc": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Streamwise location x/c at which wall C_f crosses zero from negative back to positive (reattachment downstream of the bump on the cylinder)",
+      "gt_value":      1.10,
+      "T_good":        0.10,
+      "T_bad":         0.30,
+      "physics_min":   0.95,
+      "physics_max":   1.50,
+      "T_good_source": "Bachalo & Johnson 1986 experimental reattachment at x/c=1.1 in the 2ft-x-2ft tunnel (1.17 in the 6ft-x-6ft tunnel; the canonical TMR comparison uses the 2x2 dataset). CFD predicts reattachment at x/c=1.16 (TMR axibump_val_sa.html). The reattachment-point KPI is intrinsically wider in tolerance than separation because the recovering shear layer is shallow near reattachment and the C_f zero-crossing is sensitive to turbulence-model length-scale recovery; T_good=0.10 (~9% chord) covers experiment-vs-tunnel-size scatter + SA/SST differences."
+    }
+  }
+}

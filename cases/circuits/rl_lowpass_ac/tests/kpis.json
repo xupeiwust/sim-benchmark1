@@ -1,0 +1,51 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "rl_lowpass_ac",
+  "source": {
+    "primary_url": "https://www.mheducation.com/highered/product/engineering-circuit-analysis-hayt-kemmerly/M9780073545516.html",
+    "citation": "Hayt et al. (2018). Ch.13 — RL low-pass. f_3dB = R/(2πL)."
+  },
+  "kpi_groups": {
+    "setup": {
+      "weight": 0.1
+    },
+    "outputs": {
+      "weight": 0.9
+    }
+  },
+  "kpis": {
+    "sim_completed": {
+      "group": "setup",
+      "shape": "scalar",
+      "description": "1 if AC sweep ran, else 0",
+      "gt_value": 1,
+      "T_good": 0.5,
+      "T_bad": 0.5,
+      "physics_min": 0,
+      "physics_max": 1,
+      "T_good_source": "Binary flag"
+    },
+    "gain_dc": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Gain at 10 Hz (dB)",
+      "gt_value": -0.000258,
+      "T_good": 0.3,
+      "T_bad": 1.5,
+      "physics_min": -3.0,
+      "physics_max": 3.0,
+      "T_good_source": "Ideal RL DC gain → 0 dB; replaced with oracle GT. Oracle measured -0.000258 on wine LTspice 26 (2026-04-28)."
+    },
+    "f_3db": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "-3dB frequency",
+      "gt_value": 1591.66,
+      "T_good": 50.0,
+      "T_bad": 250.0,
+      "physics_min": 500.0,
+      "physics_max": 5000.0,
+      "T_good_source": "Closed-form R/(2πL) = 1592 Hz. Oracle measured 1591.66 on wine LTspice 26 (2026-04-28)."
+    }
+  }
+}

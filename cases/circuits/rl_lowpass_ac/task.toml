@@ -1,0 +1,36 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/rl-lowpass-ac"
+description = "First-order RL low-pass — output across resistor — measure DC gain and -3 dB cutoff."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["circuit", "analog", "filter", "ac-analysis", "low-pass"]
+
+[environment]
+docker_image    = "sim-benchmark-wine-base:latest"
+cpus            = 2
+memory_gb       = 2
+internet_access = true
+
+[agent]
+timeout_s      = 1200
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "Hayt et al. (2018). Engineering Circuit Analysis, Ch.13 — RL low-pass. f_3dB = R/(2πL)."
+source_url      = "https://www.mheducation.com/highered/product/engineering-circuit-analysis-hayt-kemmerly/M9780073545516.html"
+difficulty_tier = "S"
+gt_type         = "high-fidelity-solver"
+range_value     = 1000.0
+tags            = ["solver-neutral", "scalar-kpi", "ac-sweep", "spice", "first-order"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+score_template  = "measurement"
+leakage_risk    = 3
+capability_target = "postprocess"

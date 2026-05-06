@@ -1,0 +1,36 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/lid-driven-cavity-re1000"
+description = "2D lid-driven cavity, Re=1000 (laminar). Ghia et al. 1982 reference."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "laminar", "cavity", "2d"]
+
+[environment]
+docker_image    = "sim-benchmark-base:latest"
+cpus            = 2
+memory_gb       = 4
+internet_access = true
+
+[agent]
+timeout_s      = 2400
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "Ghia, U., Ghia, K.N., Shin, C.T. (1982). High-Re Solutions for Incompressible Flow Using the Navier-Stokes Equations and a Multigrid Method. J. Comput. Phys., 48:387-411."
+source_url      = "https://doi.org/10.1016/0021-9991(82)90058-4"
+difficulty_tier = "S"
+gt_type         = "high-fidelity"
+range_value     = 1.0
+tags            = ["solver-neutral", "scalar-kpi", "laminar", "incompressible"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+score_template  = "numerical"
+leakage_risk    = 3
+capability_target = "numerical"

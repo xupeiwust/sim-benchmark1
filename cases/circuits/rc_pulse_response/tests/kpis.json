@@ -1,0 +1,51 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "rc_pulse_response",
+  "source": {
+    "primary_url":  "https://www.mheducation.com/highered/product/engineering-circuit-analysis-hayt-kemmerly/M9780073545516.html",
+    "citation":     "Hayt et al. (2018). Engineering Circuit Analysis, 9th ed., Ch.7 — first-order RC step response. t_rise(10-90%) = R·C·ln(9) ≈ 2.197τ."
+  },
+
+  "kpi_groups": {
+    "setup":   { "weight": 0.10 },
+    "outputs": { "weight": 0.90 }
+  },
+
+  "kpis": {
+    "sim_completed": {
+      "group":         "setup",
+      "shape":         "scalar",
+      "description":   "1 if LTspice transient ran without errors, else 0",
+      "gt_value":      1,
+      "T_good":        0.5,
+      "T_bad":         0.5,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Binary flag"
+    },
+
+    "vout_settled": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Steady-state V(out) — cap fully charged to source",
+      "gt_value":      1.0,
+      "T_good":        0.02,
+      "T_bad":         0.1,
+      "physics_min":   0.5,
+      "physics_max":   1.5,
+      "T_good_source": "Ideal cap charges to source: 1.0 V exactly. T_good 2% covers averaging-window precision."
+    },
+
+    "t_rise": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "10-90% rise time of V(out)",
+      "gt_value":      0.0002197,
+      "T_good":        0.00002,
+      "T_bad":         0.0001,
+      "physics_min":   0.00005,
+      "physics_max":   0.001,
+      "T_good_source": "Closed-form t_r = R·C·ln(9) = 1k·100n·ln(9) ≈ 219.72 µs. Oracle on wine LTspice 26 measures 219.72 µs (matches closed-form exactly). T_good 9% covers transient time-step granularity (.tran step 100 ns)."
+    }
+  }
+}

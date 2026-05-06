@@ -1,0 +1,36 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/dsma661-airfoil"
+description = "DSMA-661 airfoil at M=0.088, Re_c=1.2e6, alpha=0, fully turbulent. Force coefficients + wake-deficit vs CFL3D-SA TMR reference."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "turbulent", "airfoil", "wake", "low-speed", "vv"]
+
+[environment]
+docker_image    = "sim-benchmark-base:latest"
+cpus            = 4
+memory_gb       = 8
+internet_access = true
+
+[agent]
+timeout_s      = 5400
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "NASA TMR DSMA-661 verification (CFL3D-SA on 2369x449 grid). Cross-validated by SU2 V&V (https://su2code.github.io/vandv/dsma661/)."
+source_url      = "https://turbmodels.larc.nasa.gov/Other_DPW/dsma661/"
+difficulty_tier = "M"
+gt_type         = "high-fidelity"
+range_value     = 0.05
+tags            = ["solver-neutral", "scalar-kpi", "wake", "single-element-airfoil"]
+release_status  = "public_runnable"
+oracle_status   = "deferred"
+score_template  = "numerical"
+leakage_risk    = 1
+capability_target = "numerical"

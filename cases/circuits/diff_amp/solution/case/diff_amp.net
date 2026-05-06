@@ -1,0 +1,19 @@
+* Single-op-amp difference amplifier — gain = R2/R1 = 10.
+.lib LTC.lib
+
+V_pos vp  0  SINE(0 100m 1k)
+V_neg vn  0  SINE(0  50m 1k)
+V_vcc vcc 0  15
+V_vee vee 0  -15
+
+R1a vp ninnode 1k
+R1b vn invnode 1k
+R2a ninnode 0  10k
+R2b invnode out 10k
+
+XU1 ninnode invnode vcc vee out LT1001    ; vin+=ninnode, vin-=invnode
+
+.tran 5m
+.meas tran vout_pk   MAX V(out) FROM 2m TO 5m
+.meas tran gain_diff PARAM vout_pk/0.05
+.end

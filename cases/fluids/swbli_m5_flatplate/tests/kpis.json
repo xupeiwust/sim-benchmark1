@@ -1,0 +1,105 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "swbli_m5_flatplate",
+  "source": {
+    "primary_url":   "https://su2code.github.io/vandv/swbli/",
+    "data_source":   "Schulein, Krogmann, Stanewsky, DLR IB 223-96 A 49 (Oct 1996); skin-friction data re-published in Schulein, AIAA J 44(8) 2006 ('Schulein 2004 (optical)' in SU2 V&V plot legend). Cross-validated against the SU2 V&V case study (Gomes, SU2 7.4.0, SA-neg / SST-2003m on L1=37k / L2=76k / L3=146k quad meshes).",
+    "raw_data_url":  "vv-sources/benchmarks/SU2-VandV/rans/swbli/cf.png",
+    "geometry_file": "vv-sources/benchmarks/SU2-VandV/rans/swbli/geometry_and_mesh.geo",
+    "nparc_archive": "https://www.grc.nasa.gov/www/wind/valid/m5swbli/m5swbli.html",
+    "su2_config":    "https://github.com/su2code/SU2/blob/master/TestCases/vandv/rans/swbli/config_sa.cfg",
+    "freestream":    "M=5.0, T_inf=68.333 K, p_inf=4006.88 Pa, U_inf=828.58 m/s, Re/L=4.0e7 m^-1, Re_L=2.092e7 (L=0.523 m), wedge angle 10 deg, walls adiabatic per SU2 V&V config (underlying Schulein experiment used Tw=300 K)."
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the SWBLI mesh (full domain incl. wedge side and interior).",
+      "gt_value":      76000,
+      "T_good":        45000,
+      "T_bad":         200000,
+      "physics_min":   15000,
+      "physics_max":   2000000,
+      "T_good_source": "SU2 V&V grid family: L1=37k (coarse), L2=76k (medium), L3=146k (fine), all keep y+<1 on the bottom plate. gt anchored at L2; T_good wide enough to admit any of the three published levels."
+    },
+
+    "final_residual_U": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final residual of the streamwise momentum equation.",
+      "gt_value":      0,
+      "T_good":        1e-4,
+      "T_bad":         1e-2,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Hand-set; SU2 V&V config sets CONV_RESIDUAL_MINVAL=-11.5 (i.e. 1e-11.5). 1e-4 is a conservative practical convergence bar across solvers / turbulence models on this geometry."
+    },
+
+    "cf_upstream": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Local skin-friction coefficient C_f at x=0.320 m, in the undisturbed turbulent boundary layer ahead of the shock interaction.",
+      "gt_value":      0.00105,
+      "T_good":        0.00020,
+      "T_bad":         0.00060,
+      "physics_min":   0.0003,
+      "physics_max":   0.0030,
+      "T_good_source": "Read from SU2 V&V Cf plot (vv-sources/.../cf.png): both the Schulein 2004 optical experimental points and SU2 SA/SST L1-L3 simulations cluster at C_f ~ 0.00100-0.00110 in the upstream plateau x in [0.32, 0.333]. T_good ~20% of gt absorbs upstream-virtual-origin / inlet-BL-thickness ambiguity across solvers."
+    },
+
+    "cf_min": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Minimum (most negative) C_f along the bottom plate inside the shock-induced separation bubble. If the run does not separate, the agent reports 0; gt is negative so reporting 0 still incurs T_decay penalty.",
+      "gt_value":      -0.0010,
+      "T_good":        0.0010,
+      "T_bad":         0.0020,
+      "physics_min":   -0.005,
+      "physics_max":   0.0005,
+      "T_good_source": "Schulein 2004 experimental optical Cf (SU2 V&V plot) reaches a minimum near -0.0006 at x ~ 0.341 m. SU2 SA-neg / SST-2003m on L3 reach -0.0018 to -0.0019 at the same location; SA-neg-comp recovers ~-0.0017. T_good=0.001 spans the full experiment-to-RANS-model band (most-negative ~ -0.002) without rewarding fully-attached runs (which would land at +0.001 and miss by 0.002)."
+    },
+
+    "x_separation": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Streamwise location (m) of the upstream zero-crossing of C_f on the bottom plate, i.e. separation onset. If no separation, report 0; gt of 0.333 then yields large T_decay penalty.",
+      "gt_value":      0.333,
+      "T_good":        0.005,
+      "T_bad":         0.020,
+      "physics_min":   0.30,
+      "physics_max":   0.36,
+      "T_good_source": "Schulein 2004 optical experimental Cf goes negative at x ~ 0.333 m (first black-square zero-crossing in SU2 V&V plot). SU2 SST L3 separates at x ~ 0.336; SA-neg L3 at x ~ 0.339; SA-neg-comp L3 at x ~ 0.331. T_good=5 mm covers the SST-vs-SA spread and is tight enough to discriminate from a fully-attached run (which has no zero-crossing and reports 0)."
+    },
+
+    "separation_length": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Streamwise extent (m) of the separation bubble = x_reattachment - x_separation, measured between the upstream and downstream zero-crossings of C_f. If no separation, report 0.",
+      "gt_value":      0.015,
+      "T_good":        0.008,
+      "T_bad":         0.025,
+      "physics_min":   0,
+      "physics_max":   0.05,
+      "T_good_source": "Schulein 2004 optical Cf (SU2 V&V plot): zero-crossings at x ~ 0.333 m and x ~ 0.348 m, giving L_sep ~ 15 mm. SU2 SST L3 predicts ~21 mm, SA-neg L3 ~22 mm, SA-neg-comp ~17 mm (closer to experiment). T_good=8 mm absorbs the well-known RANS over-prediction of separation extent for this case."
+    },
+
+    "cf_post_shock": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Local C_f at x=0.400 m, well downstream of reattachment, in the recovered/recovering turbulent boundary layer.",
+      "gt_value":      0.0055,
+      "T_good":        0.0010,
+      "T_bad":         0.0025,
+      "physics_min":   0.001,
+      "physics_max":   0.012,
+      "T_good_source": "Schulein 2004 optical: Cf at x=0.40 m sits near 0.006 (band 0.005-0.0065 in SU2 V&V plot, with measurement scatter). SU2 SA/SST L3 predict 0.0050-0.0053 at the same x. T_good=0.001 spans the experimental scatter and the model-vs-experiment offset."
+    }
+  }
+}

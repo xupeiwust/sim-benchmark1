@@ -1,0 +1,36 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/rlc-notch"
+description = "Loaded series LC notch filter — sweep candidate trap capacitors and choose the deepest 5.033 kHz notch."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["circuit", "analog", "filter", "ac-analysis", "notch"]
+
+[environment]
+docker_image    = "sim-benchmark-wine-base:latest"
+cpus            = 2
+memory_gb       = 2
+internet_access = true
+
+[agent]
+timeout_s      = 1200
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "novel_variant"
+source_citation = "Sedra & Smith (2014). §17.4 — LC trap (series LC to ground rejects f0); loaded nonideal capacitor-selection variant generated with LTspice."
+source_url      = "https://global.oup.com/academic/product/microelectronic-circuits-9780199339136"
+difficulty_tier = "M"
+gt_type         = "high-fidelity-solver"
+range_value     = 5000.0
+tags            = ["solver-neutral", "scalar-kpi", "ac-sweep", "spice"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+score_template  = "measurement"
+leakage_risk    = 1
+capability_target = "physics"

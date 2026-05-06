@@ -1,0 +1,36 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/opamp-summer"
+description = "Summing op-amp amplifier — adds two scaled inputs in inverting topology."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["circuit", "analog", "op-amp", "summing"]
+
+[environment]
+docker_image    = "sim-benchmark-wine-base:latest"
+cpus            = 2
+memory_gb       = 2
+internet_access = true
+
+[agent]
+timeout_s      = 1500
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "Sedra & Smith (2014). §2.4 — summing amplifier; V_out = -(R_f/R1)·V1 - (R_f/R2)·V2."
+source_url      = "https://global.oup.com/academic/product/microelectronic-circuits-9780199339136"
+difficulty_tier = "M"
+gt_type         = "high-fidelity-solver"
+range_value     = 2.0
+tags            = ["solver-neutral", "scalar-kpi", "transient", "spice", "op-amp"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+score_template  = "measurement"
+leakage_risk    = 2
+capability_target = "postprocess"

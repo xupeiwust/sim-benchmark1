@@ -1,0 +1,114 @@
+# Build every case's environment image and push to GHCR.
+#
+# Mirrors Terminal-Bench's push-base-images.yaml pattern (same Laude Institute
+# team as Harbor). Runs on push-to-main when any case environment changes,
+# plus on-demand via workflow_dispatch.
+#
+# Naming: ghcr.io/svd-ai-lab/sim-benchmark/<solver>-<case-slug>:<tag>
+#   where <tag> is both :<commit-sha> (immutable) and :latest.
+#
+# sim-cli is pulled by actions/checkout at the pinned SHA (SIMCLI_REF below;
+# keep in sync with SCHEMA.md §3) and fed into the Dockerfile via
+# `build-contexts: sim-cli-src=<local-path>`. No runtime git clone in the
+# Dockerfile, matching SCHEMA.md §3 + §9.
+#
+# BASE_REGISTRY is overridden to docker.io for CI (GitHub runners reach
+# Docker Hub fine). Our local CN dev still uses docker.1panel.live via
+# cases/*/environment/docker-compose.yaml.
+
+name: Build and push case images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cases/**/environment/**'
+      - '.github/workflows/push-case-images.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_OWNER: svd-ai-lab/sim-benchmark
+  SIMCLI_REF: ba9e157
+
+jobs:
+  detect:
+    name: Detect cases
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+      count: ${{ steps.m.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: m
+        shell: bash
+        run: |
+          # Match cases/<solver>/<case-slug>/environment (depth 3).
+          # Excludes cases/_template/environment (depth 2).
+          cases=$(find cases -type d -name environment -path 'cases/*/*/environment' \
+                        | sed 's|^cases/||; s|/environment$||' \
+                        | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          count=$(echo "$cases" | jq 'length')
+          echo "matrix=$cases" >> "$GITHUB_OUTPUT"
+          echo "count=$count"  >> "$GITHUB_OUTPUT"
+          echo "Detected $count case(s): $cases"
+
+  build:
+    name: Build ${{ matrix.case }}
+    needs: detect
+    if: ${{ needs.detect.outputs.count != '0' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        case: ${{ fromJson(needs.detect.outputs.matrix) }}
+
+    steps:
+      - name: Checkout sim-benchmark
+        uses: actions/checkout@v4
+
+      - name: Clone sim-cli at pinned SHA (anonymous, public repo)
+        # actions/checkout's default GITHUB_TOKEN is scoped to sim-benchmark
+        # only — cross-repo fetch of sim-cli fails with 'process git failed
+        # exit code 1'. A plain anonymous clone works since sim-cli is public.
+        run: |
+          git clone --quiet https://github.com/svd-ai-lab/sim-cli.git sim-cli-src
+          git -C sim-cli-src checkout --quiet "${SIMCLI_REF}"
+          echo "sim-cli HEAD: $(git -C sim-cli-src rev-parse HEAD)"
+
+      - name: Compute image slug
+        id: slug
+        run: |
+          slug=$(echo '${{ matrix.case }}' | tr '/' '-')
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "Image slug: $slug"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: cases/${{ matrix.case }}/environment
+          build-contexts: |
+            sim-cli-src=sim-cli-src
+          build-args: |
+            BASE_REGISTRY=docker.io
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/${{ steps.slug.outputs.slug }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/${{ steps.slug.outputs.slug }}:latest
+          push: true
+          cache-from: type=gha,scope=${{ steps.slug.outputs.slug }}
+          cache-to: type=gha,mode=max,scope=${{ steps.slug.outputs.slug }}

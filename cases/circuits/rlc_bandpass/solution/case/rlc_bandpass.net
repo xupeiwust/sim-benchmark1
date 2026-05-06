@@ -1,0 +1,12 @@
+* Series RLC band-pass: V1 → L1 → C1 → R1 → 0; output across R1.
+* AC sweep 100 Hz to 100 kHz, 50 pts/decade. f0 = 1/(2π√LC) ≈ 5.03 kHz.
+
+V1  in   0    AC 1
+L1  in   a    10m
+C1  a    out  100n
+R1  out  0    50
+
+.ac dec 50 100 100k
+.meas AC peak_gain MAX mag(V(out))
+.meas AC peak_freq WHEN mag(V(out))=peak_gain
+.end

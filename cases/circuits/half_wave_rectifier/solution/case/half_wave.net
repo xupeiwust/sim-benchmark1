@@ -1,0 +1,12 @@
+* Half-wave rectifier with cap smoothing.
+V1 in 0 SIN(0 12 60)
+D1 in p 1N4007
+C  p  0 470u IC=0
+R  p  0 100
+
+.model 1N4007 D(Is=14n Rs=34m N=2)
+
+.tran 0 500m 0 50u UIC
+.meas tran vout_avg AVG V(p) FROM 450m TO 500m
+.meas tran vrip_pp  PP  V(p) FROM 450m TO 500m
+.end

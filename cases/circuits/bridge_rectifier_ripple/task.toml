@@ -1,0 +1,36 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/bridge-rectifier-ripple"
+description = "Single-phase full-wave bridge rectifier — choose the smallest smoothing capacitor that meets a ripple limit, then report DC output and ripple."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["circuit", "analog", "rectifier", "power-electronics"]
+
+[environment]
+docker_image    = "sim-benchmark-wine-base:latest"
+cpus            = 2
+memory_gb       = 2
+internet_access = true
+
+[agent]
+timeout_s      = 1800
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "novel_variant"
+source_citation = "Mohan, Undeland, Robbins (2003). Power Electronics: Converters, Applications, and Design (3rd ed.), Ch. 5: Line-Frequency Diode Rectifiers; capacitor-selection variant generated with LTspice."
+source_url      = "https://www.wiley.com/en-us/Power+Electronics%3A+Converters%2C+Applications%2C+and+Design%2C+3rd+Edition-p-9780471226932"
+difficulty_tier = "M"
+gt_type         = "high-fidelity-solver"
+range_value     = 12.0
+tags            = ["solver-neutral", "scalar-kpi", "transient", "spice"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+score_template  = "measurement"
+leakage_risk    = 1
+capability_target = "physics"

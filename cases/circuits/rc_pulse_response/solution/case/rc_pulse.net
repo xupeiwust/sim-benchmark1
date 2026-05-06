@@ -1,0 +1,16 @@
+* First-order RC step response: τ = RC = 100 µs.
+* PULSE rises from 0 to 1 V at t=0 with 1 ns edges; pulse width 1 s
+* (effectively a step for a 2 ms run).
+
+V1 in  0   PULSE(0 1 0 1n 1n 1 2)
+R1 in  out 1k
+C1 out 0   100n IC=0
+
+.tran 0 2m 0 100n
+.ic V(out)=0
+
+.meas tran vout_settled AVG V(out) FROM 1.8m TO 2m
+.meas tran t10  WHEN V(out)=0.1 RISE=1
+.meas tran t90  WHEN V(out)=0.9 RISE=1
+.meas tran t_rise PARAM t90-t10
+.end

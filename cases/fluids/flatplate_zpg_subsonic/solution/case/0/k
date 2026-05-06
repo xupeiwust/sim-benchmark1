@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      k;
+}
+
+dimensions [0 2 -2 0 0 0 0];
+
+// Free-stream turbulent kinetic energy — low ~ 0.1% turbulence intensity.
+// k = 1.5 * (I * U)^2 = 1.5 * (0.001 * 1)^2 = 1.5e-6
+internalField uniform 1.5e-6;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 1.5e-6;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform 1.5e-6;
+        value           uniform 1.5e-6;
+    }
+    wall
+    {
+        type            fixedValue;
+        value           uniform 1e-12;
+    }
+    top
+    {
+        type            symmetry;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "rc_highpass_ac",
+  "source": {
+    "primary_url": "https://global.oup.com/academic/product/microelectronic-circuits-9780199339136",
+    "citation": "Sedra & Smith (2014). Microelectronic Circuits, §17.2 — first-order RC high-pass. f_3dB = 1/(2πRC)."
+  },
+  "kpi_groups": {
+    "setup": {
+      "weight": 0.1
+    },
+    "outputs": {
+      "weight": 0.9
+    }
+  },
+  "kpis": {
+    "sim_completed": {
+      "group": "setup",
+      "shape": "scalar",
+      "description": "1 if LTspice AC sweep ran without errors, else 0",
+      "gt_value": 1,
+      "T_good": 0.5,
+      "T_bad": 0.5,
+      "physics_min": 0,
+      "physics_max": 1,
+      "T_good_source": "Binary flag"
+    },
+    "gain_hf": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Gain (in dB) at 100 kHz, well above the corner",
+      "gt_value": -1.1e-05,
+      "T_good": 0.3,
+      "T_bad": 1.5,
+      "physics_min": -3.0,
+      "physics_max": 3.0,
+      "T_good_source": "Ideal high-pass at 100 kHz (>>159 Hz corner): |V(out)/V(in)| → 1.0 → 0 dB. T_good 0.3 dB ≈ 3.5% linear. Oracle measured -1.1e-05 on wine LTspice 26 (2026-04-28)."
+    },
+    "f_3db": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Frequency at which |V(out)| rises to 1/√2 of its HF value",
+      "gt_value": 159.18,
+      "T_good": 5.0,
+      "T_bad": 25.0,
+      "physics_min": 50.0,
+      "physics_max": 500.0,
+      "T_good_source": "Closed-form f_3dB = 1/(2π·R·C) = 1/(2π·1k·1µ) = 159.15 Hz; matches simulator. Oracle measured 159.18 on wine LTspice 26 (2026-04-28)."
+    }
+  }
+}

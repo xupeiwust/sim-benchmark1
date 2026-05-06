@@ -1,0 +1,116 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "sandia_jet_variable_density",
+  "source": {
+    "primary_url":  "https://su2code.github.io/vandv/SANDIA_jet/",
+    "data_source":  "Schefer et al. (Sandia) propane-air variable-density turbulent jet experiment. Centerline U from LDV (paxv.jet.txt); centerline Y_C3H8 from Rayleigh mixture-fraction (paxray.txt); radial U at x/D=30 from LDV (p30v.jet.txt). Files distributed via the TNF Workshop archive and bundled in the SU2 V&V repo at rans/SANDIA_jet/Postprocessing/SANDC3H8.JET/.",
+    "raw_data_url": "vv-sources/benchmarks/SU2-VandV/rans/SANDIA_jet/Postprocessing/SANDC3H8.JET/",
+    "cross_code_check": "SU2 INC_RANS-SST V2003m and OpenFOAM rhoReactingFoam reproduce the experimental centerline U/Y_C3H8 decay within ~10% in the SU2 V&V plots; both solvers' sampled fields are stored alongside the experiment under data1994/, data2003/, dataOpenFOAM/.",
+    "su2_vandv_url": "https://su2code.github.io/vandv/SANDIA_jet/",
+    "experiment_citation": "R. W. Schefer et al., 'Propane Jet Data', Sandia National Laboratories, TNF Workshop archive (1994 LDV + 2003 reanalysis). Bulk jet velocity 53 m/s, jet diameter D=5.26 mm, Re_D=68168."
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the agent's 2-D axisymmetric mesh",
+      "gt_value":      67000,
+      "T_good":        50000,
+      "T_bad":         300000,
+      "physics_min":   8000,
+      "physics_max":   2000000,
+      "T_good_source": "SU2 V&V validation mesh MESH_validation.su2 has ~67k cells. A wall-resolved 2-D axisymmetric jet with shear-layer + near-axis refinement typically wants 30k-200k cells. Hand-set generously to allow OpenFOAM-style block meshes (often denser) and SU2-style unstructured meshes (often coarser)."
+    },
+
+    "final_residual_species": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final propane (Species_0) mass-fraction RMS residual",
+      "gt_value":      0,
+      "T_good":        1e-4,
+      "T_bad":         1e-2,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Hand-set; SU2 V&V config CONV_RESIDUAL_MINVAL = -14 (logRMS) is overkill; in practice a steady SST + species transport on this jet drops the species RMS residual past 1e-5 within a few thousand iterations."
+    },
+
+    "centerline_velocity_at_xD_15": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Streamwise velocity U on the symmetry axis at x/D=15 (m/s)",
+      "gt_value":      44.9,
+      "T_good":        4.5,
+      "T_bad":         12.0,
+      "physics_min":   30.0,
+      "physics_max":   60.0,
+      "T_good_source": "Linear interpolation of Schefer paxv.jet.txt LDV centerline data: U(14.0)=46.568, U(15.1)=44.776 -> U(15.0)=44.939 m/s. T_good ~10% (4.5 m/s) accommodates well-known SST over-prediction of jet centerline velocity (RANS spread ~5-10% near x/D=15 in the SU2 V&V plots)."
+    },
+
+    "centerline_velocity_at_xD_30": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Streamwise velocity U on the symmetry axis at x/D=30 (m/s)",
+      "gt_value":      27.1,
+      "T_good":        3.0,
+      "T_bad":         8.0,
+      "physics_min":   18.0,
+      "physics_max":   40.0,
+      "T_good_source": "Linear interpolation of Schefer paxv.jet.txt: U(27.1)=29.222, U(30.8)=26.540 -> U(30.0)=27.120 m/s. Cross-check: p30v.jet.txt y/D=0 row gives U_axis=27.191 m/s. T_good ~11% (3 m/s) consistent with RANS-vs-LDV spread at far-field stations."
+    },
+
+    "centerline_velocity_at_xD_50": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Streamwise velocity U on the symmetry axis at x/D=50 (m/s)",
+      "gt_value":      19.5,
+      "T_good":        2.5,
+      "T_bad":         6.0,
+      "physics_min":   12.0,
+      "physics_max":   28.0,
+      "T_good_source": "Linear interpolation of Schefer paxv.jet.txt: U(49.1)=19.804, U(50.6)=19.253 -> U(50.0)=19.473 m/s. Cross-check: p50v.jet.txt y/D=0 row gives U_axis=19.465 m/s. T_good ~13% (2.5 m/s) — at this far station the centerline approaches the coflow value 9.2 m/s and small absolute errors accumulate."
+    },
+
+    "centerline_propane_mass_fraction_at_xD_15": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Propane mass fraction Y_C3H8 on the symmetry axis at x/D=15",
+      "gt_value":      0.523,
+      "T_good":        0.07,
+      "T_bad":         0.20,
+      "physics_min":   0.30,
+      "physics_max":   0.80,
+      "T_good_source": "Schefer paxray.txt (Rayleigh-scattering mixture fraction along axis): F_mean(x/D=15.03)=0.522. For a binary propane/air mixing flow with conserved scalar, F_mean equals Y_C3H8. T_good ~13% (0.07) reflects scatter between SST and the experimental mixture-fraction decay rate visible in the SU2 V&V plots at x/D=15."
+    },
+
+    "centerline_propane_mass_fraction_at_xD_30": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Propane mass fraction Y_C3H8 on the symmetry axis at x/D=30",
+      "gt_value":      0.238,
+      "T_good":        0.04,
+      "T_bad":         0.12,
+      "physics_min":   0.10,
+      "physics_max":   0.50,
+      "T_good_source": "Schefer paxray.txt: F_mean(x/D=29.79)=0.239 -> Y_C3H8(x/D=30.0)=0.238 by linear interp to the next station (39.0, 0.185). T_good ~17% (0.04) — Y_C3H8 decay is set by turbulent Schmidt number and SST predictions typically run 10-20% high vs experiment at x/D=30."
+    },
+
+    "jet_half_width_at_xD_30": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Jet velocity half-width r/D at x/D=30: smallest positive r/D where U(r) = 0.5 * U_centerline at that station",
+      "gt_value":      2.67,
+      "T_good":        0.30,
+      "T_bad":         0.80,
+      "physics_min":   1.5,
+      "physics_max":   5.0,
+      "T_good_source": "Computed from Schefer p30v.jet.txt radial LDV profile: U_centerline=27.191, U_half=13.595; linear interp on the positive y/D side between (y/D=2.5, U=14.629) and (y/D=2.8, U=12.844) -> y/D=2.6737. T_good ~11% (0.30) absorbs RANS spreading-rate spread; SST is known to over-spread variable-density round jets by 10-15%."
+    }
+  }
+}

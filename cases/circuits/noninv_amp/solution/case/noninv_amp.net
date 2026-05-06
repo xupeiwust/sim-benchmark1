@@ -1,0 +1,16 @@
+* Non-inverting op-amp — gain = 1 + R_fb/R_in = 10.
+.lib LTC.lib
+
+V_in  in  0  SINE(0 100m 1k)
+V_pos vcc 0  15
+V_neg vee 0  -15
+
+XU1 in invnode vcc vee out LT1001    ; vin+=in, vin-=invnode
+
+R_in        0       invnode  1k
+R_feedback  invnode out      9k
+
+.tran 5m
+.meas tran vout_pk MAX V(out) FROM 2m TO 5m
+.meas tran gain    PARAM vout_pk/0.1
+.end

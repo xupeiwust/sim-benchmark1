@@ -1,0 +1,51 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "half_wave_rectifier",
+  "source": {
+    "primary_url": "https://www.wiley.com/en-us/Power+Electronics%3A+Converters%2C+Applications%2C+and+Design%2C+3rd+Edition-p-9780471226932",
+    "citation": "Mohan et al. (2003). Power Electronics, Ch.5 — half-wave rectifier."
+  },
+  "kpi_groups": {
+    "setup": {
+      "weight": 0.1
+    },
+    "outputs": {
+      "weight": 0.9
+    }
+  },
+  "kpis": {
+    "sim_completed": {
+      "group": "setup",
+      "shape": "scalar",
+      "description": "1 if transient ran, else 0",
+      "gt_value": 1,
+      "T_good": 0.5,
+      "T_bad": 0.5,
+      "physics_min": 0,
+      "physics_max": 1,
+      "T_good_source": "Binary flag"
+    },
+    "vout_avg": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Time-average V(p) over steady-state window",
+      "gt_value": 9.681,
+      "T_good": 1.0,
+      "T_bad": 3.0,
+      "physics_min": 5.0,
+      "physics_max": 12.0,
+      "T_good_source": "Approximate; replaced with oracle GT (half-wave with real diode + finite RC). Oracle measured 9.681 on wine LTspice 26 (2026-04-28)."
+    },
+    "vrip_pp": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Peak-to-peak ripple of V(p) in steady-state",
+      "gt_value": 2.949,
+      "T_good": 0.5,
+      "T_bad": 2.0,
+      "physics_min": 0.5,
+      "physics_max": 12.0,
+      "T_good_source": "Approximate (half-wave ripples are larger than full-wave). Replaced with oracle GT. Oracle measured 2.949 on wine LTspice 26 (2026-04-28)."
+    }
+  }
+}

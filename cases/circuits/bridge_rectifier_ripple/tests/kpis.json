@@ -1,0 +1,62 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "bridge_rectifier_ripple",
+  "source": {
+    "primary_url": "https://www.wiley.com/en-us/Power+Electronics%3A+Converters%2C+Applications%2C+and+Design%2C+3rd+Edition-p-9780471226932",
+    "citation": "Mohan, Undeland, Robbins (2003). Power Electronics, 3rd ed., Ch.5. Bridge rectifier with cap smoothing; finite diode drop and capacitor discharge dominate the KPIs."
+  },
+  "kpi_groups": {
+    "setup": {
+      "weight": 0.1
+    },
+    "outputs": {
+      "weight": 0.9
+    }
+  },
+  "kpis": {
+    "sim_completed": {
+      "group": "setup",
+      "shape": "scalar",
+      "description": "1 if LTspice transient sweep ran without errors, else 0",
+      "gt_value": 1,
+      "T_good": 0.5,
+      "T_bad": 0.5,
+      "physics_min": 0,
+      "physics_max": 1,
+      "T_good_source": "Binary flag"
+    },
+    "selected_cap_uF": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Smallest capacitor from {220, 330, 470, 680} uF that keeps ripple below 1.5 Vpp",
+      "gt_value": 470.0,
+      "T_good": 2.0,
+      "T_bad": 150.0,
+      "physics_min": 100.0,
+      "physics_max": 1000.0,
+      "T_good_source": "LTspice stepped Cval list shows 330 uF has 1.811 Vpp ripple and 470 uF has 1.339 Vpp, so 470 uF is the smallest passing value."
+    },
+    "vout_avg": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Time-average of V(p) over the steady-state window for selected_cap_uF",
+      "gt_value": 9.669,
+      "T_good": 0.5,
+      "T_bad": 2.0,
+      "physics_min": 5.0,
+      "physics_max": 12.0,
+      "T_good_source": "Oracle stepped LTspice 26.0.1 transient at selected C=470 uF; 250-300 ms averaging window."
+    },
+    "vrip_pp": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Peak-to-peak excursion of V(p) over the same steady-state window for selected_cap_uF",
+      "gt_value": 1.339,
+      "T_good": 0.15,
+      "T_bad": 0.7,
+      "physics_min": 0.1,
+      "physics_max": 12.0,
+      "T_good_source": "Oracle stepped LTspice 26.0.1 transient at selected C=470 uF. Naive ripple formulas miss because diode drop and finite discharge shape matter."
+    }
+  }
+}

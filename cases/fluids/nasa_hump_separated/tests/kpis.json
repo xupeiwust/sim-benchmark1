@@ -1,0 +1,91 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "nasa_hump_separated",
+  "source": {
+    "primary_url":  "https://tmbwg.github.io/turbmodels/nasahump_val.html",
+    "data_source":  "Greenblatt et al. 2006 experimental campaign (CFDVAL2004 Case 3 baseline, no flow control), distributed via NASA TMR as noflow_cp.exp.dat and noflow_cf.exp.dat. Original paper: Greenblatt, D., Paschal, K. B., Yao, C.-S., Harris, J., Schaeffler, N. W., Washburn, A. E. (2006). 'Experimental Investigation of Separation Control Part 1: Baseline and Steady Suction.' AIAA Journal, 44(12), 2820-2830, doi:10.2514/1.13817.",
+    "raw_data_url": "https://tmbwg.github.io/turbmodels/Nasahump_validation/",
+    "extraction_method": "separation_xc and reattachment_xc taken from the canonical experimental values quoted by NASA TMR (x/c = 0.665 from PIV; x/c ~ 1.1 from Cf zero-crossing; the latter linearly interpolates to 1.116 between (1.09, -0.00038) and (1.15, +0.00049) in noflow_cf.exp.dat). cp_min_separation is the minimum of noflow_cp.exp.dat. cf_recovery_at_xc_2 is hand-set: experimental Cf data only extends to x/c=1.57, so the value at x/c=2.0 is extrapolated from the recovering trend (Cf ~0.0023 at x/c=1.57, growing slowly).",
+    "physics": "2D smooth-body wall-mounted Glauert-Goldschmied hump in a low-speed channel at M=0.1, Re_c=9.36e5. The hump is contoured on the upstream face, peak-suction-driven adverse pressure gradient on the lee side triggers turbulent separation near x/c~0.66, with reattachment on the flat wall ~x/c~1.1. RANS turbulence models classically underpredict shear-layer mixing here, giving long bubbles (CFL3D-SA reattaches at x/c~1.27 vs experiment ~1.1)."
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the 2D channel-and-hump mesh",
+      "gt_value":      90000,
+      "T_good":        50000,
+      "T_bad":         300000,
+      "physics_min":   5000,
+      "physics_max":   5000000,
+      "T_good_source": "TMR provides nested structured grids 209x65 (~13k) up to 1633x513 (~837k); a wall-resolved (y+~1) RANS of this geometry typically lands ~80-150k cells in 2D. Hand-set midpoint."
+    },
+
+    "final_residual_U": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final residual of the momentum equation",
+      "gt_value":      0,
+      "T_good":        1e-4,
+      "T_bad":         1e-2,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Hand-set; subsonic RANS on this geometry routinely reaches 1e-5 (steady SA). SST and similar two-equation models may stall at 1e-4 quasi-steady inside the unsteady-prone bubble."
+    },
+
+    "separation_xc": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "x/c location where wall C_f first crosses zero from positive (turbulent separation on the lee side of the hump)",
+      "gt_value":      0.665,
+      "T_good":        0.04,
+      "T_bad":         0.10,
+      "physics_min":   0.50,
+      "physics_max":   0.85,
+      "T_good_source": "Canonical experimental separation x/c = 0.665 quoted by NASA TMR (https://tmbwg.github.io/turbmodels/nasahump_val_sa.html), derived from PIV near-wall data in Greenblatt et al. 2006 (the discrete C_f tabulation in noflow_cf.exp.dat has a measurement gap between x/c=0.62 (Cf=+0.00505) and x/c=0.75 (Cf=-0.00016)). T_good = 0.04 (~6%) covers turbulence-model spread (TMR SA predicts 0.661, SST predicts ~0.69)."
+    },
+
+    "reattachment_xc": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "x/c location where wall C_f crosses zero from negative back to positive (reattachment downstream of the bubble)",
+      "gt_value":      1.10,
+      "T_good":        0.10,
+      "T_bad":         0.30,
+      "physics_min":   0.95,
+      "physics_max":   1.50,
+      "T_good_source": "Canonical experimental reattachment x/c = 1.1 quoted by NASA TMR (linear interpolation of noflow_cf.exp.dat between (1.09, -0.00038) and (1.15, +0.00049) gives x/c = 1.116; TMR rounds to 1.1). T_good = 0.10 (~9%) is intentionally wide because RANS models systematically over-predict bubble length here (CFL3D-SA: 1.27, FUN3D-SST: ~1.21) — the discrepancy is the documented turbulence-modelling gap, not a coding error."
+    },
+
+    "cp_min_separation": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Minimum (most-negative) wall Cp on the hump — the peak suction near x/c ~ 0.48 just upstream of separation",
+      "gt_value":      -0.872,
+      "T_good":        0.08,
+      "T_bad":         0.20,
+      "physics_min":   -1.20,
+      "physics_max":   -0.50,
+      "T_good_source": "Greenblatt 2006 noflow_cp.exp.dat: Cp_min = -0.87240 at x/c = 0.47875 (peak suction). T_good = 0.08 (~9% of |gt|) covers turbulence-model and grid-resolution scatter; the suction peak is mostly inviscid but is sensitive to BL displacement (delta*) which scales with Re and y+."
+    },
+
+    "cf_recovery_at_xc_2": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Wall skin-friction coefficient C_f at x/c = 2.0 (recovery region, ~0.9 c downstream of reattachment)",
+      "gt_value":      0.00260,
+      "T_good":        0.00060,
+      "T_bad":         0.00150,
+      "physics_min":   0.0010,
+      "physics_max":   0.0050,
+      "T_good_source": "NO DEFENSIBLE EXPERIMENTAL CITATION — Greenblatt 2006 noflow_cf.exp.dat extends only to x/c = 1.57 (Cf = 0.00223). The gt_value = 0.00260 is a hand-extrapolation assuming the slow positive trend (Cf grows ~0.00006 per 0.05 in x/c near x/c=1.5) continues into the recovery region; T_good = 0.00060 (~23%) is intentionally wide because no experimental anchor exists at x/c=2.0. FLAG: this KPI is the weakest in the case and should be revisited if a published TMR or LES dataset extending past x/c=1.57 becomes available."
+    }
+  }
+}

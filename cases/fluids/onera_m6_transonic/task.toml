@@ -1,0 +1,36 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/onera-m6-transonic"
+description = "ONERA M6 swept wing at M=0.8395, Re_root=11.72e6, alpha=3.06 deg, fully turbulent. CL/CD + suction-side Cp at 2y/b=0.44, x/c=0.50 vs Schmitt-Charpin AGARD AR-138 / NASA TMR reference."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "compressible", "transonic", "swept-wing", "onera-m6", "3d", "vv"]
+
+[environment]
+docker_image    = "sim-benchmark-base:latest"
+cpus            = 8
+memory_gb       = 16
+internet_access = true
+
+[agent]
+timeout_s      = 10800
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "Schmitt, V. & Charpin, F., 'Pressure Distributions on the ONERA-M6-Wing at Transonic Mach Numbers', AGARD AR-138 (1979). Force-coefficient and Cp reference values cross-validated against NASA TMR ONERA M6 numerics page (SA-neg / SST-2003m on the standard 3.5M-cell grid)."
+source_url      = "https://tmbwg.github.io/turbmodels/onerawingnumerics_val.html"
+difficulty_tier = "L"
+gt_type         = "experimental"
+range_value     = 1.0
+tags            = ["solver-neutral", "scalar-kpi", "compressible", "transonic", "3d", "swept-wing", "lambda-shock", "no-analytical-shortcut"]
+release_status  = "public_runnable"
+oracle_status   = "deferred"
+score_template  = "numerical"
+leakage_risk    = 2
+capability_target = "numerical"

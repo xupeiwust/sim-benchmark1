@@ -1,0 +1,37 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      sampleDict;
+}
+
+// Probe the wall patch at x = 0.97 to extract wallShearStress there.
+// Offset y slightly above 0 so the probe finds a cell face above the wall.
+
+type            sets;
+libs            ("libsampling.so");
+
+interpolationScheme cellPoint;
+setFormat       raw;
+
+fields
+(
+    wallShearStress
+);
+
+// Sample wallShearStress along a streamwise line just above the wall,
+// at mid-span. 200 points span x in (0.005, 1.995) so the Python
+// post-processor can linearly interpolate to x=0.97.
+sets
+(
+    wall_line
+    {
+        type    uniform;
+        axis    x;
+        start   (0.005 1.0e-6 0.5);
+        end     (1.995 1.0e-6 0.5);
+        nPoints 200;
+    }
+);

@@ -1,0 +1,10 @@
+* Parallel LC tank, AC current source. f0 = 1/(2π√LC) ≈ 5033 Hz.
+I1 0  tank AC 1
+L1 tank 0  10m
+C1 tank 0  100n
+R_par tank 0 10k
+
+.ac dec 100 100 100k
+.meas AC v_peak      MAX mag(V(tank))
+.meas AC f_resonance WHEN mag(V(tank))=v_peak CROSS=1
+.end

@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      omega;
+}
+
+dimensions [0 0 -1 0 0 0 0];
+
+// Free-stream specific dissipation. Mixing-length scale ~ 0.1 * L.
+// omega = k^0.5 / (Cmu^0.25 * l) ~ (1.5e-6)^0.5 / (0.09^0.25 * 0.1)
+//       ~ 1.225e-3 / (0.548 * 0.1) = 0.0224
+internalField uniform 0.022;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 0.022;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform 0.022;
+        value           uniform 0.022;
+    }
+    wall
+    {
+        // low-Re SST wall omega: omegaWallFunction handles both low-Re
+        // and wall-function meshes automatically.
+        type            omegaWallFunction;
+        value           uniform 60;
+    }
+    top
+    {
+        type            symmetry;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

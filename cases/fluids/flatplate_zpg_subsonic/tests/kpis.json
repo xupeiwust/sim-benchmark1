@@ -1,0 +1,65 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "flatplate_zpg_subsonic",
+  "source": {
+    "primary_url":  "https://tmbwg.github.io/turbmodels/flatplate.html",
+    "data_source":  "CFL3D and FUN3D solutions on TMR's 545x385 grid (208896 cells) with Spalart-Allmaras turbulence model",
+    "cross_code_spread_cf":    "CFL3D 0.002706 vs FUN3D 0.002705 — spread < 1e-6",
+    "cross_code_spread_drag":  "CFL3D 0.002860 vs FUN3D 0.002852 — spread ~ 8e-6"
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the 2D flat-plate mesh",
+      "gt_value":      40000,
+      "T_good":        20000,
+      "T_bad":         100000,
+      "physics_min":   1000,
+      "physics_max":   10000000,
+      "T_good_source": "TMR reference grid is 545x385 (~210k); a wall-resolved 2D RANS mesh of ~40k is a realistic minimum for moderate Re=5e6. Hand-set."
+    },
+
+    "final_residual_U": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final residual of the momentum equation at end of simulation",
+      "gt_value":      0,
+      "T_good":        1e-4,
+      "T_bad":         1e-2,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Hand-set; steady-state RANS on a flat plate should reach 1e-5"
+    },
+
+    "cf_x097": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Skin-friction coefficient C_f at x=0.9700 on the plate",
+      "gt_value":      0.002706,
+      "T_good":        0.0001,
+      "T_bad":         0.0004,
+      "physics_min":   0.0005,
+      "physics_max":   0.01,
+      "T_good_source": "Inter-code spread (CFL3D vs FUN3D on same grid) is < 1e-6; T_good widened to ~4% to allow for minor differences in mesh topology / turbulence model variant"
+    },
+    "drag_coefficient": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Integrated viscous drag coefficient over the full plate length",
+      "gt_value":      0.002856,
+      "T_good":        0.0001,
+      "T_bad":         0.0004,
+      "physics_min":   0.0005,
+      "physics_max":   0.01,
+      "T_good_source": "Inter-code spread is ~8e-6; T_good widened to accommodate mesh + model choices"
+    }
+  }
+}

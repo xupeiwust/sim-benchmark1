@@ -1,0 +1,13 @@
+* Loaded series LC notch capacitor selection sweep - oracle netlist
+.param Ctrap=110n
+V1 in  0   AC 1
+R_s in  out 1k
+Rload out 0 10k
+L1 out a   10m Rser=0.35
+C1 a   0   {Ctrap}
+
+.ac dec 100 100 100k
+.step param Ctrap list 75n 91n 110n 130n
+.meas AC dc_gain     FIND mag(V(out)) AT 100
+.meas AC notch_depth FIND mag(V(out)) AT 5033
+.end
