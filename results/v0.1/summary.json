@@ -1,41 +1,70 @@
 {
   "release": "v0.1-mvp",
-  "run_id": "release-v0.1-ltspice20-oracle-20260503",
-  "run_date": "2026-05-03",
-  "timezone": "Asia/Shanghai",
-  "agent": "oracle",
-  "scope": "LTspice circuits MVP scored gate",
+  "scope": "LTspice circuits MVP scored gate (20 tasks)",
   "public_runnable_tasks": 36,
   "mvp_scored_tasks": 20,
-  "completed_tasks": 20,
-  "errored_tasks": 0,
-  "mean_score": 1.0,
-  "job_result_path": "jobs/release-v0.1-ltspice20-oracle-20260503/result.json",
-  "case_result_csv": "results/v0.1/ltspice20-oracle-20260503.csv",
-  "case_result_json": "results/v0.1/ltspice20-oracle-20260503.json",
+  "runs": [
+    {
+      "run_id": "release-v0.1-ltspice20-oracle-20260503",
+      "run_date": "2026-05-03",
+      "agent": "oracle",
+      "model": null,
+      "completed_tasks": 20,
+      "errored_tasks": 0,
+      "mean_score": 1.0,
+      "case_result_csv": "results/v0.1/ltspice20-oracle-20260503.csv",
+      "case_result_json": "results/v0.1/ltspice20-oracle-20260503.json",
+      "notes": "Reference upper bound. Deterministic oracle solve.sh, no LLM."
+    },
+    {
+      "run_id": "release-v0.1-ltspice20-minimax-m25-20260506",
+      "run_date": "2026-05-06",
+      "timezone": "Asia/Shanghai",
+      "agent": "claude-code",
+      "model": "MiniMax-M2.5-highspeed",
+      "n_concurrent_trials": 5,
+      "completed_tasks": 20,
+      "errored_tasks": 1,
+      "mean_score": 0.936,
+      "score_distribution": {
+        "1.0": 16,
+        "0.7-0.9": 1,
+        "0.5-0.7": 2,
+        "0.3-0.5": 1,
+        "0.0": 0
+      },
+      "case_result_csv": "results/v0.1/ltspice20-minimax-m25-20260506.csv",
+      "case_result_json": "results/v0.1/ltspice20-minimax-m25-20260506.json",
+      "harness": "tools.agent_harness:ClaudeCodeViaCcr",
+      "notes": "Non-reasoning fast variant via claude-code-router → MiniMax-OpenAI."
+    },
+    {
+      "run_id": "release-v0.1-ltspice20-minimax-m27-20260506",
+      "run_date": "2026-05-06",
+      "timezone": "Asia/Shanghai",
+      "agent": "claude-code",
+      "model": "MiniMax-M2.7",
+      "n_concurrent_trials": 3,
+      "completed_tasks": 20,
+      "errored_tasks": 3,
+      "mean_score": 0.776,
+      "score_distribution": {
+        "1.0": 15,
+        "0.5-1.0": 0,
+        "0.2-0.5": 2,
+        "0.0": 3
+      },
+      "case_result_csv": "results/v0.1/ltspice20-minimax-m27-20260506.csv",
+      "case_result_json": "results/v0.1/ltspice20-minimax-m27-20260506.json",
+      "harness": "tools.agent_harness:ClaudeCodeViaCcr",
+      "notes": "Reasoning variant. Three zero-score cases on harder design tasks (bridge_rectifier_ripple, half_wave_rectifier, rl_lowpass_ac) failed to submit result.json — likely consumed reasoning budget under the 80-turn cap."
+    }
+  ],
   "openfoam_status": {
     "public_tasks": 16,
     "oracle_available": 3,
     "oracle_deferred": 13,
     "release_gate_status": "not_blocking_v0.1",
-    "latest_attempt": "jobs/release-v0.1-openfoam3-oracle-20260503/result.json",
-    "latest_attempt_result": "environment_build_failed_before_solver_start",
-    "root_cause": "docker.io/svd-ai-lab/sim-benchmark-base:latest is not pullable locally"
-  },
-  "dependency_snapshot": {
-    "sim-cli": {
-      "commit": "431cc27",
-      "version": "sim-cli-core 0.3.3"
-    },
-    "sim-skills": {
-      "commit": "a32e99e"
-    },
-    "sim-plugin-ltspice": {
-      "commit": "d9d60da",
-      "version": "sim-plugin-ltspice 0.2.3"
-    },
-    "sim-ltspice": {
-      "commit": "9db6bd9"
-    }
+    "blocked_on": "docker.io/svd-ai-lab/sim-benchmark-base:latest publication"
   }
 }

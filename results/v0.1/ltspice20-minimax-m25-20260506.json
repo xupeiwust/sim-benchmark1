@@ -1,0 +1,59 @@
+{
+    "id": "6d875313-d41e-4693-b76a-98a349f06d32",
+    "started_at": "2026-05-06T17:13:51.497519",
+    "finished_at": "2026-05-06T17:44:00.751015",
+    "n_total_trials": 20,
+    "stats": {
+        "n_trials": 20,
+        "n_errors": 1,
+        "evals": {
+            "claude-code__circuits": {
+                "n_trials": 20,
+                "n_errors": 1,
+                "metrics": [
+                    {
+                        "mean": 0.93625
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "score": {
+                        "1.0": [
+                            "opamp_summer__ubZudaZ",
+                            "opamp_buffer__rBvDzdW",
+                            "rl_step__k6UMpJJ",
+                            "opamp_integrator__RTrboSz",
+                            "half_wave_rectifier__eSBZyVh",
+                            "rlc_step_overdamped__pcwFmA6",
+                            "rlc_bandpass__wRDXebN",
+                            "rlc_step_underdamped__VueNFey",
+                            "inv_amp__edbhfkV",
+                            "rl_lowpass_ac__nU3xeuh",
+                            "rc_pulse_response__aryzcZL",
+                            "sallen_key_lp__JU2WQWf",
+                            "diff_amp__fsGRHMa",
+                            "noninv_amp__LMwUDmW",
+                            "lc_resonator__mJnptXE",
+                            "rc_highpass_ac__4FiCrtW"
+                        ],
+                        "0.7": [
+                            "rlc_notch__F4sCLEs",
+                            "bridge_rectifier_ripple__THiwmps"
+                        ],
+                        "0.775": [
+                            "rc_lowpass_ac__zwindrQ"
+                        ],
+                        "0.55": [
+                            "lc_lowpass_2nd__dTJqwZP"
+                        ]
+                    }
+                },
+                "exception_stats": {
+                    "NonZeroAgentExitCodeError": [
+                        "bridge_rectifier_ripple__THiwmps"
+                    ]
+                }
+            }
+        }
+    }
+}

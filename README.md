@@ -59,11 +59,17 @@ Every task ships with a deterministic `solution/solve.sh` (the *oracle*).
 Running the oracle produces the maximum reachable score under the current
 verifier; any model's score is read against this upper bound.
 
-| Run | Agent | Tasks | Mean reward | Status |
-|---|---|---:|---:|---|
-| `release-v0.1-ltspice20-oracle` | Oracle (deterministic) | 20 | **1.000** | reference upper bound |
-| `release-v0.1-ltspice20-minimax-m25` | MiniMax-M2.5-highspeed | 20 | _pending_ | non-reasoning |
-| `release-v0.1-ltspice20-minimax-m27` | MiniMax-M2.7 | 20 | _pending_ | reasoning |
+| Run | Agent / Model | Tasks | Errors | **Mean reward** | Notes |
+|---|---|---:|---:|---:|---|
+| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 0 | **1.000** | reference upper bound |
+| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | 20 | 1 | **0.936** | non-reasoning |
+| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 20 | 3 | **0.776** | reasoning |
+
+**v0.1 read.** M2.5-highspeed (non-reasoning) wins by 16 points over M2.7 (reasoning).
+M2.7 had three zero-score cases that failed to submit `result.json` at all — likely
+consumed reasoning budget under the 80-turn cap. Both models bottom out on the upgraded
+design tasks (`bridge_rectifier_ripple`, `rc_lowpass_ac`, `rlc_notch`, `lc_lowpass_2nd`)
+where the model has to sweep a parameter and choose by spec rather than just measure.
 
 Per-case scores and machine-readable artifacts live in
 [`results/v0.1/`](results/v0.1/). [`LEADERBOARD.md`](LEADERBOARD.md) tracks

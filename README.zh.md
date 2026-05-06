@@ -49,11 +49,16 @@ verifier 已定义 + 任意模型可跑，但 oracle baseline 推迟到 v0.2）�
 每个 case 都 ship 一个确定性 `solution/solve.sh`（**oracle**）。Oracle 跑
 出的分数 = 当前 verifier 下可达的上限；任何模型的分数都对它读。
 
-| 运行 | Agent | 题数 | Mean reward | 状态 |
-|---|---|---:|---:|---|
-| `release-v0.1-ltspice20-oracle` | Oracle（确定性） | 20 | **1.000** | 参考上限 |
-| `release-v0.1-ltspice20-minimax-m25` | MiniMax-M2.5-highspeed | 20 | _跑测中_ | 非推理 |
-| `release-v0.1-ltspice20-minimax-m27` | MiniMax-M2.7 | 20 | _跑测中_ | 推理 |
+| 运行 | Agent / 模型 | 题数 | Errors | **Mean reward** | 说明 |
+|---|---|---:|---:|---:|---|
+| `release-v0.1-ltspice20-oracle-20260503` | oracle（确定性） | 20 | 0 | **1.000** | 参考上限 |
+| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | 20 | 1 | **0.936** | 非推理 |
+| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 20 | 3 | **0.776** | 推理 |
+
+**v0.1 读法。** 非推理的 M2.5-highspeed 比推理的 M2.7 高 16 个百分点（反直觉）。
+M2.7 有 3 个 0 分 case 直接没提交 `result.json`——很可能 80-turn 上限里推理预算
+烧光了。两个模型都在升级版设计题（`bridge_rectifier_ripple` / `rc_lowpass_ac` /
+`rlc_notch` / `lc_lowpass_2nd`）上踩坑——这类题要扫参选参数而不是直接测量。
 
 逐 case 分数和机读 artifact 见 [`results/v0.1/`](results/v0.1/)；
 [`LEADERBOARD.md`](LEADERBOARD.md) 跟踪历史和 ablation 结果。

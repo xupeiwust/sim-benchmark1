@@ -18,16 +18,25 @@ model run completes.
 
 ### Current Results
 
-| Run | Agent/model | Scope | Tasks | Completed | Mean score | Result path | Notes |
-|---|---|---|---:|---:|---:|---|---|
-| `release-v0.1-ltspice20-oracle-20260503` | oracle | LTspice circuits | 20 | 20/20 | 1.000 | `results/v0.1/summary.json` | Release gate passed |
-| `release-v0.1-openfoam3-oracle-20260503` | oracle | OpenFOAM oracle-available | 3 | 0/3 | n/a | `results/v0.1/summary.json` | Environment build failed before solver start: `svd-ai-lab/sim-benchmark-base:latest` is not pullable |
-| `release-v0.1-ltspice20-minimax-m27` | MiniMax-M2.7 | LTspice circuits | 20 | pending | pending | `configs/release-v0.1-ltspice20-minimax-m27.yaml` | Optional day-one reference model run |
+| Run | Agent / Model | Scope | Tasks | Completed | Errors | **Mean** | Notes |
+|---|---|---|---:|---:|---:|---:|---|
+| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | LTspice circuits | 20 | 20/20 | 0 | **1.000** | reference upper bound |
+| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | LTspice circuits | 20 | 20/20 | 1 | **0.936** | non-reasoning (16×1.0, 1×0.78, 2×0.7, 1×0.55) |
+| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | LTspice circuits | 20 | 20/20 | 3 | **0.776** | reasoning (15×1.0, 1×0.33, 1×0.20, **3×0.0**) |
+| `release-v0.1-openfoam3-oracle-20260503` | oracle | OpenFOAM oracle-available | 3 | 0/3 | n/a | n/a | environment build failed before solver: `svd-ai-lab/sim-benchmark-base:latest` not pullable |
 
-For v0.1, publish the LTspice 20 oracle gate as the reproducibility proof and
-label OpenFOAM as public runnable with deferred release packaging for the base
-image/oracle gate. The historical tables below are retained as development
-history and should not be presented as the v0.1 public result.
+Per-case scores in [`results/v0.1/README.md`](./results/v0.1/README.md). Machine-readable
+artifacts at `results/v0.1/{summary.json, ltspice20-{run}-*.csv, ltspice20-{run}-*.json}`.
+
+**v0.1 read.** M2.5-highspeed (non-reasoning) wins by 16 points over M2.7 (reasoning) on
+this LTspice suite, contrary to the usual reasoning-helps prior. M2.7's three zero-score
+cases (`bridge_rectifier_ripple`, `half_wave_rectifier`, `rl_lowpass_ac`) failed to submit
+`/tmp/agent/result.json` at all — likely consumed reasoning budget under the 80-turn cap.
+Both models bottom out on the upgraded design tasks (sweep + select capacitor) — leakage 1
+cases discriminate as designed.
+
+The historical tables below are development history (v3 / v4 / v5 / v7 / v9–v18 OpenFOAM
+work). They should not be presented as the v0.1 public result.
 
 ---
 
