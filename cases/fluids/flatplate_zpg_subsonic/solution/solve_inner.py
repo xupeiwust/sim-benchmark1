@@ -179,7 +179,7 @@ def main() -> int:
         "grep 'patch' "
         "| grep 'y+' "
         "| tr ',' ' ' "
-        "| awk '{ for (i=1;i<=NF;i++) if ($i==\"max\") { print $(i+2); exit } }'"
+        "| awk '{ for (i=1;i<=NF;i++) if ($i==\"max\") { idx=i+2; print $idx; exit } }'"
     )
     y_plus_max = float(run_pipeline(yplus_extract, CASE / "log.yPlus"))
 
