@@ -37,11 +37,12 @@ Write `/tmp/agent/result.json`. Each KPI is an object with `value` and a
 `source` describing where the number came from. The verifier
 re-extracts from the source and compares; bare numbers are rejected.
 
-The benchmark scores four KPIs (more is fine, extras are ignored):
+The benchmark scores five KPIs (more is fine, extras are ignored):
 
 | key | meaning |
 |---|---|
-| `mesh_cell_count` | total cells in your computational mesh |
+| `mesh_cell_count` | total cells in your computational mesh (resolution proxy) |
+| `max_non_orthogonality` | max non-orthogonality angle (degrees) from `checkMesh -allGeometry` — quality proxy; uniform structured cavity should be ~0 |
 | `final_residual_p` | last residual of the pressure equation |
 | `u_centerline_y0p5` | x-velocity at exactly (x=0.5, y=0.5); expected **negative** |
 | `u_min_along_x0p5` | most-negative u along x=0.5 centreline (vortex peak) |

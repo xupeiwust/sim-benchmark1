@@ -38,7 +38,9 @@ The benchmark scores four KPIs (extras are ignored):
 
 | key | meaning |
 |---|---|
-| `mesh_cell_count` | total cells in your computational mesh |
+| `mesh_cell_count` | total cells in your computational mesh (resolution proxy) |
+| `max_non_orthogonality` | max non-orthogonality angle (degrees) from `checkMesh -allGeometry` — quality proxy |
+| `y_plus_max` | max wall y+ from yPlus utility / FO — wall-resolution proxy for boundary-layer flow; **the canonical mesh KPI for this case** |
 | `final_residual_U` | last residual of the momentum equation |
 | `cf_x097` | local skin-friction coefficient C_f at x = 0.9700; C_f = τ_w / (0.5 · ρ_∞ · U_∞²) |
 | `drag_coefficient` | integrated viscous drag, normalised by 0.5 · ρ_∞ · U_∞² · L (per unit span; ref area per span = L = 2) |

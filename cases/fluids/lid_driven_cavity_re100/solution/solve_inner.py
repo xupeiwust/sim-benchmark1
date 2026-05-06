@@ -1,11 +1,22 @@
 """Lid-driven cavity Re=100 oracle.
 
-simpleFoam (laminar) — steady-state driven cavity.
+simpleFoam (laminar) on a uniform structured cavity mesh. Writes a
+schema-conforming /tmp/agent/result.json with `file_extract` provenance
+against real OpenFOAM artifacts that persist in /root/case after solve:
+
+  /root/case/log.blockMesh          - mesh build log
+  /root/case/log.checkMesh          - checkMesh -allGeometry output
+  /root/case/log.simpleFoam         - solver iteration log
+  /root/case/centerline_x0p5_U.xy   - copy of postProcessing sample (deterministic name)
+
+Each KPI re-extracts via awk/sed pipelines that the verifier runs against
+the file's stdin contents. No bare numbers, no fabricated logs.
 """
 from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -40,41 +51,15 @@ def sh(cmd: str) -> None:
     )
 
 
-def read_centerline(case: Path) -> list[tuple[float, float]]:
-    """Read the latest sampled U along x=0.5 centreline, return (y, u_x)."""
-    candidates = list(case.glob("postProcessing/sampleDict/*/centerline_x0p5_U.xy"))
-    if not candidates:
-        return []
-    xy = sorted(candidates, key=lambda p: float(p.parent.name))[-1]
-
-    pts: list[tuple[float, float]] = []
-    for line in xy.read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        parts = line.split()
-        if len(parts) < 4:
-            continue
-        try:
-            y = float(parts[0])
-            u_x = float(parts[1])
-            pts.append((y, u_x))
-        except ValueError:
-            continue
-    return pts
-
-
-def interp_u_at_y(pts: list[tuple[float, float]], y_target: float) -> float | None:
-    pts = sorted(pts, key=lambda t: t[0])
-    for i in range(len(pts) - 1):
-        y0, u0 = pts[i]
-        y1, u1 = pts[i + 1]
-        if y0 <= y_target <= y1:
-            if y1 == y0:
-                return u0
-            w = (y_target - y0) / (y1 - y0)
-            return u0 + w * (u1 - u0)
-    return None
+def run_awk(prog: str, source_path: Path) -> str:
+    """Re-run an awk extract locally and return its stdout (for value field)."""
+    with open(source_path, encoding="utf-8", errors="replace") as f:
+        text = f.read()
+    proc = subprocess.run(
+        ["awk", prog],
+        input=text, capture_output=True, text=True, check=True,
+    )
+    return proc.stdout.strip()
 
 
 def main() -> int:
@@ -83,27 +68,134 @@ def main() -> int:
     print("[oracle] blockMesh")
     sh("blockMesh > log.blockMesh 2>&1")
 
+    print("[oracle] checkMesh -allGeometry")
+    sh("checkMesh -allGeometry > log.checkMesh 2>&1")
+
     print("[oracle] simpleFoam")
     sh("simpleFoam > log.simpleFoam 2>&1")
 
     print("[oracle] postProcess -func sampleDict -latestTime")
     sh("postProcess -func sampleDict -latestTime > log.postProcess 2>&1")
 
-    pts = read_centerline(CASE)
-    u_at_center = interp_u_at_y(pts, 0.5)
-    u_min = min((u for _, u in pts), default=None)
+    # --- Copy time-stamped sample output to a deterministic path so result.json
+    # can reference it without a wildcard. The verifier requires absolute paths.
+    centerline_src_candidates = sorted(
+        CASE.glob("postProcessing/sampleDict/*/centerline_x0p5_U.xy"),
+        key=lambda p: float(p.parent.name),
+    )
+    if not centerline_src_candidates:
+        raise RuntimeError("postProcess did not produce centerline_x0p5_U.xy")
+    centerline_src = centerline_src_candidates[-1]
+    centerline_dst = CASE / "centerline_x0p5_U.xy"
+    shutil.copy(centerline_src, centerline_dst)
 
-    out: dict = {}
-    if u_at_center is not None:
-        out["u_centerline_y0p5"] = u_at_center
-    if u_min is not None:
-        out["u_min_along_x0p5"] = u_min
+    # --- Pre-compute the values via the SAME awk extracts the verifier will run.
+    # Keeps oracle's claimed value byte-identical to what the verifier will see.
 
-    result_path = Path("/tmp/agent/result.json")
-    result_path.parent.mkdir(parents=True, exist_ok=True)
-    result_path.write_text(json.dumps(out, indent=2))
+    cell_count_extract = "awk '/^[[:space:]]+cells:/ {print $NF; exit}'"
+    cell_count = int(run_awk(
+        "/^[[:space:]]+cells:/ {print $NF; exit}",
+        CASE / "log.checkMesh",
+    ))
 
-    print(json.dumps(out))
+    nonorth_extract = "awk '/Mesh non-orthogonality Max:/ {print $4; exit}'"
+    max_nonorth = float(run_awk(
+        "/Mesh non-orthogonality Max:/ {print $4; exit}",
+        CASE / "log.checkMesh",
+    ))
+
+    # log.simpleFoam: last "Solving for p," line, pull "Final residual = X,"
+    final_resid_extract = (
+        "grep 'Solving for p,' "
+        "| tail -1 "
+        "| sed 's/.*Final residual = //; s/,.*//'"
+    )
+    proc = subprocess.run(
+        ["bash", "-c", final_resid_extract],
+        input=(CASE / "log.simpleFoam").read_text(),
+        capture_output=True, text=True, check=True,
+    )
+    final_residual_p = float(proc.stdout.strip())
+
+    # u along x=0.5 centreline: file is `(y u_x u_y u_z)` per row.
+    # Linear-interp at y=0.5; awk does it directly.
+    u_centre_awk = (
+        'BEGIN { yt=0.5; have=0 } '
+        '/^[^#]/ && NF >= 2 { '
+        '  y=$1+0.0; u=$2+0.0; '
+        '  if (have && py <= yt && yt <= y) { '
+        '    if (y == py) print pu; '
+        '    else printf "%.10g\\n", pu + (yt - py) / (y - py) * (u - pu); '
+        '    exit '
+        '  } '
+        '  py=y; pu=u; have=1 '
+        '}'
+    )
+    u_centre_extract = "awk '" + u_centre_awk + "'"
+    u_centerline_y0p5 = float(run_awk(u_centre_awk, centerline_dst))
+
+    # most-negative u along the line (primary vortex peak).
+    u_min_awk = (
+        'BEGIN { mn=1e9 } '
+        '/^[^#]/ && NF >= 2 { if ($2+0.0 < mn) mn=$2+0.0 } '
+        'END { printf "%.10g\\n", mn }'
+    )
+    u_min_extract = "awk '" + u_min_awk + "'"
+    u_min_along_x0p5 = float(run_awk(u_min_awk, centerline_dst))
+
+    log_blockmesh   = str(CASE / "log.blockMesh")
+    log_checkmesh   = str(CASE / "log.checkMesh")
+    log_simplefoam  = str(CASE / "log.simpleFoam")
+    centerline_path = str(centerline_dst)
+
+    result = {
+        "mesh_cell_count": {
+            "value": cell_count,
+            "source": {
+                "kind": "file_extract",
+                "path": log_checkmesh,
+                "extract": cell_count_extract,
+            },
+        },
+        "max_non_orthogonality": {
+            "value": max_nonorth,
+            "source": {
+                "kind": "file_extract",
+                "path": log_checkmesh,
+                "extract": nonorth_extract,
+            },
+        },
+        "final_residual_p": {
+            "value": final_residual_p,
+            "source": {
+                "kind": "file_extract",
+                "path": log_simplefoam,
+                "extract": final_resid_extract,
+            },
+        },
+        "u_centerline_y0p5": {
+            "value": u_centerline_y0p5,
+            "source": {
+                "kind": "file_extract",
+                "path": centerline_path,
+                "extract": u_centre_extract,
+            },
+        },
+        "u_min_along_x0p5": {
+            "value": u_min_along_x0p5,
+            "source": {
+                "kind": "file_extract",
+                "path": centerline_path,
+                "extract": u_min_extract,
+            },
+        },
+    }
+
+    out_path = Path("/tmp/agent/result.json")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(result, indent=2))
+
+    print(json.dumps({k: v["value"] for k, v in result.items()}))
     print(f"[oracle] finished in {time.time() - t0:.1f}s", file=sys.stderr)
     return 0
 

@@ -16,13 +16,25 @@
     "mesh_cell_count": {
       "group":         "mesh",
       "shape":         "scalar",
-      "description":   "Total cell count of the 2D cavity mesh",
+      "description":   "Total cell count of the 2D cavity mesh (resolution adequacy proxy)",
       "gt_value":      14400,
       "T_good":        4000,
       "T_bad":         12000,
       "physics_min":   100,
       "physics_max":   1000000,
       "T_good_source": "Re=1000 needs finer wall-layer resolution than Re=100; 120x120 (=14400) is the realistic minimum. Hand-set."
+    },
+
+    "max_non_orthogonality": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Max mesh non-orthogonality angle (degrees) reported by checkMesh",
+      "gt_value":      0,
+      "T_good":        10,
+      "T_bad":         65,
+      "physics_min":   0,
+      "physics_max":   180,
+      "T_good_source": "OpenFOAM checkMesh advisory: <70 deg acceptable, <30 deg good. Uniform structured cavity mesh is trivially 0; threshold here catches grossly distorted hand-built meshes."
     },
 
     "final_residual_p": {

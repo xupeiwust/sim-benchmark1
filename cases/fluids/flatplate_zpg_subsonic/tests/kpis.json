@@ -15,16 +15,40 @@
   },
 
   "kpis": {
+    "y_plus_max": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Max wall y+ over the plate (wall-resolution proxy for boundary-layer flow)",
+      "gt_value":      1.0,
+      "T_good":        2.0,
+      "T_bad":         10.0,
+      "physics_min":   0.0,
+      "physics_max":   1000.0,
+      "T_good_source": "Wall-resolved RANS / SA practice: y+ < 2 across entire wall; y+ > 10 means wall-functions territory and Cf will read incorrectly. TMR reference grid achieves y+ < 1."
+    },
+
+    "max_non_orthogonality": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Max mesh non-orthogonality angle (degrees) reported by checkMesh",
+      "gt_value":      0,
+      "T_good":        15,
+      "T_bad":         65,
+      "physics_min":   0,
+      "physics_max":   180,
+      "T_good_source": "OpenFOAM checkMesh advisory: <70 deg acceptable, <30 deg good. Stretched wall-normal grid here may run 0-15 deg; threshold catches grossly distorted hand-built meshes."
+    },
+
     "mesh_cell_count": {
       "group":         "mesh",
       "shape":         "scalar",
-      "description":   "Total cell count of the 2D flat-plate mesh",
+      "description":   "Total cell count of the 2D flat-plate mesh (resolution adequacy proxy)",
       "gt_value":      40000,
       "T_good":        20000,
       "T_bad":         100000,
       "physics_min":   1000,
       "physics_max":   10000000,
-      "T_good_source": "TMR reference grid is 545x385 (~210k); a wall-resolved 2D RANS mesh of ~40k is a realistic minimum for moderate Re=5e6. Hand-set."
+      "T_good_source": "TMR reference grid is 545x385 (~210k); a wall-resolved 2D RANS mesh of ~40k is a realistic minimum for moderate Re=5e6. Hand-set. Note: y_plus_max is the canonical mesh KPI for boundary-layer flow; cell count is a coarse co-check."
     },
 
     "final_residual_U": {
