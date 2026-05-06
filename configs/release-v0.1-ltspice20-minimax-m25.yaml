@@ -16,7 +16,7 @@ agents:
   - import_path: tools.agent_harness:ClaudeCodeViaCcr
     model_name: MiniMax-M2.5-highspeed
     kwargs:
-      max_turns: 80
+      max_turns: 300
     env:
       ANTHROPIC_API_KEY: 'harbor-ccr-2026'
       ANTHROPIC_BASE_URL: 'http://127.0.0.1:3456'
