@@ -1,156 +1,256 @@
 # sim-benchmark
 
-**sim-benchmark** 是一个面向工业仿真 agent 的 benchmark：给 LLM agent 一个真实仿真任务，让它建模、运行 solver、处理报错、提取工程 KPI，并提交可验证的结果。
+> **An industrial simulation agent benchmark.** Hand an LLM agent a real
+> CAE/EDA task — meshing, boundary conditions, solver invocation, log parsing,
+> KPI extraction — and grade what it actually produced. No LLM-as-judge; the
+> verifier re-runs the agent's claimed extraction commands against the
+> agent's produced solver artifacts.
 
-目标不是证明某个内部 CLI 有用，而是回答一个更大的问题：
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Tasks](https://img.shields.io/badge/v0.1-36%20public%20tasks-success)](CASES.md)
+[![Solvers](https://img.shields.io/badge/solvers-OpenFOAM%20%7C%20LTspice-informational)]()
 
-> LLM agent 到底能不能完成真实工业仿真任务？失败在哪里？
+中文版 → [`README.zh.md`](README.zh.md)
 
-English: see [README.en.md](./README.en.md).
+---
 
-## What It Measures
+## What this measures
 
-每个 case 都要求 agent 端到端完成一件仿真工作：
+Every task hands the agent a natural-language problem statement, a working
+container with a real solver installed, and one rule: produce
+`/tmp/agent/result.json` whose KPIs come with **source provenance** —
+`(value, source.kind, source.path, source.extract)`. The verifier re-runs
+each `source.extract` command against the file the agent named and confirms
+the value. Hand-written numbers, fabricated logs, and unreproducible KPIs
+score zero.
 
-- 从自然语言任务描述搭建 case
-- 调用可用 solver 或仿真工具
-- 处理运行失败、收敛问题、文件格式问题
-- 从真实 solver artifact 中提取 KPI
-- 写出 `/tmp/agent/result.json`
+**Out of scope (deliberately).** This is not a knowledge quiz, not a
+syntax-of-Fluent test, not an LLM-as-judge tournament. It does not require
+the agent to use any specific tool or library — `sim-cli`, native solver
+CLIs, Python wrappers, or the agent's own scratch scripts are all valid
+launch routes. Tooling is implementation, not the thing being benchmarked.
 
-主分数只看 **真实 artifacts + KPI accuracy + source provenance**。agent 是否使用 `sim` / sim-cli 只作为诊断信息，不是得分门槛。
+## v0.1 release scope
 
-## Design Principles
+| Domain | Tasks | Oracle available | Backing solver |
+|---|---:|---:|---|
+| Circuits / SPICE | 20 | 20 | LTspice (free, open-format) |
+| Fluids / CFD | 16 | 3 | OpenFOAM (open source) |
+| **Total** | **36** | **23** | |
 
-### 1. 真实 solver，不用 LLM-as-judge
+The MVP scored gate is the 20 LTspice tasks. They run on Linux via Wine,
+with a deterministic oracle baseline at **mean reward = 1.000**. The 16
+OpenFOAM tasks ship as public catalog members; only 3 have no-token oracle
+solutions today (the other 13 are public, verifier-defined, and runnable
+against any model — but the no-token baseline is deferred to v0.2).
 
-Verifier 是确定性的。它读取 agent 产生的文件、solver log、run history 或后处理输出，重新抽取 KPI 并计算分数。
+Future commercial-solver cases (Ansys Mechanical / Abaqus / Flotherm /
+Fluent) will live in `release_status: hidden_eval`, evaluated only when an
+authorised licensed-solver run is requested. They are **not in this
+public release**.
 
-### 2. 强 provenance，不强制成功
+See [`CASES.md`](CASES.md) for the full catalog with leakage, tier, and
+oracle-status flags per case. See [`SCHEMA.md`](SCHEMA.md) for the case /
+verifier contract.
 
-每个 KPI 必须是：
+## Day-one results (reference run)
+
+Every task ships with a deterministic `solution/solve.sh` (the *oracle*).
+Running the oracle produces the maximum reachable score under the current
+verifier; any model's score is read against this upper bound.
+
+| Run | Agent | Tasks | Mean reward | Status |
+|---|---|---:|---:|---|
+| `release-v0.1-ltspice20-oracle` | Oracle (deterministic) | 20 | **1.000** | reference upper bound |
+| `release-v0.1-ltspice20-minimax-m25` | MiniMax-M2.5-highspeed | 20 | _pending_ | non-reasoning |
+| `release-v0.1-ltspice20-minimax-m27` | MiniMax-M2.7 | 20 | _pending_ | reasoning |
+
+Per-case scores and machine-readable artifacts live in
+[`results/v0.1/`](results/v0.1/). [`LEADERBOARD.md`](LEADERBOARD.md) tracks
+historical and ablation results.
+
+## Why three audiences should care
+
+### For AI / agent companies
+
+We give you a hard, reproducible, end-to-end task suite where the only
+thing that scores is **what the model actually produced**, not whether it
+described the right answer in chat. Every task is a real solver run with
+artifact-grounded grading: the model writes a netlist, runs LTspice,
+parses the `.log`, and submits the parse command alongside the value. We
+re-run the parse. If your `value` and our re-extraction disagree, you score
+zero on that KPI.
+
+This gives a clean, commercially-relevant signal that:
+- separates models that "know about" vs models that "can complete"
+  industrial workflows;
+- breaks down by task tier (S/M/L), leakage class, and template
+  (measurement / numerical / workflow);
+- runs locally with `harbor` + Docker — no submission portal, no API key
+  for us, no rate-limited grader.
+
+To publish a leaderboard row, see [`REPRODUCING.md`](REPRODUCING.md). To
+see what the harness does on each trial, see [`docs/hooks.md`](docs/hooks.md).
+
+### For CAE / EDA software vendors
+
+Industrial CAE has been "the agent layer is too brittle" for a decade.
+This benchmark turns that into a measurable signal — over real cases,
+real solver artifacts, real numerical-vs-physical pass criteria — and
+makes it possible to talk concretely about *which* parts of the agent loop
+fail on *which* solvers.
+
+You can use this to:
+- evaluate whether AI agents can drive your solver well enough for
+  customer-facing automation;
+- contribute commercial-solver tasks (we keep them in `hidden_eval` and
+  evaluate them only when you authorise a licensed run);
+- benchmark internal solver wrappers / Python APIs against the same task
+  suite the open community runs.
+
+The contract is in [`SCHEMA.md`](SCHEMA.md). Cases proposed via PR are
+reviewed for verifiability — see [`cases/circuits/README.md`](cases/circuits/README.md)
+and [`cases/fluids/README.md`](cases/fluids/README.md) for tier / leakage
+norms.
+
+### For CAE practitioners
+
+If you've been asked "should we put an LLM in front of our solver
+workflow", this is a yardstick. Run the oracle smoke (no LLM, free):
+
+```bash
+uv tool install harbor
+git clone https://github.com/svd-ai-lab/sim-benchmark && cd sim-benchmark
+harbor run -p cases/circuits -i rc_highpass_ac --agent oracle -y
+# Expect: reward = 1.000, wall-clock ~1 min on Docker Desktop.
+```
+
+If that returns 1.0, your environment is sound and any model run you do
+will be apples-to-apples comparable to ours. Then run a model — the same
+command with `--agent claude-code` (or your wrapper) replacing
+`--agent oracle`. See [`REPRODUCING.md`](REPRODUCING.md) for the three
+reproduction paths (GHCR pull / build from source / paranoid).
+
+## Quick start (5 minutes, no LLM)
+
+```bash
+# 1. install harbor (the runner — same one Terminal-Bench uses)
+uv tool install harbor
+
+# 2. clone
+git clone https://github.com/svd-ai-lab/sim-benchmark && cd sim-benchmark
+
+# 3. oracle smoke on one circuit (no LLM, no API key)
+harbor run -p cases/circuits -i rc_highpass_ac --agent oracle -y
+
+# 4. oracle smoke on a CFD case (also no LLM, requires the OpenFOAM base
+#    image to build locally — see REPRODUCING.md Path B)
+harbor run -p cases/fluids -i lid_driven_cavity_re100 --agent oracle -y
+```
+
+Both should print `reward: 1.000`. If you see anything else, the bug is
+in your environment, not in the agent.
+
+## How scoring works in 60 seconds
+
+Every case is verified against a `tests/kpis.json` that lists named KPIs
+and how to measure them. The agent submits:
 
 ```json
 {
-  "value": 1.23,
-  "source": {
-    "kind": "file_extract",
-    "path": "/root/case/output.log",
-    "extract": "grep '^kpi:' | awk '{print $2}'"
+  "kpis": {
+    "f_3db": {
+      "value": 175.6,
+      "source": {
+        "kind": "ltspice_log",
+        "path": "rc_lowpass.log",
+        "extract": "section=measure name=f_3db"
+      }
+    }
   }
 }
 ```
 
-verifier 会重新执行 `extract`，确认 `value` 真能从声明的 source 里得到。裸数字、假 source、无法重抽取的值不得分。
-不要手写、编辑或伪造 solver log、`.meas` 输出、`.raw` 数据或 run history 来满足 provenance。
+The verifier opens `rc_lowpass.log`, runs the declared extraction, gets
+the actual measured value, and compares against ground truth (within the
+tolerance `tests/kpis.json` declares). Scoring templates per task type:
 
-推荐 task wording：
-
-> Report only values that can be re-extracted from artifacts you produced. If the simulation fails, report the failure with a verifiable log source.
-
-### 3. Case 分层
-
-公开 suite 会区分：
-
-- `smoke`: 高 leakage / 快速环境验证 / 示例
-- `public_eval`: public leaderboard 的主评测
-- `hidden_eval`: 未来商业软件 license suite 的私有 holdout
-
-经典公开题（例如 Ghia cavity、标准 RC filter）适合 smoke，不适合作为 headline 证据。
-
-### 4. Scoring Templates
-
-每个 case 使用少数标准评分模板之一，而不是随意定义权重。
-
-| Template | 用途 | Groups |
+| Template | Groups | Used for |
 |---|---|---|
-| `measurement` | 普通仿真 + KPI 测量 | `setup 0.10`, `outputs 0.90` |
-| `numerical` | 明确测收敛/残差/稳定性 | `setup 0.10`, `numerical 0.15`, `outputs 0.75` |
-| `workflow` | GUI / 多步流程 / artifact export | `setup 0.15`, `process 0.25`, `outputs 0.60` |
+| `measurement` | setup 0.10 / outputs 0.90 | "measure this circuit" |
+| `numerical` | setup 0.10 / numerical 0.15 / outputs 0.75 | "this CFD case must converge" |
+| `workflow` | setup 0.15 / process 0.25 / outputs 0.60 | multi-step GUI / artifact tasks |
 
-空 group 是无效 schema：如果一个 group 有正权重，必须至少有一个 KPI 引用它。
+Total per case is a weighted sum of the per-group means. See
+[`SCHEMA.md`](SCHEMA.md) for the formal contract.
 
-## Current Domains
-
-所有公开 case 的当前状态见 [CASES.md](./CASES.md)。OpenFOAM 和 LTspice cases
-都公开；`oracle_status` 单独标出 no-token oracle 是否已经可用，没有 oracle
-不等于 draft。
-
-### v0.1 MVP Scope
-
-v0.1 发布 36 个 public runnable tasks：20 个 LTspice circuits 和 16 个
-OpenFOAM fluids。MVP scored gate 先只承诺 20 个 LTspice oracle-available
-tasks；它们已经在当前 release gate 中达到 `20/20`, mean `1.000`。
-
-OpenFOAM 16 个 task 保留在公开 catalog 中，其中 3 个已有 oracle 标记，13 个
-oracle deferred。OpenFOAM 的默认 release gate 还需要先发布或文档化
-`svd-ai-lab/sim-benchmark-base:latest` base image。
-
-发布用结果见 [RESULTS.md](./RESULTS.md) 和
-[`results/v0.1/`](./results/v0.1/)。
-
-### Fluids / OpenFOAM
-
-OpenFOAM cases 主要用于公开透明的 CFD proving ground 和 pipeline shakedown。它们适合验证 harness、verifier、artifact provenance 和 failure taxonomy。
-
-### Circuits / LTspice
-
-LTspice cases 覆盖 SPICE 类电路仿真、`.meas`、log/source extraction、Wine/headless batch quirks。普通 `.meas` cases 使用 `measurement` 模板。
-
-## Quickstart
-
-### Docker + Harbor
-
-```bash
-uv tool install harbor
-docker --version
-```
-
-### Oracle Smoke, No LLM Token
-
-```bash
-harbor run -p cases/circuits --agent oracle -i rc_highpass_ac
-```
-
-### Windows Docker Desktop Notes
-
-PowerShell 下运行 Harbor + Docker Desktop 时建议设置：
-
-```powershell
-$env:DOCKER_HOST='npipe:////./pipe/docker_engine'
-$env:PYTHONUTF8='1'
-$env:PYTHONIOENCODING='utf-8'
-```
-
-## Repository Layout
+## Repository layout
 
 ```text
 sim-benchmark/
 ├── cases/
-│   ├── fluids/       # CFD / OpenFOAM tasks
-│   └── circuits/     # SPICE / LTspice tasks
-├── configs/          # Harbor run configs
-├── docs/             # design notes and appendices
-├── environment/      # base Docker images
+│   ├── circuits/          # 20 LTspice tasks
+│   └── fluids/            # 16 OpenFOAM tasks
+├── configs/               # release run configs (oracle, M2.7, M2.5)
+├── docs/                  # design appendices
+├── environment/
+│   ├── base/              # OpenFOAM base image
+│   └── wine-base/         # LTspice-on-Wine image
 ├── lib/
-│   └── sim_benchmark_verifier/
-├── tools/            # harness, lint, aggregation, rescore
-├── results/          # published v0.1 reference run artifacts
-├── SCHEMA.md
-└── LEADERBOARD.md
+│   └── sim_benchmark_verifier/   # the grader (Python)
+├── tools/                 # harness, lint, aggregation, scoring helpers
+├── results/v0.1/          # published reference-run artifacts
+├── CASES.md               # public catalog with status / leakage / tier
+├── LEADERBOARD.md         # historical & ablation results
+├── ORACLE.md              # oracle baseline + verifier sanity checks
+├── RELEASE.md             # v0.1 release gate
+├── REPRODUCING.md         # three reproduction paths
+└── SCHEMA.md              # case + verifier contract
 ```
 
-## Launch Direction
+## Roadmap
 
-The public v0 goal is a credible Industrial Simulation Agent leaderboard:
+- **v0.1 (current)** — 36 public tasks, deterministic verifier, 20 LTspice
+  oracle gate at 1.000, day-one MiniMax reference rows.
+- **v0.2** — publish OpenFOAM base image; add 13 OpenFOAM no-token
+  oracles; harden Docker Hub package distribution.
+- **v0.3** — second commercial-solver track in `hidden_eval` (Mechanical
+  or Abaqus, evaluated under licensed-run authorisation).
+- **v1.0** — stable schema, public leaderboard, multi-org submission flow.
 
-- small but high-quality OpenFOAM + LTspice public eval set
-- deterministic verifier
-- source-provenance scoring
-- failure taxonomy
-- cost and wall-time reporting
+Track open work on [GitHub Issues](https://github.com/svd-ai-lab/sim-benchmark/issues).
 
-sim-cli remains useful infrastructure, but not the headline variable.
+## Contributing
 
-See [RELEASE.md](./RELEASE.md) for the MVP release checklist and latest local
-gate results.
+PRs welcome. Two common contributions:
+
+- **A new case.** Use [`tools/new_circuit_case.py`](tools/new_circuit_case.py)
+  for circuits or copy an existing fluids case as a template. Run
+  [`tools/lint_case.py`](tools/lint_case.py) and the verifier tests
+  before opening a PR. See [`SCHEMA.md`](SCHEMA.md) §9.
+- **A model harness.** New `agent_harness.py:Agent` subclass; bring your
+  own routing layer. See [`tools/agent_harness.py`](tools/agent_harness.py)
+  for the existing CC + ccr pattern.
+
+For the Reasoning behind the launch positioning (problem-first, not
+tool-first), see [PR #2 on the internal repo](https://github.com/svd-ai-lab/sim-benchmark-internal/pull/2).
+
+## Citing
+
+```bibtex
+@misc{simbenchmark2026,
+  title  = {sim-benchmark: An Industrial Simulation Agent Benchmark},
+  author = {{svd-ai-lab}},
+  year   = {2026},
+  url    = {https://github.com/svd-ai-lab/sim-benchmark},
+  note   = {v0.1}
+}
+```
+
+## License
+
+Apache 2.0. See [`LICENSE`](LICENSE).
+
+The repo bundles example assets (LTspice netlists, OpenFOAM mesh files)
+that are themselves under their respective upstream licenses; see each
+case's `solution/` directory for source attribution.
