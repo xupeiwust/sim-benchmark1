@@ -10,8 +10,6 @@
 [![Tasks](https://img.shields.io/badge/v0.1-36%20public%20tasks-success)](CASES.md)
 [![Solvers](https://img.shields.io/badge/solvers-OpenFOAM%20%7C%20LTspice-informational)]()
 
-中文版 → [`README.zh.md`](README.zh.md)
-
 ---
 
 ## What this measures
