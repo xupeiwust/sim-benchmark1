@@ -1,0 +1,32 @@
+# v0.1 OpenFOAM reference run: MiniMax-M2.5-highspeed on the 3 OpenFOAM cases
+# that have a no-token oracle (`solution/solve.sh`) shipped today.
+#
+# Companion to release-v0.1-ltspice20-minimax-m25.yaml — same model, smaller
+# scope. The remaining 13 OpenFOAM tasks are public-runnable but oracle-deferred
+# in v0.1; they will land in the v0.2 reference run.
+
+jobs_dir: jobs/release-v0.1-openfoam3-minimax-m25
+n_concurrent_trials: 3
+timeout_multiplier: 3.0
+
+environment:
+  type: docker
+  delete: false
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeViaCcr
+    model_name: MiniMax-M2.5-highspeed
+    kwargs:
+      max_turns: 80
+    env:
+      ANTHROPIC_API_KEY: 'harbor-ccr-2026'
+      ANTHROPIC_BASE_URL: 'http://127.0.0.1:3456'
+      CCR_UPSTREAM_BASE: 'https://api.minimaxi.com/v1/chat/completions'
+      CCR_UPSTREAM_KEY: '${MINIMAX_API_KEY}'
+
+datasets:
+  - path: cases/fluids
+    task_names:
+      - flatplate_zpg_subsonic
+      - lid_driven_cavity_re100
+      - lid_driven_cavity_re1000
