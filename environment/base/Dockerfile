@@ -56,6 +56,16 @@ RUN curl -fkSL https://npmmirror.com/mirrors/node/v20.19.0/node-v20.19.0-linux-x
     && npm install -g @anthropic-ai/claude-code @musistudio/claude-code-router \
     && claude --version
 
+# -- token-recovery proxy + ccr custom transformers ----------------------
+# Mirror of wine-base/Dockerfile setup. agent_harness.py spawns the proxy
+# at trial time and registers the minimax-system-merge transformer in
+# ccr config when the upstream is MiniMax-OpenAI (which rejects mid-
+# conversation system messages with error 2013). Without these, ccr
+# returns a 400 "Missing model in request body" on the first call.
+COPY tools/openai_usage_proxy.py /opt/openai_usage_proxy.py
+COPY tools/ccr-plugins /opt/ccr-plugins/
+RUN pip install --no-cache-dir --break-system-packages aiohttp
+
 # -- environment contract (read by agents & grader) --------------------
 ENV SIM_SKILLS_ROOT=/opt/sim-skills
 ENV SIM_DIR=/logs/agent/sim-cli
