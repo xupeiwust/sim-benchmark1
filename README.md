@@ -4,15 +4,15 @@
 
 <br>
 
-**Hand a real CAE/EDA task to an LLM agent. Score what it produced.**
-
-*No LLM-as-judge. The verifier replays the agent's own extraction commands*
-*against the agent's own solver artifacts.*
+> **An industrial simulation agent benchmark.** Hand an LLM agent a real
+> CAE/EDA task — meshing, boundary conditions, solver invocation, log parsing,
+> KPI extraction — and grade what it actually produced. No LLM-as-judge; the
+> verifier re-runs the agent's claimed extraction commands against the
+> agent's produced solver artifacts.
 
 <p align="center">
-  <a href="#-quick-start"><img src="https://img.shields.io/badge/Quick_Start-2_min-3b82f6?style=for-the-badge" alt="Quick Start"></a>
-  <a href="CASES.md"><img src="https://img.shields.io/badge/v0.1-23_oracle--verified_tasks-22c55e?style=for-the-badge" alt="23 tasks"></a>
-  <a href="#-reference-runs"><img src="https://img.shields.io/badge/Reference_runs-MiniMax_M2.5hs_%E2%80%A2_M2.7-8b5cf6?style=for-the-badge" alt="MiniMax reference"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Quick_Start-2_min-3b82f6?style=for-the-badge" alt="Quick Start"></a>
+  <a href="#first-reference-runs"><img src="https://img.shields.io/badge/Reference_runs-MiniMax_M2.5hs_%E2%80%A2_M2.7-8b5cf6?style=for-the-badge" alt="MiniMax reference"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-eab308?style=for-the-badge" alt="License"></a>
 </p>
 
@@ -24,110 +24,149 @@
   <img src="https://img.shields.io/badge/status-v0.1-f97316" alt="Status: v0.1">
 </p>
 
-[Why](#-why-this-benchmark) · [Quick Start](#-quick-start) · [Reference runs](#-reference-runs) · [How scoring works](#-how-scoring-works) · [Layout](#-repository-layout) · [Contributing](#-contributing)
+[What this measures](#what-this-measures) · [Scope](#v01-release-scope) · [Reference runs](#first-reference-runs) · [Quick start](#quick-start) · [Scoring](#how-scoring-works-in-60-seconds) · [Layout](#repository-layout)
 
 </div>
 
 ---
 
-## 🤔 Why this benchmark?
+## What this measures
 
-LLM agents already know how to write simulation scripts — training data is full
-of them. What no benchmark measured cleanly was whether they can **drive a
-real solver, parse its real output, and submit results that survive an
-independent replay**.
+Every task hands the agent a natural-language problem statement, a working
+container with a real solver installed, and one rule: produce
+`/tmp/agent/result.json` whose KPIs come with **source provenance** —
+`(value, source.kind, source.path, source.extract)`. The verifier re-runs
+each `source.extract` command against the file the agent named and confirms
+the value. Hand-written numbers, fabricated logs, and unreproducible KPIs
+score zero.
 
-Today, the choices for "can this agent do CAE?" are awful:
+**Out of scope (deliberately).** This is not a knowledge quiz, not a
+syntax-of-Fluent test, not an LLM-as-judge tournament. It does not require
+the agent to use any specific tool or library — `sim-cli`, native solver
+CLIs, Python wrappers, or the agent's own scratch scripts are all valid
+launch routes. Tooling is implementation, not the thing being benchmarked.
 
-- **Pass-through QA** — model paraphrases a Wikipedia article on Reynolds
-  number; nothing was simulated.
-- **LLM-as-judge** — the grader is itself an LLM with the same blind spots.
-- **Synthetic toy tasks** — agent solves a problem that looks like CAE but
-  bypasses every real industrial pain point (units, file formats, log parsing,
-  convergence diagnostics).
+## v0.1 release scope
 
-`sim-benchmark` measures the workflow itself. Each task hands the agent a
-container with a real solver installed and asks for `/tmp/agent/result.json`
-where every KPI is paired with a `source.kind / source.path / source.extract`
-provenance triple. The verifier re-runs every `extract` against the agent's
-produced artifacts and compares. Hand-written numbers, fabricated logs, and
-unreproducible KPIs score zero.
+| Domain | Tasks | Backing solver |
+|---|---:|---|
+| Circuits / SPICE | 20 | LTspice (free, open-format) |
+| Fluids / CFD | 3 | OpenFOAM (open source) |
 
-> Tooling is implementation, not the thing being benchmarked. `sim-cli`,
-> native solver CLIs, Python wrappers, or the agent's own scratch scripts are
-> all valid launch routes.
-
----
-
-## 🧭 v0.1 release scope
-
-| Domain | Public tasks | Oracle | Backing solver |
-|---|---:|---:|---|
-| Circuits / SPICE | 20 | 20 | LTspice (free, open-format) |
-| Fluids / CFD | 3 | 3 | OpenFOAM (open source) |
-| **Total** | **23** | **23** | |
-
-Every v0.1 task ships with a deterministic `solution/solve.sh` oracle that
-exercises the full pipeline without an LLM. That gives the verifier's
-upper-bound sanity check; model rows are read against that ceiling.
-
-Future commercial-solver cases (Mechanical / Abaqus / Flotherm / Fluent) live
-in `release_status: hidden_eval`, evaluated only when an authorised
-licensed-solver run is requested. **They are not in this public release.**
+Every v0.1 task has a deterministic `solution/solve.sh` oracle that produces
+the verifier's upper-bound sanity check. Future releases extend the OpenFOAM
+side (turbulent boundary layers, transonic airfoils, multiphase, separated
+flows) once their oracles are written and validated.
 
 See [`CASES.md`](CASES.md) for the full catalog with leakage, tier, and
-oracle-status flags. See [`SCHEMA.md`](SCHEMA.md) for the case / verifier
-contract.
+oracle-status flags per case. See [`SCHEMA.md`](SCHEMA.md) for the case /
+verifier contract.
 
----
+## First reference runs
 
-## 🚀 Quick Start
+Every task ships with a deterministic `solution/solve.sh` oracle. Running
+the oracle gives the verifier's upper-bound sanity check; model rows are
+read against that ceiling.
 
-```bash
-# 1. Install Harbor — the same runner Terminal-Bench uses
-uv tool install harbor
-
-# 2. Clone
-git clone https://github.com/svd-ai-lab/sim-benchmark
-cd sim-benchmark
-
-# 3. Run the oracle on one circuit (no LLM, no API key)
-harbor run -p cases/circuits -i rc_highpass_ac --agent oracle -y
-# → reward: 1.000, ~1 min on Docker Desktop.
-
-# 4. Run a model — same command, swap --agent
-harbor run -c configs/release-v0.1-ltspice20-minimax-m25.yaml -y
-```
-
-If step 3 prints `reward: 1.000`, your environment is sound and any model run
-you do is apples-to-apples comparable to ours. If it doesn't, the bug is
-in your environment, not in the agent.
-
-For local builds without GHCR, see [`REPRODUCING.md`](REPRODUCING.md).
-
----
-
-## 📊 Reference runs
+We include first reference runs with MiniMax-M2.5-highspeed and MiniMax-M2.7
+through a claude-code harness.
 
 | Suite | Reference models | Read |
 |---|---|---|
-| **LTspice circuits** | MiniMax-M2.5-highspeed and MiniMax-M2.7 both land around **0.9** | Strong agents already complete many artifact-grounded circuit workflows. Parameter-sweep and design-selection tasks still discriminate. |
-| **OpenFOAM fluids** | Both MiniMax runs are below **0.5** on the oracle-available CFD subset | CFD remains much harder: agents must author case files, mesh, run solvers, post-process fields, and produce replayable KPI provenance. |
+| LTspice circuits | MiniMax-M2.5-highspeed and MiniMax-M2.7 both land around the 0.9 range | Strong agents can already complete many artifact-grounded circuit workflows. Parameter sweeps and design-selection tasks still discriminate. |
+| OpenFOAM fluids | Both MiniMax runs are below 0.5 on the oracle-available CFD subset | CFD remains much harder: agents must author case files, mesh, run solvers, post-process fields, and produce replayable KPI provenance. |
 
-These are reference rows, not a mature cross-model leaderboard. Exact scores,
+These are reference runs, not a mature cross-model leaderboard. Exact scores,
 completion policy, per-case artifacts, and superseded-run notes live in
 [`LEADERBOARD.md`](LEADERBOARD.md) and [`results/v0.1/`](results/v0.1/).
 
-The useful early signal is workflow-shaped: source-provenance grading
+The useful early signal is workflow-shaped: artifact-grounded grading
 separates agents that can talk about simulation from agents that can produce
 solver artifacts that survive replay.
 
----
+## Why three audiences should care
 
-## 🔬 How scoring works
+### For AI / agent companies
 
-Every case has a `tests/kpis.json` that names KPIs and tolerances. The agent
-submits one `result.json`:
+A hard, reproducible, end-to-end task suite where the only thing that scores
+is **what the model actually produced**, not whether it described the right
+answer in chat. Every task is a real solver run with artifact-grounded
+grading: the model writes a netlist, runs LTspice, parses the `.log`, and
+submits the parse command alongside the value. We re-run the parse. If your
+`value` and our re-extraction disagree, you score zero on that KPI.
+
+This gives a clean, commercially-relevant signal that:
+- separates models that "know about" vs models that "can complete"
+  industrial workflows;
+- breaks down by task tier (S/M/L), leakage class, and template
+  (measurement / numerical / workflow);
+- runs locally with `harbor` + Docker — no submission portal, no API key
+  for us, no rate-limited grader.
+
+To publish a leaderboard row, see [`REPRODUCING.md`](REPRODUCING.md). To
+see what the harness does on each trial, see [`docs/hooks.md`](docs/hooks.md).
+
+### For CAE / EDA software vendors
+
+Industrial CAE has been "the agent layer is too brittle" for a decade.
+This benchmark turns that into a measurable signal — over real cases,
+real solver artifacts, real numerical-vs-physical pass criteria — and
+makes it possible to talk concretely about *which* parts of the agent loop
+fail on *which* solvers.
+
+You can use this to:
+- evaluate whether AI agents can drive your solver well enough for
+  customer-facing automation;
+- benchmark internal solver wrappers / Python APIs against the same task
+  suite the open community runs;
+- propose new cases via PR — see [`cases/circuits/README.md`](cases/circuits/README.md)
+  and [`cases/fluids/README.md`](cases/fluids/README.md) for tier / leakage
+  norms.
+
+The contract is in [`SCHEMA.md`](SCHEMA.md).
+
+### For CAE practitioners
+
+If you've been asked "should we put an LLM in front of our solver
+workflow", this is a yardstick. Run the oracle smoke (no LLM, free):
+
+```bash
+uv tool install harbor
+git clone https://github.com/svd-ai-lab/sim-benchmark && cd sim-benchmark
+harbor run -p cases/circuits -i rc_highpass_ac --agent oracle -y
+# Expect: reward = 1.000, wall-clock ~1 min on Docker Desktop.
+```
+
+If that returns 1.0, your environment is sound and any model run you do
+will be apples-to-apples comparable to ours. Then run a model — the same
+command with `--agent claude-code` (or your wrapper) replacing
+`--agent oracle`. See [`REPRODUCING.md`](REPRODUCING.md) for the three
+reproduction paths (GHCR pull / build from source / paranoid).
+
+## Quick start
+
+```bash
+# 1. install harbor (the runner — same one Terminal-Bench uses)
+uv tool install harbor
+
+# 2. clone
+git clone https://github.com/svd-ai-lab/sim-benchmark && cd sim-benchmark
+
+# 3. oracle smoke on one circuit (no LLM, no API key)
+harbor run -p cases/circuits -i rc_highpass_ac --agent oracle -y
+
+# 4. oracle smoke on a CFD case (also no LLM; needs the OpenFOAM base
+#    image — see REPRODUCING.md Path B for local builds)
+harbor run -p cases/fluids -i lid_driven_cavity_re100 --agent oracle -y
+```
+
+Both should print `reward: 1.000`. If you see anything else, the bug is
+in your environment, not in the agent.
+
+## How scoring works in 60 seconds
+
+Every case is verified against a `tests/kpis.json` that lists named KPIs
+and how to measure them. The agent submits:
 
 ```json
 {
@@ -143,115 +182,67 @@ submits one `result.json`:
 }
 ```
 
-The verifier opens the file at `path`, replays the declared extraction, gets
-the actual measured value, and compares against ground truth within the
-case's `T_good` / `T_bad` tolerances. Three scoring templates cover all v0.1
-tasks:
+The verifier opens the file at `path`, runs the declared extraction, gets
+the actual measured value, and compares against ground truth (within the
+tolerance `tests/kpis.json` declares). Scoring templates per task type:
 
-| Template | Group weights | Used for |
+| Template | Groups | Used for |
 |---|---|---|
-| `measurement` | setup 0.10 / outputs 0.90 | "Measure this circuit" |
-| `numerical` | setup 0.10 / numerical 0.15 / outputs 0.75 | "This CFD case must converge" |
-| `workflow` | setup 0.15 / process 0.25 / outputs 0.60 | Multi-step GUI / artifact tasks |
+| `measurement` | setup 0.10 / outputs 0.90 | "measure this circuit" |
+| `numerical` | setup 0.10 / numerical 0.15 / outputs 0.75 | "this CFD case must converge" |
+| `workflow` | setup 0.15 / process 0.25 / outputs 0.60 | multi-step GUI / artifact tasks |
 
-In-trial validation runs through two Stop-hook passes inside the agent
-container — schema (KPI shape, allowed binaries, run_id history) and
-runnability (replay each `file_extract` against its declared path, report
-empty-vs-non-empty without leaking the value). Details:
-[`docs/hooks.md`](docs/hooks.md). The full contract:
-[`SCHEMA.md`](SCHEMA.md).
+Total per case is a weighted sum of the per-group means. See
+[`SCHEMA.md`](SCHEMA.md) for the formal contract.
 
----
-
-## ✨ Features
-
-### 🧠 Built for agents, not for chat
-
-- **Source-provenance scoring** — every KPI has a replayable `extract`
-  pipeline; bare numbers score zero.
-- **Two in-trial Stop-hook passes** catch malformed JSON / disallowed
-  extractor binaries / empty extracts before the agent commits.
-- **Oracle baseline** every task; you always know the verifier's ceiling.
-
-### 🔌 Solver-real, harness-light
-
-- **Real solvers, not mocks** — LTspice runs through Wine, OpenFOAM v2412
-  runs natively, both shipped as ready-to-pull base images.
-- **Harness-agnostic agent contract** — claude-code, custom Python, even a
-  bare Bash script all qualify; only `result.json` is graded.
-- **Harbor runner** — the same task / job protocol as
-  [Terminal-Bench](https://www.tbench.ai/), so existing tooling slots in.
-
-### 🎯 Designed to discriminate
-
-- **Three scoring templates** match the case shape (measurement / numerical
-  / workflow) instead of one-size-fits-all.
-- **Leakage-1 design tasks** (sweep + select) keep textbook-memorisation
-  from carrying low-tier scores.
-- **Mesh-quality KPIs alongside resolution** for boundary-layer cases — y+
-  matters more than cell count when wall friction is the question.
-
----
-
-## 🏛 Repository layout
+## Repository layout
 
 ```text
 sim-benchmark/
 ├── cases/
-│   ├── circuits/          # 20 LTspice tasks
-│   └── fluids/            # 3 OpenFOAM tasks
-├── configs/               # Reference run configs (oracle, M2.5-hs, M2.7)
-├── docs/                  # Design notes, hooks contract
+│   ├── circuits/          # LTspice tasks
+│   └── fluids/            # OpenFOAM tasks
+├── configs/               # release run configs (oracle, M2.7, M2.5)
+├── docs/                  # design appendices
 ├── environment/
-│   ├── base/              # OpenFOAM v2412 base image
-│   └── wine-base/         # LTspice-on-Wine base image
+│   ├── base/              # OpenFOAM base image
+│   └── wine-base/         # LTspice-on-Wine image
 ├── lib/
-│   └── sim_benchmark_verifier/   # Grader (Python)
-├── tools/                 # Harness, lint, scoring helpers
-├── results/v0.1/          # Published reference-run artifacts
-├── CASES.md               # Public catalog + leakage / tier
-├── LEADERBOARD.md         # Reference rows + history
-├── ORACLE.md              # Oracle baseline + verifier sanity
+│   └── sim_benchmark_verifier/   # the grader (Python)
+├── tools/                 # harness, lint, aggregation, scoring helpers
+├── results/v0.1/          # published reference-run artifacts
+├── CASES.md               # public catalog with status / leakage / tier
+├── LEADERBOARD.md         # current and historical results
+├── ORACLE.md              # oracle baseline + verifier sanity checks
 ├── RELEASE.md             # v0.1 release gate
-├── REPRODUCING.md         # Three reproduction paths
-└── SCHEMA.md              # Case + verifier contract
+├── REPRODUCING.md         # three reproduction paths
+└── SCHEMA.md              # case + verifier contract
 ```
 
----
+## Roadmap
 
-## 🗺️ Roadmap
+- **v0.1 (current)** — deterministic verifier, in-trial Stop hook with
+  schema and extract-runnability passes, MiniMax reference rows.
+- **v0.2** — broader OpenFOAM coverage (turbulent boundary layer,
+  transonic airfoil, multiphase, separated flows); harden Docker Hub
+  package distribution.
+- **later** — stable schema, public leaderboard, multi-org submission flow.
 
-- **v0.1 (current)** — 23 oracle-verified tasks (20 LTspice + 3 OpenFOAM),
-  Pass-1 + Pass-2 Stop hook, reasoning-content-safe routing, MiniMax
-  reference runs.
-- **v0.2** — expand OpenFOAM scope (turbulent boundary layer, transonic
-  airfoil, multiphase, separated flows) once their oracles are written.
-- **v0.3** — second commercial-solver track in `hidden_eval`
-  (Mechanical or Abaqus, evaluated under licensed-run authorisation).
-- **v1.0** — stable schema, public leaderboard, multi-org submission flow.
+Track open work on [GitHub Issues](https://github.com/svd-ai-lab/sim-benchmark/issues).
 
-Open work tracked at [GitHub Issues](https://github.com/svd-ai-lab/sim-benchmark/issues).
+## Contributing
 
----
-
-## 🤝 Contributing
-
-Two common contributions:
+PRs welcome. Two common contributions:
 
 - **A new case.** Use [`tools/new_circuit_case.py`](tools/new_circuit_case.py)
   for circuits or copy an existing fluids case as a template. Run
-  [`tools/lint_case.py`](tools/lint_case.py) and the verifier tests before
-  opening a PR. See [`SCHEMA.md`](SCHEMA.md) §9 for the full contract.
-- **A new agent harness.** A new `agent_harness.py:Agent` subclass; bring
-  your own routing layer. The existing claude-code + ccr pattern is in
-  [`tools/agent_harness.py`](tools/agent_harness.py).
+  [`tools/lint_case.py`](tools/lint_case.py) and the verifier tests
+  before opening a PR. See [`SCHEMA.md`](SCHEMA.md) §9.
+- **A model harness.** New `agent_harness.py:Agent` subclass; bring your
+  own routing layer. See [`tools/agent_harness.py`](tools/agent_harness.py)
+  for the existing CC + ccr pattern.
 
-For the launch positioning (problem-first, not tool-first) see
-[the upstream PR](https://github.com/svd-ai-lab/sim-benchmark-internal/pull/2).
-
----
-
-## 📚 Citing
+## Citing
 
 ```bibtex
 @misc{simbenchmark2026,
@@ -259,27 +250,14 @@ For the launch positioning (problem-first, not tool-first) see
   author = {{svd-ai-lab}},
   year   = {2026},
   url    = {https://github.com/svd-ai-lab/sim-benchmark},
-  note   = {v0.1 — 23 oracle-verified tasks across LTspice + OpenFOAM}
+  note   = {v0.1}
 }
 ```
 
----
+## License
 
-## 📄 License
+Apache 2.0. See [`LICENSE`](LICENSE).
 
-Apache-2.0 — see [`LICENSE`](LICENSE).
-
-The repo bundles example assets (LTspice netlists, OpenFOAM mesh files) under
-their respective upstream licenses; see each case's `solution/` directory for
-source attribution.
-
-### Trademarks
-
-`sim-benchmark` is an independent open-source project and is **not affiliated
-with, endorsed by, or sponsored by** any solver vendor. Product, solver, and
-company names referenced anywhere in this repository remain the property of
-their respective owners:
-
-- **OpenFOAM®** is a registered trademark of **OpenCFD Ltd.**
-- **LTspice®** is a registered trademark of **Analog Devices, Inc.**
-- All other solver and product names are trademarks of their respective owners.
+The repo bundles example assets (LTspice netlists, OpenFOAM mesh files)
+that are themselves under their respective upstream licenses; see each
+case's `solution/` directory for source attribution.

@@ -36,7 +36,7 @@
       Hand a real CAE/EDA task to an LLM agent. Score what it produced.
     </text>
     <text x="0" y="60" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" fill="#64748b">
-      No LLM-as-judge · Source-provenance scoring · 23 oracle-verified tasks
+      No LLM-as-judge · Source-provenance scoring · Oracle-verified tasks
     </text>
   </g>
 
