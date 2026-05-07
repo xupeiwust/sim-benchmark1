@@ -217,8 +217,9 @@ def _score_groups(kpis_spec: dict, groups_spec: dict, result: dict, sim_records:
 
     # Annotate each per-KPI dict with two-axis failure classification
     # (provenance_stage × solver_stage) plus a v3.1 backward-compat
-    # `failure_class` field. See sim-proj #125 RFC.
-    axis_counts = annotate_per_kpi(per_kpi, result)
+    # `failure_class` field. ``sim_records`` lets the solver-stage
+    # detector attribute L2_solver_crash. See sim-proj #125 RFC.
+    axis_counts = annotate_per_kpi(per_kpi, result, sim_records)
 
     per_group: dict[str, dict] = {}
     weighted_sum = 0.0
@@ -301,9 +302,13 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 1
 
-    # Meta layer
+    # Meta layer.
+    # We *read* records from meta_detail for KPI verification + solver-stage
+    # attribution, but leave them in the dict so saved reward_detail.json
+    # carries them — necessary for back-fills and the failure_class
+    # detector to attribute L2_solver_crash post-hoc.
     meta_score, meta_detail = meta_check()
-    sim_records = meta_detail.pop("records", [])
+    sim_records = meta_detail.get("records", [])
 
     # Result.json (may be missing — every KPI then scores 0 with "absent")
     result_obj: dict = {}

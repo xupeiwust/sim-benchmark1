@@ -140,30 +140,55 @@ def classify_provenance(kpi_result: dict, claim) -> str:
     return "P2_extract_unrunnable"
 
 
-def classify_solver_stage(kpi_result: dict) -> str | None:
+def classify_solver_stage(kpi_result: dict, sim_records: list[dict] | None = None) -> str | None:
     """Reduce a per-KPI score dict to a ``solver_stage`` value, or ``None``.
 
-    Phase 1 only knows L5_physics / L5_quantitative / L6_pass — these are
-    derivable from the verifier's existing per-KPI fields. L0 / L1 / L2 /
-    L3 / L4 require solver-specific detectors that don't exist yet
-    (RFC sim-proj #125). When ``provenance_stage != P4_pass`` we return
-    ``None`` because the cascading failure means we can't trust any
-    solver-side signal.
+    Phase 1 derives L5_physics / L5_quantitative / L6_pass from the
+    verifier's existing per-KPI fields when ``source_verified == 1``.
+
+    Phase 2 adds L2_solver_crash attribution from ``sim_records``
+    (`sim --json logs`'s output). When provenance failed AND every sim
+    record on the trial reports failure (no ``ok=True`` / ``exit_code=0``),
+    we attribute L2.
+
+    L0 (input syntax), L1 (semantics), L3 (convergence), L4 (conservation)
+    require solver-specific detectors that don't exist yet — those phases
+    will land per-solver (RFC sim-proj #125, sim-benchmark #4).
+
+    ``None`` is returned when (a) provenance failed but sim_records gives
+    no signal (e.g. agent bypassed sim-cli, or records weren't preserved)
+    — we don't fabricate a stage we can't verify.
     """
-    if kpi_result.get("source_verified") != 1.0:
-        return None
-    if kpi_result.get("kpi_score") == 1.0:
-        return "L6_pass"
-    if kpi_result.get("physics_pass") == 0.0:
-        return "L5_physics"
-    # In physics range but T_decay short of 1.0 (either 0 or partial).
-    return "L5_quantitative"
+    if kpi_result.get("source_verified") == 1.0:
+        if kpi_result.get("kpi_score") == 1.0:
+            return "L6_pass"
+        if kpi_result.get("physics_pass") == 0.0:
+            return "L5_physics"
+        # In physics range but T_decay short of 1.0 (either 0 or partial).
+        return "L5_quantitative"
+
+    # Provenance failed — try to attribute via sim records.
+    if sim_records:
+        runs = [r for r in sim_records if r.get("kind", "run") == "run"]
+        if runs:
+            ok_runs = [
+                r for r in runs
+                if r.get("ok") is True or r.get("exit_code") == 0
+            ]
+            if not ok_runs:
+                # Solver was invoked but every invocation failed.
+                return "L2_solver_crash"
+    return None
 
 
-def annotate_per_kpi(per_kpi: dict, result_obj: dict) -> dict:
+def annotate_per_kpi(per_kpi: dict, result_obj: dict, sim_records: list[dict] | None = None) -> dict:
     """Mutate ``per_kpi`` in place: add ``solver_stage`` /
     ``provenance_stage`` / ``failure_class`` (legacy) fields to each
     entry. Return a small summary dict with both-axis distributions.
+
+    ``sim_records`` is the list of `sim --json logs` records for this
+    trial (from ``meta_detail.records``); when present the solver-stage
+    detector can attribute L2_solver_crash (Phase 2).
     """
     solver_counts: dict[str, int] = {s: 0 for s in SOLVER_STAGES}
     solver_counts["null"] = 0
@@ -171,7 +196,7 @@ def annotate_per_kpi(per_kpi: dict, result_obj: dict) -> dict:
 
     for name, kpi_result in per_kpi.items():
         prov = classify_provenance(kpi_result, result_obj.get(name))
-        solver = classify_solver_stage(kpi_result)
+        solver = classify_solver_stage(kpi_result, sim_records)
         kpi_result["provenance_stage"] = prov
         kpi_result["solver_stage"] = solver
         # v3.1 backward-compat field
@@ -203,7 +228,7 @@ PER_KPI_CLASSES = (
 )
 
 
-def classify_kpi(kpi_result: dict, claim) -> str:
+def classify_kpi(kpi_result: dict, claim, sim_records: list[dict] | None = None) -> str:
     """Deprecated v3.1 name — returns the legacy ``failure_class``.
 
     Prefer ``classify_provenance`` + ``classify_solver_stage``. This
@@ -211,5 +236,5 @@ def classify_kpi(kpi_result: dict, claim) -> str:
     until they migrate.
     """
     prov = classify_provenance(kpi_result, claim)
-    solver = classify_solver_stage(kpi_result)
+    solver = classify_solver_stage(kpi_result, sim_records)
     return _legacy_failure_class(solver, prov)

@@ -236,3 +236,56 @@ def test_legacy_failure_class_still_correct():
     r = {"kpi_score": 0.0, "source_verified": 0.0, "physics_pass": 0.0,
          "t_decay": 0.0, "why": "source verification failed: extractor rejected: forbidden binary"}
     assert classify_kpi(r, {"value": 1, "source": {}}) == "extract_runnable"
+
+
+# ── Phase 2: L2_solver_crash attribution from sim_records ───────────────
+
+def test_solver_stage_L2_when_all_runs_failed():
+    r = {"kpi_score": 0.0, "source_verified": 0.0,
+         "why": "source verification failed: source file not found: /tmp/nope.log"}
+    sim_records = [
+        {"kind": "run", "solver": "ltspice", "ok": False, "exit_code": 1},
+        {"kind": "run", "solver": "ltspice", "ok": False, "exit_code": 2},
+    ]
+    assert classify_solver_stage(r, sim_records) == "L2_solver_crash"
+
+
+def test_solver_stage_null_when_some_run_succeeded():
+    # At least one ok run → solver completed; provenance failure is not
+    # attributable to L2.
+    r = {"kpi_score": 0.0, "source_verified": 0.0,
+         "why": "source verification failed: extractor exited 1: awk: cannot open"}
+    sim_records = [
+        {"kind": "run", "solver": "ltspice", "ok": True, "exit_code": 0},
+    ]
+    assert classify_solver_stage(r, sim_records) is None
+
+
+def test_solver_stage_null_when_no_records():
+    # Agent bypassed sim-cli — no records means we can't tell if the
+    # solver ran. Don't fabricate an L2 attribution.
+    r = {"kpi_score": 0.0, "source_verified": 0.0,
+         "why": "source verification failed: source file not found: /x"}
+    assert classify_solver_stage(r, sim_records=[]) is None
+    assert classify_solver_stage(r, sim_records=None) is None
+
+
+def test_solver_stage_records_ignored_when_provenance_passed():
+    # If source_verified=1, sim_records can't override the per-KPI L5/L6
+    # attribution; solver clearly ran.
+    r = {"kpi_score": 1.0, "source_verified": 1.0, "physics_pass": 1.0,
+         "t_decay": 1.0, "value": 175.6}
+    sim_records = [{"kind": "run", "solver": "ltspice", "ok": False}]
+    assert classify_solver_stage(r, sim_records) == "L6_pass"
+
+
+def test_annotate_with_sim_records_emits_L2():
+    per_kpi = {
+        "missed": {"kpi_score": 0.0, "source_verified": 0.0,
+                   "why": "source verification failed: source file not found"},
+    }
+    sim_records = [{"kind": "run", "solver": "openfoam", "ok": False, "exit_code": 1}]
+    counts = annotate_per_kpi(per_kpi, {"missed": {"value": 1, "source": {}}}, sim_records)
+    assert per_kpi["missed"]["solver_stage"] == "L2_solver_crash"
+    assert per_kpi["missed"]["provenance_stage"] == "P1_path_invalid"
+    assert counts["solver_stage_counts"]["L2_solver_crash"] == 1

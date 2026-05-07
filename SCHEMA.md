@@ -230,10 +230,17 @@ solver hasn't been written yet).
 | `L5_quantitative` | value matches physics range but `|pred − gt| > T_bad` |
 | `L6_pass` | nothing wrong on this axis |
 
-Phase 1 (current commit) populates only `L5_physics` / `L5_quantitative`
-/ `L6_pass` from data the verifier already has. `L0` / `L1` / `L2` /
-`L3` / `L4` require solver-specific detectors and emit `null` until
-phases 2–4 (sim-benchmark #4) land.
+Phase 1 populates `L5_physics` / `L5_quantitative` / `L6_pass` from
+data the verifier already has. **Phase 2** (current commit) adds
+`L2_solver_crash` attribution from `sim --json logs` records: when
+provenance failed AND every sim run on the trial reports failure
+(`ok=False` or non-zero exit), we emit `L2_solver_crash`. Records are
+now preserved in `meta_detail.records` (previously popped) so the
+classifier can run post-hoc on saved `reward_detail.json`.
+
+`L0_input_syntax` / `L1_input_semantics` / `L3_convergence` /
+`L4_conservation` still require solver-specific log analysis; those
+remain `null` until phases 3–4 (sim-benchmark #4) land.
 
 **Why two axes.** A KPI that passes provenance but fails physics is a
 model-capability problem; a KPI that passes physics but fails
