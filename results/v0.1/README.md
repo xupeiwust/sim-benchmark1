@@ -75,22 +75,24 @@ kept beside current artifacts.
 
 ## Cost / turns / wall (cross-model)
 
-See [`economics.md`](./economics.md) for the full table. Cross-model
-comparable summary, mean per case:
+See [`economics.md`](./economics.md) for the full table + price sources.
+Mean per case:
 
-| Suite | Model | Turns | Wall (s) | Cost (USD) |
+| Suite | Model | Turns | Wall (s) | $ / case |
 |---|---|---:|---:|---:|
-| LTspice 20 | MiniMax-M2.5-highspeed | 29.7 | 238 | — |
-| LTspice 20 | MiniMax-M2.7              | 26.1 | 284 | — |
-| LTspice 20 | Claude Opus 4.6           | 27.6 | 281 | $6.57 |
-| OpenFOAM 3 | MiniMax-M2.5-highspeed | 175.7 | 1,513 | — |
-| OpenFOAM 3 | MiniMax-M2.7              | 157.0 | 2,341 | — |
-| OpenFOAM 3 | Claude Opus 4.6           | 110.3 | 1,315 | $42.62 |
+| LTspice 20 | MiniMax-M2.5-highspeed | 29.7 | 238 | $0.09 |
+| LTspice 20 | MiniMax-M2.7              | 26.1 | 284 | $0.07 |
+| LTspice 20 | Claude Opus 4.6           | 27.6 | 281 | **$6.57** |
+| OpenFOAM 3 | MiniMax-M2.5-highspeed | 175.7 | 1,513 | $1.22 |
+| OpenFOAM 3 | MiniMax-M2.7              | 157.0 | 2,341 | $0.67 |
+| OpenFOAM 3 | Claude Opus 4.6           | 110.3 | 1,315 | **$42.62** |
 
-USD costs are direct-Anthropic only (ccr does not surface a price-resolved
-figure). Within OpenFOAM, Opus 4.6 is **30 % fewer turns** and **44 %
-shorter wall** than MiniMax-M2.7 while reaching the oracle ceiling, so
-the cost is for higher quality, not higher latency.
+MiniMax USD figures use May-2026 published rates; Claude Opus 4.6 uses
+claude-code's trial-cumulative `total_cost_usd`. Per-case ratio Opus 4.6
+vs MiniMax-M2.7 is **~94×** on LTspice and **~64×** on OpenFOAM. On the
+OF oracle-available subset Opus reaches the oracle ceiling (1.000) while
+M2.7 stays at 0.284, so the cost gap on CFD buys score, not just
+latency: ~30 % fewer turns and ~44 % shorter wall than M2.7.
 
 ## Reproduction
 

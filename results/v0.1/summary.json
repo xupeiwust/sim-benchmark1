@@ -58,7 +58,9 @@
         "total_output_tokens": 150326,
         "mean_turns_per_case": 29.7,
         "mean_wall_s_per_case": 238.0,
-        "total_cost_usd": null
+        "total_cost_usd": 1.87,
+        "mean_cost_usd_per_case": 0.09,
+        "price_source": "verdent.ai (May 2026); cache rate estimated at 20% of input"
       },
       "harness": "tools.agent_harness:ClaudeCodeViaCcr",
       "notes": "Non-reasoning fast variant via claude-code-router to MiniMax-OpenAI. Pre-final harness, but all assigned tasks completed."
@@ -97,7 +99,9 @@
         "total_output_tokens": 105059,
         "mean_turns_per_case": 26.1,
         "mean_wall_s_per_case": 283.6,
-        "total_cost_usd": null
+        "total_cost_usd": 1.47,
+        "mean_cost_usd_per_case": 0.07,
+        "price_source": "pricepertoken.com (May 2026)"
       },
       "harness": "tools.agent_harness:ClaudeCodeViaCcr",
       "notes": "Final M2.7 reference run after reasoning-content router fix and turn-cap correction. bridge_rectifier_ripple hit the wall-time cap and is counted as zero in assigned_mean."
@@ -142,7 +146,9 @@
         "total_output_tokens": 201491,
         "mean_turns_per_case": 175.7,
         "mean_wall_s_per_case": 1512.9,
-        "total_cost_usd": null
+        "total_cost_usd": 3.66,
+        "mean_cost_usd_per_case": 1.22,
+        "price_source": "verdent.ai (May 2026); cache rate estimated at 20% of input"
       },
       "harness": "tools.agent_harness:ClaudeCodeViaCcr",
       "notes": "OpenFOAM oracle-available subset reference run."
@@ -170,7 +176,9 @@
         "total_output_tokens": 149494,
         "mean_turns_per_case": 157.0,
         "mean_wall_s_per_case": 2341.3,
-        "total_cost_usd": null
+        "total_cost_usd": 2.02,
+        "mean_cost_usd_per_case": 0.67,
+        "price_source": "pricepertoken.com (May 2026)"
       },
       "harness": "tools.agent_harness:ClaudeCodeViaCcr",
       "notes": "OpenFOAM oracle-available subset reference run. cavity_re100 scored zero from an extract-path paperwork failure."

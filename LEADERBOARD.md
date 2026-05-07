@@ -46,23 +46,27 @@ verifier may still have replayable artifacts.
 
 ### Run economics
 
-Per [`results/v0.1/economics.md`](./results/v0.1/economics.md) — turns and
-wall-time are cross-model comparable; USD cost is reported only for the
-direct-Anthropic Opus run because ccr-routed MiniMax runs do not produce
-a price-resolved cost figure.
+Per [`results/v0.1/economics.md`](./results/v0.1/economics.md). Turns and
+wall-time are cross-model comparable. USD cost for MiniMax is computed
+from May-2026 published prices (`MiniMax-M2.5-highspeed` $0.30/$2.40/$0.06
+per 1M input/output/cache tokens; `MiniMax-M2.7` $0.30/$1.20/$0.059)
+applied to the openai_usage_proxy token sums; for Opus 4.6 it is
+claude-code's trial-cumulative `total_cost_usd`.
 
-| Suite | Model | Mean turns/case | Mean wall/case (s) | Total cost (USD) |
-|---|---|---:|---:|---:|
-| LTspice 20 | MiniMax-M2.5-highspeed | 29.7 | 238.0 | — |
-| LTspice 20 | MiniMax-M2.7              | 26.1 | 283.6 | — |
-| LTspice 20 | Claude Opus 4.6           | 27.6 | 280.9 | **131.47** |
-| OpenFOAM 3 | MiniMax-M2.5-highspeed | 175.7 | 1,512.9 | — |
-| OpenFOAM 3 | MiniMax-M2.7              | 157.0 | 2,341.3 | — |
-| OpenFOAM 3 | Claude Opus 4.6           | 110.3 | 1,315.1 | **127.86** |
+| Suite | Model | Mean turns/case | Mean wall/case (s) | Total cost (USD) | $ / case |
+|---|---|---:|---:|---:|---:|
+| LTspice 20 | MiniMax-M2.5-highspeed | 29.7 | 238.0 | **1.87** | 0.09 |
+| LTspice 20 | MiniMax-M2.7              | 26.1 | 283.6 | **1.47** | 0.07 |
+| LTspice 20 | Claude Opus 4.6           | 27.6 | 280.9 | **131.47** | 6.57 |
+| OpenFOAM 3 | MiniMax-M2.5-highspeed | 175.7 | 1,512.9 | **3.66** | 1.22 |
+| OpenFOAM 3 | MiniMax-M2.7              | 157.0 | 2,341.3 | **2.02** | 0.67 |
+| OpenFOAM 3 | Claude Opus 4.6           | 110.3 | 1,315.1 | **127.86** | 42.62 |
 
-OpenFOAM costs ~10× more turns and wall-time per case than LTspice; the
-oracle-equivalent Opus 4.6 OF run averaged $42.62 per case for replayable,
-schema-conforming KPIs. Token totals + per-case breakdown live in
+Cost-per-case ratio Opus 4.6 vs MiniMax-M2.7 is **~94×** on LTspice and
+**~64×** on OpenFOAM; on the OF subset Opus reaches the oracle ceiling
+(1.000) while M2.7 stays at 0.284, so the cost gap is buying score, not
+just latency. OpenFOAM costs 10–35× more turns per case than LTspice
+across all three agents. Token totals + per-case breakdown live in
 [`economics.md`](./results/v0.1/economics.md).
 
 ### Superseded run note

@@ -12,11 +12,11 @@
       "total_cache_read_tokens": 20012496,
       "total_cache_creation_tokens": null,
       "total_reasoning_tokens": 71306,
-      "total_cost_usd": null,
+      "total_cost_usd": 1.8695,
       "total_solver_wall_s": 302.656,
       "mean_turns_per_case": 29.7,
       "mean_wall_s_per_case": 238.0215,
-      "mean_cost_usd_per_case": null
+      "mean_cost_usd_per_case": 0.093475
     },
     {
       "run_label": "2026-05-06__22-06-27",
@@ -30,11 +30,11 @@
       "total_cache_read_tokens": 12390180,
       "total_cache_creation_tokens": null,
       "total_reasoning_tokens": 13407,
-      "total_cost_usd": null,
+      "total_cost_usd": 1.4658,
       "total_solver_wall_s": 237.15,
       "mean_turns_per_case": 26.105263157894736,
       "mean_wall_s_per_case": 283.5653157894737,
-      "mean_cost_usd_per_case": null
+      "mean_cost_usd_per_case": 0.07714736842105263
     },
     {
       "run_label": "2026-05-06__22-06-27",
@@ -48,11 +48,11 @@
       "total_cache_read_tokens": 47672302,
       "total_cache_creation_tokens": null,
       "total_reasoning_tokens": 104248,
-      "total_cost_usd": null,
+      "total_cost_usd": 3.6632,
       "total_solver_wall_s": 0.0,
       "mean_turns_per_case": 175.66666666666666,
       "mean_wall_s_per_case": 1512.933,
-      "mean_cost_usd_per_case": null
+      "mean_cost_usd_per_case": 1.2210666666666665
     },
     {
       "run_label": "2026-05-06__22-06-30",
@@ -66,11 +66,11 @@
       "total_cache_read_tokens": 29248436,
       "total_cache_creation_tokens": null,
       "total_reasoning_tokens": 6402,
-      "total_cost_usd": null,
+      "total_cost_usd": 2.0186,
       "total_solver_wall_s": 8.602,
       "mean_turns_per_case": 157.0,
       "mean_wall_s_per_case": 2341.284,
-      "mean_cost_usd_per_case": null
+      "mean_cost_usd_per_case": 0.6728666666666667
     },
     {
       "run_label": "2026-05-07__15-02-30",
@@ -122,7 +122,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 11865,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.3956,
       "solver_wall_s": 21.287,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -138,7 +138,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 697,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0387,
       "solver_wall_s": 14.985,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -154,7 +154,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 691,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0417,
       "solver_wall_s": 15.252,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -170,7 +170,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 1109,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0445,
       "solver_wall_s": 14.677,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -186,7 +186,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 7840,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.1264,
       "solver_wall_s": 18.137,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -202,7 +202,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 739,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0289,
       "solver_wall_s": 12.853,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -218,7 +218,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 1252,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0552,
       "solver_wall_s": 6.707,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -234,7 +234,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 329,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0253,
       "solver_wall_s": 17.416,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -250,7 +250,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 7327,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.1585,
       "solver_wall_s": 6.403,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -266,7 +266,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 914,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0325,
       "solver_wall_s": 17.488,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -282,7 +282,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 7115,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.1279,
       "solver_wall_s": 16.256,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -298,7 +298,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 11356,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.1853,
       "solver_wall_s": 14.833,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -314,7 +314,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 1417,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0558,
       "solver_wall_s": 14.748,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -330,7 +330,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 527,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0282,
       "solver_wall_s": 15.169,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -346,7 +346,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 385,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.026,
       "solver_wall_s": 15.42,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -362,7 +362,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 5405,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.1019,
       "solver_wall_s": 14.909,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -378,7 +378,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 2157,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.056,
       "solver_wall_s": 15.281,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -394,7 +394,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 1158,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0605,
       "solver_wall_s": 22.387,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -410,7 +410,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 3431,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.133,
       "solver_wall_s": 13.535,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -426,7 +426,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 5592,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.1476,
       "solver_wall_s": 14.913,
       "run_label": "2026-05-06__17-13-51"
     },
@@ -458,7 +458,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 1719,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0505,
       "solver_wall_s": 13.061,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -474,7 +474,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0838,
       "solver_wall_s": 17.556,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -490,7 +490,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0364,
       "solver_wall_s": 15.137,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -506,7 +506,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 1934,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0418,
       "solver_wall_s": 12.885,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -522,7 +522,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.056,
       "solver_wall_s": 6.687,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -538,7 +538,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0392,
       "solver_wall_s": 13.097,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -554,7 +554,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0426,
       "solver_wall_s": 15.134,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -570,7 +570,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0608,
       "solver_wall_s": 13.046,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -586,7 +586,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.1937,
       "solver_wall_s": 6.761,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -602,7 +602,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 6953,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.1515,
       "solver_wall_s": 0.0,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -618,7 +618,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0473,
       "solver_wall_s": 13.869,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -634,7 +634,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0401,
       "solver_wall_s": 14.67,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -650,7 +650,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 1323,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0427,
       "solver_wall_s": 14.861,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -666,7 +666,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0384,
       "solver_wall_s": 14.986,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -682,7 +682,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0519,
       "solver_wall_s": 12.74,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -698,7 +698,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.2579,
       "solver_wall_s": 19.699,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -714,7 +714,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 1478,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0481,
       "solver_wall_s": 13.101,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -730,7 +730,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0988,
       "solver_wall_s": 12.954,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -746,7 +746,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.0843,
       "solver_wall_s": 6.906,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -762,7 +762,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 79346,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 2.5951,
       "solver_wall_s": 0.0,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -778,7 +778,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 7669,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.4597,
       "solver_wall_s": 0.0,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -794,7 +794,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 17233,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.6084,
       "solver_wall_s": 0.0,
       "run_label": "2026-05-06__22-06-27"
     },
@@ -810,7 +810,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 1.1547,
       "solver_wall_s": 0.0,
       "run_label": "2026-05-06__22-06-30"
     },
@@ -826,7 +826,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 0,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.485,
       "solver_wall_s": 0.0,
       "run_label": "2026-05-06__22-06-30"
     },
@@ -842,7 +842,7 @@
       "cache_creation_tokens": null,
       "reasoning_tokens": 6402,
       "tokens_source": "openai_usage_proxy",
-      "total_cost_usd": null,
+      "total_cost_usd": 0.3789,
       "solver_wall_s": 8.602,
       "run_label": "2026-05-06__22-06-30"
     },

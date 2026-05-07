@@ -4,8 +4,15 @@
 Reads cost.json files (produced by tools/cost_meter.py) under one or more
 job dirs and emits two artifacts to stdout (or to --output-json / --output-md):
 
-  1. Per-case detail rows: case | model | turns | wall_s | tokens_in/out/cache
-  2. Per-run summary    : model | n_cases | total_turns | total_wall_s | total_tokens_*
+  1. Per-case detail rows: case | model | turns | wall_s | tokens_in/out/cache | $cost
+  2. Per-run summary    : model | n_cases | total_turns | total_wall_s | total_tokens_* | $cost
+
+USD cost rules:
+  - claude_code_assistant_sum source: use claude-code's `total_cost_usd`
+    (trial-cumulative, accurate, surfaced by cost_meter.py).
+  - openai_usage_proxy source: compute `(billable_input × input_price +
+    cache_read × cache_read_price + output × output_price) / 1M` from the
+    per-model price table below. Where a price isn't known, leave None.
 
 Usage:
   python3 tools/aggregate_economics.py jobs/release-v0.1-ltspice20-minimax-m25/2026-05-06__17-13-51 \
@@ -20,6 +27,53 @@ import argparse
 import json
 import sys
 from pathlib import Path
+
+# USD per 1M tokens. Sources:
+# - MiniMax-M2.5 / M2.7: pricepertoken.com (May 2026)
+# - MiniMax-M2.5-highspeed (a.k.a. M2.5-Lightning): verdent.ai pricing guide
+#   (May 2026); cache_read price is not officially listed for the highspeed
+#   variant, so we apply the 20 % of input ratio observed on the base + M2.7
+#   tiers as a stable estimate.
+# Updates: keep this dict in sync with sources cited in
+# `results/v0.1/economics.md`.
+MODEL_PRICES: dict[str, dict[str, float]] = {
+    "MiniMax-M2.5-highspeed": {
+        "input": 0.30, "output": 2.40, "cache_read": 0.06,
+        "source": "verdent.ai (May 2026); cache rate estimated",
+    },
+    "MiniMax-M2.7": {
+        "input": 0.30, "output": 1.20, "cache_read": 0.059,
+        "source": "pricepertoken.com (May 2026)",
+    },
+    "MiniMax-M2.5": {
+        "input": 0.15, "output": 1.15, "cache_read": 0.03,
+        "source": "pricepertoken.com (May 2026)",
+    },
+}
+
+
+def compute_usd(row: dict) -> float | None:
+    """Compute trial USD cost from token totals + per-model price table.
+
+    Returns None when (a) tokens_source != openai_usage_proxy or (b) the
+    model is missing from MODEL_PRICES.
+    """
+    if row.get("tokens_source") != "openai_usage_proxy":
+        return None
+    model = row.get("model")
+    prices = MODEL_PRICES.get(model)
+    if not prices:
+        return None
+    in_t = row.get("input_tokens") or 0
+    out_t = row.get("output_tokens") or 0
+    cache = row.get("cache_read_tokens") or 0
+    billable_in = max(in_t - cache, 0)
+    cost = (
+        billable_in * prices["input"]
+        + cache * prices["cache_read"]
+        + out_t * prices["output"]
+    ) / 1_000_000.0
+    return round(cost, 4)
 
 
 def collect(job_dir: Path) -> tuple[str, list[dict]]:
@@ -37,7 +91,7 @@ def collect(job_dir: Path) -> tuple[str, list[dict]]:
             continue
         agent = cost.get("agent") or {}
         compute = cost.get("compute") or {}
-        rows.append({
+        row = {
             "case": cost.get("case"),
             "trial": cost.get("trial"),
             "model": agent.get("model"),
@@ -51,7 +105,10 @@ def collect(job_dir: Path) -> tuple[str, list[dict]]:
             "tokens_source": agent.get("tokens_source"),
             "total_cost_usd": agent.get("total_cost_usd"),
             "solver_wall_s": compute.get("solver_wall_seconds"),
-        })
+        }
+        if row["total_cost_usd"] is None:
+            row["total_cost_usd"] = compute_usd(row)
+        rows.append(row)
     label = job_dir.name
     return label, rows
 
@@ -136,14 +193,23 @@ def render_md(summaries: list[dict], detail: list[dict]) -> str:
         "- **`turns`**: number of agent round-trips (claude-code's `result.num_turns`). Comparable across models.\n"
         "- **`wall_s`**: end-to-end trial wall time (claude-code's `result.duration_ms`). Comparable across models.\n"
         "- **`tokens_source = openai_usage_proxy`**: ccr-routed runs (MiniMax). Tokens are the proxy's exact "
-        "request-by-request sum; no `$` figure (price varies by upstream).\n"
+        "request-by-request sum. USD cost is computed from the price table baked into "
+        "`tools/aggregate_economics.py` (see sources below); accurate to first-order but caveated by "
+        "(a) any upstream price changes since this snapshot, and (b) `MiniMax-M2.5-highspeed`'s cache rate "
+        "being estimated at 20 % of input rate (officially listed price absent).\n"
         "- **`tokens_source = claude_code_assistant_sum`**: direct-Anthropic runs (Claude Opus 4.6). "
         "Per-message usage on streaming events is incomplete in the SDK transcript, so token totals here "
         "**undercount** the true cumulative; `$` cost is taken from claude-code's "
         "`total_cost_usd` (trial-cumulative, accurate).\n"
-        "- We do **not** publish a unified `tokens` × price table — different upstreams price differently. "
-        "Use within-model rows for cost/quality reasoning.\n"
     )
+    out.append("\n### Price table (USD / 1M tokens)\n")
+    out.append("| Model | Input | Output | Cache read | Source |")
+    out.append("|---|---:|---:|---:|---|")
+    for name, p in MODEL_PRICES.items():
+        out.append(
+            f"| {name} | {p['input']:.3f} | {p['output']:.3f} | "
+            f"{p['cache_read']:.3f} | {p['source']} |"
+        )
     return "\n".join(out) + "\n"
 
 
