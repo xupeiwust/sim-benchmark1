@@ -1,8 +1,9 @@
 # Public Case Catalog
 
-All OpenFOAM and LTspice cases in this repository are public. The catalog
-separates benchmark status from oracle availability: cases can be public and
-leaderboard-runnable even when their no-token oracle is still deferred.
+23 public-runnable cases ship in v0.1: **20 LTspice circuits** + **3 OpenFOAM
+fluids**. Every case has a no-token oracle. The CFD scope is intentionally
+narrow for v0.1; more OpenFOAM cases land in v0.2 once their oracles are
+written.
 
 ## Status
 
@@ -53,23 +54,10 @@ leaderboard-runnable even when their no-token oracle is still deferred.
 | circuits | `rlc_step_overdamped` | public_runnable | available | measurement | 2 | postprocess | M |
 | circuits | `rlc_step_underdamped` | public_runnable | available | measurement | 2 | postprocess | M |
 | circuits | `sallen_key_lp` | public_runnable | available | measurement | 2 | postprocess | M |
-| fluids | `30p30n_three_element_highlift` | public_runnable | deferred | numerical | 1 | numerical | L |
-| fluids | `axibump_transonic` | public_runnable | deferred | numerical | 1 | numerical | L |
-| fluids | `backstep_driver_seegmiller_turbulent` | public_runnable | deferred | numerical | 2 | numerical | M |
-| fluids | `bump_in_channel_2d` | public_runnable | deferred | numerical | 1 | numerical | M |
-| fluids | `driver_axisym_apg_separation` | public_runnable | deferred | numerical | 1 | numerical | M |
-| fluids | `dsma661_airfoil` | public_runnable | deferred | numerical | 1 | numerical | M |
 | fluids | `flatplate_zpg_subsonic` | public_runnable | available | numerical | 2 | numerical | S |
-| fluids | `flatplate_zpgh_supersonic` | public_runnable | deferred | numerical | 2 | numerical | L |
 | fluids | `lid_driven_cavity_re100` | public_runnable | available | numerical | 3 | numerical | S |
 | fluids | `lid_driven_cavity_re1000` | public_runnable | available | numerical | 3 | numerical | S |
-| fluids | `naca0012_subsonic` | public_runnable | deferred | numerical | 2 | numerical | M |
-| fluids | `naca4412_trailing_edge_separation` | public_runnable | deferred | numerical | 1 | numerical | L |
-| fluids | `nasa_hump_separated` | public_runnable | deferred | numerical | 2 | numerical | M |
-| fluids | `onera_m6_transonic` | public_runnable | deferred | numerical | 2 | numerical | L |
-| fluids | `sandia_jet_variable_density` | public_runnable | deferred | numerical | 1 | numerical | L |
-| fluids | `swbli_m5_flatplate` | public_runnable | deferred | numerical | 1 | numerical | L |
 
-Current runnable public set: 36 cases: 20 LTspice/circuits cases and 16
-OpenFOAM/fluids cases. No-token oracle solutions are currently available for
-20 LTspice cases and 3 OpenFOAM cases.
+Total: 23 public-runnable cases, all with no-token oracle solutions. v0.2 will
+expand the OpenFOAM scope (turbulent boundary layer, transonic airfoil,
+multiphase, separated flows) once those oracles are written and validated.

@@ -3,8 +3,9 @@
 The release-facing v0.1 MVP results live in
 [`results/v0.1/`](./results/v0.1/).
 
-v0.1 is a benchmark release first. The public catalog contains 36 runnable
-tasks: 20 LTspice circuit tasks and 16 OpenFOAM fluid tasks.
+v0.1 is a benchmark release first. The public catalog contains 23 runnable
+tasks: 20 LTspice circuit tasks and 3 OpenFOAM fluid tasks. Every task has a
+no-token oracle.
 
 ## v0.1 Reference Runs
 
@@ -60,8 +61,8 @@ verifier may still have replayable artifacts.
 
 ## OpenFOAM scope
 
-The 3 OpenFOAM tasks above are the no-token-oracle subset. The full
-OpenFOAM catalog has 16 public-runnable tasks; the remaining 13 ship
-verifier-defined KPIs but no oracle baseline yet. The default OpenFOAM
+The 3 OpenFOAM tasks above are the v0.1 oracle-verified subset. v0.2 will
+expand OpenFOAM scope (turbulent boundary layer, transonic airfoil,
+multiphase, separated flows) once those oracles are written. The default OpenFOAM
 release gate ships in v0.2 once `svd-ai-lab/sim-benchmark-base:latest`
 is publicly pullable.

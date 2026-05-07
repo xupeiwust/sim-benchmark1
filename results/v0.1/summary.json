@@ -1,7 +1,7 @@
 {
   "release": "v0.1-mvp",
-  "scope": "Initial public release: 36 public runnable tasks; LTspice 20 scored gate plus OpenFOAM 3 oracle-available reference subset.",
-  "public_runnable_tasks": 36,
+  "scope": "Initial public release: 23 oracle-verified tasks; LTspice 20 scored gate plus OpenFOAM 3 oracle-available CFD reference subset.",
+  "public_runnable_tasks": 23,
   "oracle_available_tasks": 23,
   "mvp_scored_tasks": 20,
   "counting_policy": {
@@ -148,9 +148,10 @@
     }
   ],
   "openfoam_status": {
-    "public_tasks": 16,
+    "public_tasks": 3,
     "oracle_available": 3,
-    "oracle_deferred": 13,
-    "release_gate_status": "not_blocking_v0.1"
+    "oracle_deferred": 0,
+    "release_gate_status": "in_v0.1",
+    "v0.2_expansion_planned": "Turbulent boundary layer, transonic airfoil, multiphase, separated flows."
   }
 }

@@ -11,10 +11,10 @@ model run completes.
 
 | Scope | Count | Status |
 |---|---:|---|
-| Public runnable tasks | 36 | 20 LTspice + 16 OpenFOAM |
-| Oracle-available tasks | 23 | 20 LTspice + 3 OpenFOAM |
+| Public runnable tasks | 23 | 20 LTspice + 3 OpenFOAM |
+| Oracle-available tasks | 23 | every public task ships an oracle |
 | MVP scored gate | 20 | LTspice oracle-verified |
-| OpenFOAM public tasks | 16 | Public catalog; base image/oracle packaging still needs release work |
+| OpenFOAM public tasks | 3 | v0.2 will expand once more oracles are written |
 
 ### Current Results · v0.1 (2026-05-06)
 

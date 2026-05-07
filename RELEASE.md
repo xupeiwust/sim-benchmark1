@@ -7,23 +7,22 @@ remain useful infrastructure, but they are not the public headline.
 
 ## Release Scope
 
-v0.1 publishes 36 public runnable simulation tasks:
+v0.1 publishes 23 oracle-verified simulation tasks:
 
 | Domain | Tasks | Oracle status |
 |---|---:|---|
 | LTspice circuits | 20 | 20 available |
-| OpenFOAM fluids | 16 | 3 available, 13 deferred |
-| Total | 36 | 23 available, 13 deferred |
+| OpenFOAM fluids | 3 | 3 available |
+| Total | 23 | 23 available |
 
-The MVP scored release view is the 20 LTspice tasks. They are fully
-oracle-verified on the current Windows Docker Desktop setup and exercise the
-new structured `ltspice_log` provenance path.
+LTspice 20 is the headline scored gate; OpenFOAM 3 is the v0.1 CFD
+reference subset. Every task ships with a deterministic
+`solution/solve.sh` oracle that produces a 1.0-ceiling baseline.
 
-The 16 OpenFOAM tasks remain public runnable tasks in the catalog. For v0.1,
-their no-token oracle status is explicitly split from their public task status.
-The three OpenFOAM oracle-available tasks still require a publishable
-`svd-ai-lab/sim-benchmark-base:latest` image before they can be used in the
-default release gate.
+OpenFOAM scope is intentionally narrow for v0.1 — only cases whose
+oracles have been written, run, and verified are included. v0.2 will
+expand OpenFOAM (turbulent boundary layer, transonic airfoil,
+multiphase, separated flows) once those oracles are written.
 
 ## Release Gate
 
@@ -99,9 +98,8 @@ Create a dedicated benchmark page on https://svdailab.com/ for launch. The
 page should include:
 
 - benchmark positioning: industrial simulation agent benchmark
-- v0.1 scope: 36 public runnable tasks
-- MVP scored scope: 20 LTspice oracle-verified tasks
-- OpenFOAM status: 16 public tasks, with base image/oracle packaging still in progress
+- v0.1 scope: 23 oracle-verified tasks (20 LTspice + 3 OpenFOAM)
+- Reference runs: MiniMax-M2.5-highspeed and MiniMax-M2.7
 - a small results table and links to the public repo, case catalog, schema, and reproduction guide
 
 ## Release Blockers
@@ -116,6 +114,6 @@ page should include:
 ## Non-Blockers
 
 - Running a broad multi-model leaderboard.
-- Finishing all 13 deferred OpenFOAM no-token oracles.
+- Adding more OpenFOAM cases (deferred to v0.2 with their own oracles).
 - Renaming historical v19 configs.
 - Making sim-cli usage a scoring requirement.
