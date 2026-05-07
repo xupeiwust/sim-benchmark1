@@ -44,6 +44,27 @@ assigned but incomplete tasks as zero. `Harness exceptions` are agent or
 runner exit-status events; they are not always zero-score tasks because the
 verifier may still have replayable artifacts.
 
+### Run economics
+
+Per [`results/v0.1/economics.md`](./results/v0.1/economics.md) — turns and
+wall-time are cross-model comparable; USD cost is reported only for the
+direct-Anthropic Opus run because ccr-routed MiniMax runs do not produce
+a price-resolved cost figure.
+
+| Suite | Model | Mean turns/case | Mean wall/case (s) | Total cost (USD) |
+|---|---|---:|---:|---:|
+| LTspice 20 | MiniMax-M2.5-highspeed | 29.7 | 238.0 | — |
+| LTspice 20 | MiniMax-M2.7              | 26.1 | 283.6 | — |
+| LTspice 20 | Claude Opus 4.6           | 27.6 | 280.9 | **131.47** |
+| OpenFOAM 3 | MiniMax-M2.5-highspeed | 175.7 | 1,512.9 | — |
+| OpenFOAM 3 | MiniMax-M2.7              | 157.0 | 2,341.3 | — |
+| OpenFOAM 3 | Claude Opus 4.6           | 110.3 | 1,315.1 | **127.86** |
+
+OpenFOAM costs ~10× more turns and wall-time per case than LTspice; the
+oracle-equivalent Opus 4.6 OF run averaged $42.62 per case for replayable,
+schema-conforming KPIs. Token totals + per-case breakdown live in
+[`economics.md`](./results/v0.1/economics.md).
+
 ### Superseded run note
 
 An earlier MiniMax-M2.7 LTspice run is superseded. It was invalidated by a

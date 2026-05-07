@@ -25,6 +25,7 @@ verifier may still have replayable artifacts.
 ## Files
 
 - `summary.json` - machine-readable current release summary.
+- `economics.md` / `economics.json` - per-run + per-case turns / wall-time / tokens / `$` cost.
 - `ltspice20-oracle-20260503.{csv,json}` - LTspice oracle reference run.
 - `ltspice20-claude-opus46-20260507.json` - Claude Opus 4.6 LTspice run.
 - `ltspice20-minimax-m25-20260506.{csv,json}` - MiniMax-M2.5-highspeed LTspice run.
@@ -71,6 +72,25 @@ kept beside current artifacts.
   mesh, solve, post-process, and submit replayable KPI provenance.
 - Several misses are workflow or provenance failures rather than pure physics
   failures. That is a core benchmark signal, not just bookkeeping noise.
+
+## Cost / turns / wall (cross-model)
+
+See [`economics.md`](./economics.md) for the full table. Cross-model
+comparable summary, mean per case:
+
+| Suite | Model | Turns | Wall (s) | Cost (USD) |
+|---|---|---:|---:|---:|
+| LTspice 20 | MiniMax-M2.5-highspeed | 29.7 | 238 | — |
+| LTspice 20 | MiniMax-M2.7              | 26.1 | 284 | — |
+| LTspice 20 | Claude Opus 4.6           | 27.6 | 281 | $6.57 |
+| OpenFOAM 3 | MiniMax-M2.5-highspeed | 175.7 | 1,513 | — |
+| OpenFOAM 3 | MiniMax-M2.7              | 157.0 | 2,341 | — |
+| OpenFOAM 3 | Claude Opus 4.6           | 110.3 | 1,315 | $42.62 |
+
+USD costs are direct-Anthropic only (ccr does not surface a price-resolved
+figure). Within OpenFOAM, Opus 4.6 is **30 % fewer turns** and **44 %
+shorter wall** than MiniMax-M2.7 while reaching the oracle ceiling, so
+the cost is for higher quality, not higher latency.
 
 ## Reproduction
 

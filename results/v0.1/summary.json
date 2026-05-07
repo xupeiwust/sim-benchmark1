@@ -51,6 +51,15 @@
       },
       "case_result_csv": "results/v0.1/ltspice20-minimax-m25-20260506.csv",
       "case_result_json": "results/v0.1/ltspice20-minimax-m25-20260506.json",
+      "economics": {
+        "tokens_source": "openai_usage_proxy",
+        "total_turns": 594,
+        "total_wall_s": 4760.4,
+        "total_output_tokens": 150326,
+        "mean_turns_per_case": 29.7,
+        "mean_wall_s_per_case": 238.0,
+        "total_cost_usd": null
+      },
       "harness": "tools.agent_harness:ClaudeCodeViaCcr",
       "notes": "Non-reasoning fast variant via claude-code-router to MiniMax-OpenAI. Pre-final harness, but all assigned tasks completed."
     },
@@ -81,6 +90,15 @@
       },
       "case_result_csv": "results/v0.1/ltspice20-minimax-m27-20260506-final.csv",
       "case_result_json": "results/v0.1/ltspice20-minimax-m27-20260506-final.json",
+      "economics": {
+        "tokens_source": "openai_usage_proxy",
+        "total_turns": 496,
+        "total_wall_s": 5387.7,
+        "total_output_tokens": 105059,
+        "mean_turns_per_case": 26.1,
+        "mean_wall_s_per_case": 283.6,
+        "total_cost_usd": null
+      },
       "harness": "tools.agent_harness:ClaudeCodeViaCcr",
       "notes": "Final M2.7 reference run after reasoning-content router fix and turn-cap correction. bridge_rectifier_ripple hit the wall-time cap and is counted as zero in assigned_mean."
     },
@@ -117,6 +135,15 @@
       "included_in_leaderboard": true,
       "case_result_csv": null,
       "case_result_json": "results/v0.1/openfoam3-minimax-m25hs-20260506.json",
+      "economics": {
+        "tokens_source": "openai_usage_proxy",
+        "total_turns": 527,
+        "total_wall_s": 4538.8,
+        "total_output_tokens": 201491,
+        "mean_turns_per_case": 175.7,
+        "mean_wall_s_per_case": 1512.9,
+        "total_cost_usd": null
+      },
       "harness": "tools.agent_harness:ClaudeCodeViaCcr",
       "notes": "OpenFOAM oracle-available subset reference run."
     },
@@ -136,6 +163,15 @@
       "included_in_leaderboard": true,
       "case_result_csv": null,
       "case_result_json": "results/v0.1/openfoam3-minimax-m27-20260506.json",
+      "economics": {
+        "tokens_source": "openai_usage_proxy",
+        "total_turns": 471,
+        "total_wall_s": 7023.9,
+        "total_output_tokens": 149494,
+        "mean_turns_per_case": 157.0,
+        "mean_wall_s_per_case": 2341.3,
+        "total_cost_usd": null
+      },
       "harness": "tools.agent_harness:ClaudeCodeViaCcr",
       "notes": "OpenFOAM oracle-available subset reference run. cavity_re100 scored zero from an extract-path paperwork failure."
     },
@@ -163,6 +199,16 @@
       },
       "case_result_csv": null,
       "case_result_json": "results/v0.1/ltspice20-claude-opus46-20260507.json",
+      "economics": {
+        "tokens_source": "claude_code_assistant_sum",
+        "total_turns": 553,
+        "total_wall_s": 5617.9,
+        "total_output_tokens_undercounted": 5201,
+        "mean_turns_per_case": 27.6,
+        "mean_wall_s_per_case": 280.9,
+        "total_cost_usd": 131.47,
+        "mean_cost_usd_per_case": 6.57
+      },
       "harness": "tools.agent_harness:ClaudeCodeAnthropicDirect",
       "notes": "Native Anthropic-protocol via xaminim outside-platform gateway. 19/20 perfect; only opamp_integrator at 0.7182. Wall time 45m52s."
     },
@@ -183,6 +229,16 @@
       "included_in_leaderboard": true,
       "case_result_csv": null,
       "case_result_json": "results/v0.1/openfoam3-claude-opus46-20260507.json",
+      "economics": {
+        "tokens_source": "claude_code_assistant_sum",
+        "total_turns": 331,
+        "total_wall_s": 3945.4,
+        "total_output_tokens_undercounted": 3250,
+        "mean_turns_per_case": 110.3,
+        "mean_wall_s_per_case": 1315.1,
+        "total_cost_usd": 127.86,
+        "mean_cost_usd_per_case": 42.62
+      },
       "harness": "tools.agent_harness:ClaudeCodeAnthropicDirect",
       "notes": "Matches the oracle ceiling on the 3 oracle-available CFD cases (cavity_re100, cavity_re1000, flatplate_zpg_subsonic). Wall time 50m51s."
     }

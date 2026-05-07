@@ -57,6 +57,37 @@ def _last_result_event(claude_code_txt: Path) -> dict | None:
     return None
 
 
+def _sum_assistant_usage(claude_code_txt: Path) -> dict:
+    """Sum per-message usage across every `type=assistant` event in the trial.
+
+    The result event's `usage` field is only the *last* API call's tokens —
+    not cumulative — so for direct-Anthropic trials we have to walk the whole
+    transcript. ccr-routed trials still get accurate numbers from
+    proxy-usage.jsonl in the caller.
+    """
+    agg = {"input": 0, "output": 0, "cache_read": 0, "cache_create": 0, "n": 0}
+    if not claude_code_txt.exists():
+        return agg
+    for line in claude_code_txt.read_text(encoding="utf-8", errors="replace").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            d = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if d.get("type") != "assistant":
+            continue
+        u = ((d.get("message") or {}).get("usage") or {})
+        agg["input"]        += int(u.get("input_tokens") or 0)
+        agg["output"]       += int(u.get("output_tokens") or 0)
+        agg["cache_read"]   += int(u.get("cache_read_input_tokens") or 0)
+        agg["cache_create"] += int(u.get("cache_creation_input_tokens") or 0)
+        if u:
+            agg["n"] += 1
+    return agg
+
+
 def _resources_from_task_toml(case_dir: Path) -> tuple[int | None, int | None, str | None]:
     """Return (cpu_cores, gpu_count, solver) from cases/<.../>task.toml."""
     task = case_dir / "task.toml"
@@ -114,9 +145,10 @@ def measure_trial(trial_dir: Path, repo_root: Path | None = None) -> dict:
             "turns": None,
             "wall_seconds": None,
             "model": None,
-            "tokens_source": None,        # claude_code_result_event | openai_usage_proxy
+            "tokens_source": None,        # claude_code_assistant_sum | openai_usage_proxy
             "proxy_request_count": None,  # how many requests the proxy logged for this trial
             "tokens_unavailable_note": None,
+            "total_cost_usd": None,       # trial-cumulative USD (direct-Anthropic only)
         },
         "compute": {
             "cpu_cores": None,
@@ -138,20 +170,30 @@ def measure_trial(trial_dir: Path, repo_root: Path | None = None) -> dict:
     }
 
     # --- agent: from claude-code.txt's last `type=result` event ---
-    res = _last_result_event(trial_dir / "agent" / "claude-code.txt")
+    cc_path = trial_dir / "agent" / "claude-code.txt"
+    res = _last_result_event(cc_path)
     if res:
-        usage = res.get("usage") or {}
+        # Result event's `usage` is the LAST API call only (not cumulative),
+        # so we walk every `type=assistant` event and sum per-message usage.
+        # See _sum_assistant_usage() for why.
+        sum_u = _sum_assistant_usage(cc_path)
         mu = res.get("modelUsage") or {}
         cost["agent"].update(
-            input_tokens=usage.get("input_tokens"),
-            output_tokens=usage.get("output_tokens"),
-            cache_read_tokens=usage.get("cache_read_input_tokens"),
-            cache_creation_tokens=usage.get("cache_creation_input_tokens"),
+            input_tokens=sum_u["input"] or None,
+            output_tokens=sum_u["output"] or None,
+            cache_read_tokens=sum_u["cache_read"] or None,
+            cache_creation_tokens=sum_u["cache_create"] or None,
             turns=res.get("num_turns"),
             wall_seconds=(res.get("duration_ms") or 0) / 1000 or None,
             model=next(iter(mu), None) if mu else None,
         )
-        cost["agent"]["tokens_source"] = "claude_code_result_event"
+        cost["agent"]["tokens_source"] = "claude_code_assistant_sum"
+        # Trial-cumulative dollar cost is reported by Claude Code on the
+        # result event; surface it for direct-Anthropic runs (ccr-routed
+        # paths report 0 here because cost is computed downstream).
+        tcu = res.get("total_cost_usd")
+        if isinstance(tcu, (int, float)) and tcu > 0:
+            cost["agent"]["total_cost_usd"] = tcu
 
     # --- agent token recovery from openai_usage_proxy sidecar log ---
     # When the agent is routed via ccr → upstream, Claude Code's usage field
