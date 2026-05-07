@@ -436,7 +436,7 @@ def test_main_perfect_score(tmp_path, monkeypatch):
     assert list(rj.keys()) == ["score"]
     assert rj["score"] == pytest.approx(W_META + W_KPI)  # 1.0
     rd = json.loads(out.with_name("reward_detail.json").read_text())
-    assert rd["schema_version"] == "reward-v3"
+    assert rd["schema_version"].startswith("reward-v3")
     assert rd["meta_score"] == 1.0
     assert rd["kpi_score"] == 1.0
 

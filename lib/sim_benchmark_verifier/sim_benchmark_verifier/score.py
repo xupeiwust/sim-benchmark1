@@ -209,9 +209,16 @@ def _score_groups(kpis_spec: dict, groups_spec: dict, result: dict, sim_records:
     `kpis.json` case is rejected at the spec layer; a member declared in
     spec but absent from result.json scores 0 (penalising "skipped a stage").
     """
+    from .failure_class import annotate_per_kpi
+
     per_kpi: dict[str, dict] = {}
     for name, spec in kpis_spec.items():
         per_kpi[name] = _score_one_kpi(name, spec, result.get(name), sim_records)
+
+    # Annotate each per-KPI dict with a stable failure_class enum so
+    # downstream tooling can group "physics fails" vs "paperwork fails"
+    # vs "agent didn't even claim the KPI" without re-parsing free text.
+    failure_class_counts = annotate_per_kpi(per_kpi, result)
 
     per_group: dict[str, dict] = {}
     weighted_sum = 0.0
@@ -229,7 +236,11 @@ def _score_groups(kpis_spec: dict, groups_spec: dict, result: dict, sim_records:
             "group_score": round(gscore, 4),
         }
         weighted_sum += weight * gscore
-    return round(weighted_sum, 4), {"per_group": per_group, "per_kpi": per_kpi}
+    return round(weighted_sum, 4), {
+        "per_group": per_group,
+        "per_kpi": per_kpi,
+        "failure_class_counts": failure_class_counts,
+    }
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -317,7 +328,7 @@ def main(argv: list[str] | None = None) -> int:
     args.reward_out.write_text(json.dumps({"score": final}, indent=2))
 
     detail = {
-        "schema_version": "reward-v3",
+        "schema_version": "reward-v3.1",
         "case_id":        spec.get("case_id", args.kpis.parent.name),
         "weights":        {"meta": W_META, "kpi": W_KPI},
         "meta_score":     round(meta_score, 4),

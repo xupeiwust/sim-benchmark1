@@ -187,11 +187,37 @@ aggregate metric.
 
 The verifier also writes `reward_detail.json` with:
 
-- `schema_version`
+- `schema_version` (currently `reward-v3.1`)
 - diagnostic `meta_score` and `meta_detail`
 - `kpi_score`
-- per-group and per-KPI scoring detail
+- per-group and per-KPI scoring detail (each per-KPI entry carries a
+  `failure_class` enum — see below)
+- `kpi_detail.failure_class_counts` — class → count distribution across
+  the case's KPIs
 - `final_score`
+
+### `failure_class` enum (per-KPI diagnostic layer)
+
+Schema `reward-v3.1` adds a stable enum so downstream tooling can group
+"physics fail" vs "paperwork fail" vs "agent didn't even claim the KPI"
+without re-parsing the free-text `why` string. Values:
+
+| Value | Meaning |
+|---|---|
+| `null` | KPI passed (kpi_score = 1.0) |
+| `physics` | value outside `[physics_min, physics_max]` |
+| `convergence` | physics ok but `|pred − gt| > T_bad` (or partial T_decay) |
+| `provenance_path` | `source.path` missing / not a file / not absolute |
+| `extract_runnable` | `source.extract` failed to run (sandbox reject, exit ≠ 0, timeout) |
+| `extract_format` | extract ran fine but extracted value differs from claim |
+| `hallucination` | KPI absent / claim has no `source` / unknown `source.kind` |
+| `spec_error` | the case's `kpis.json` is itself malformed (not the agent's fault) |
+
+Trial-level classes (`wall_time`, `turn_cap`, `infra`) are NOT set by
+the verifier — they're populated post-hoc by an aggregator that reads
+the harness transcript. Per-KPI failure_class needs only the verifier's
+output; trial-level classes need the harness, so they're a separate
+layer (tracked in sim-proj #121).
 
 The final public score is KPI-only:
 

@@ -89,6 +89,38 @@ oracle on OpenFOAM (< 0.5). Several MiniMax misses are workflow or
 provenance failures rather than pure physics failures — exactly the
 discriminator this benchmark is designed to expose.
 
+### Failure-class distribution
+
+`reward-v3.1` annotates each KPI with a `failure_class` enum (see
+[`SCHEMA.md`](SCHEMA.md) §6). Counts of non-`null` classes across the
+v0.1 reference runs (computed by `tools/classify_failures.py` against
+`results/v0.1/failure_classes.json`):
+
+| Run | KPIs | passed | physics | conv | prov_path | extr_run | extr_fmt | halluc |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| LTspice 20 · M2.5-hs | 64 | 60 | 0 | 0 | 0 | 0 | 4 | 0 |
+| LTspice 20 · M2.7    | 60 | 56 | 1 | 1 | 0 | 0 | 2 | 0 |
+| LTspice 20 · Opus 4.6 | 64 | 63 | 0 | 1 | 0 | 0 | 0 | 0 |
+| OpenFOAM 3 · M2.5-hs | 16 |  7 | 0 | 3 | 0 | 6 | 0 | 0 |
+| OpenFOAM 3 · M2.7    | 16 |  3 | 1 | 6 | 0 | 6 | 0 | 0 |
+| OpenFOAM 3 · Opus 4.6 | 16 | 16 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+Reads:
+
+- **MiniMax LTspice misses are paperwork**, not physics — extract_format
+  dominates (4–2 of the few misses). The model got the simulation right
+  but its claimed source extraction was off.
+- **MiniMax OpenFOAM misses split convergence + extract_runnable** —
+  half the failures are bad numerical convergence, the other half are
+  agent-written extract pipelines that don't actually run. No single
+  bottleneck to fix.
+- **No `provenance_path` failures across any model** — the path-side
+  hygiene (absolute paths, file exists) is solid; the gap is *which*
+  extract command and *what* it produces.
+- **Opus 4.6's only LTspice miss is `convergence`** on `opamp_integrator`
+  — physics in range but T_decay = 0. Not a benchmark or paperwork
+  problem; a numerical-tolerance question.
+
 The historical tables below are development history (v3 / v4 / v5 / v7 / v9–v18 OpenFOAM
 work). They should not be presented as the v0.1 public result.
 
