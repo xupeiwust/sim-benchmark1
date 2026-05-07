@@ -9,9 +9,11 @@ runs; files kept here are the current public result set.
 | Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Status |
 |---|---|---:|---:|---:|---:|---:|---|
 | `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 20 | 0 | **1.000** | **1.000** | reference upper bound |
+| `release-v0.1-ltspice20-claude-opus46-20260507` | claude-code · Claude Opus 4.6 | 20 | 20 | 0 | **0.986** | **0.986** | included |
 | `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | 20 | 20 | 1 | **0.936** | **0.936** | included |
 | `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 20 | 19 | 2 | **0.930** | **0.884** | included; `bridge_rectifier_ripple` wall-time capped |
 | `release-v0.1-openfoam3-oracle-20260506` | oracle (deterministic) | 3 | 3 | 0 | **0.999** | **0.999** | reference upper bound |
+| `release-v0.1-openfoam3-claude-opus46-20260507` | claude-code · Claude Opus 4.6 | 3 | 3 | 0 | **1.000** | **1.000** | included |
 | `release-v0.1-openfoam3-minimax-m25hs-20260506` | claude-code · MiniMax-M2.5-highspeed | 3 | 3 | 1 | **0.408** | **0.408** | included |
 | `release-v0.1-openfoam3-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 3 | 3 | 0 | **0.284** | **0.284** | included |
 
@@ -24,9 +26,10 @@ verifier may still have replayable artifacts.
 
 - `summary.json` - machine-readable current release summary.
 - `ltspice20-oracle-20260503.{csv,json}` - LTspice oracle reference run.
+- `ltspice20-claude-opus46-20260507.json` - Claude Opus 4.6 LTspice run.
 - `ltspice20-minimax-m25-20260506.{csv,json}` - MiniMax-M2.5-highspeed LTspice run.
 - `ltspice20-minimax-m27-20260506-final.{csv,json}` - MiniMax-M2.7 LTspice final run.
-- `openfoam3-{oracle,minimax-m25hs,minimax-m27}-20260506.json` - OpenFOAM reference subset.
+- `openfoam3-{oracle,claude-opus46,minimax-m25hs,minimax-m27}-2026050{6,7}.json` - OpenFOAM reference subset.
 
 An earlier MiniMax-M2.7 LTspice run was superseded by the final run after a
 reasoning-content router fix and turn-cap correction. It is intentionally not
@@ -34,30 +37,30 @@ kept beside current artifacts.
 
 ## Per-Case Comparison (LTspice 20)
 
-| Case | Tier | Leakage | Oracle | M2.5 | M2.7 final |
-|---|---|---:|---:|---:|---:|
-| `bridge_rectifier_ripple` | M | 1 | 1.000 | 0.700 | n/a |
-| `diff_amp` | M | 2 | 1.000 | 1.000 | 1.000 |
-| `half_wave_rectifier` | S | 2 | 1.000 | 1.000 | 1.000 |
-| `inv_amp` | M | 3 | 1.000 | 1.000 | 1.000 |
-| `lc_lowpass_2nd` | M | 2 | 1.000 | 0.550 | 1.000 |
-| `lc_resonator` | M | 2 | 1.000 | 1.000 | 1.000 |
-| `noninv_amp` | M | 3 | 1.000 | 1.000 | 1.000 |
-| `opamp_buffer` | S | 3 | 1.000 | 1.000 | 1.000 |
-| `opamp_integrator` | M | 2 | 1.000 | 1.000 | 0.201 |
-| `opamp_summer` | M | 2 | 1.000 | 1.000 | 1.000 |
-| `rc_highpass_ac` | S | 3 | 1.000 | 1.000 | 1.000 |
-| `rc_lowpass_ac` | M | 1 | 1.000 | 0.775 | 0.775 |
-| `rc_pulse_response` | S | 3 | 1.000 | 1.000 | 1.000 |
-| `rl_lowpass_ac` | S | 3 | 1.000 | 1.000 | 1.000 |
-| `rl_step` | S | 3 | 1.000 | 1.000 | 1.000 |
-| `rlc_bandpass` | S | 2 | 1.000 | 1.000 | 1.000 |
-| `rlc_notch` | M | 1 | 1.000 | 0.700 | 0.700 |
-| `rlc_step_overdamped` | M | 2 | 1.000 | 1.000 | 1.000 |
-| `rlc_step_underdamped` | M | 2 | 1.000 | 1.000 | 1.000 |
-| `sallen_key_lp` | M | 2 | 1.000 | 1.000 | 1.000 |
-| **Completed Mean** | | | **1.000** | **0.936** | **0.930** |
-| **Assigned Mean** | | | **1.000** | **0.936** | **0.884** |
+| Case | Tier | Leakage | Oracle | Opus 4.6 | M2.5 | M2.7 final |
+|---|---|---:|---:|---:|---:|---:|
+| `bridge_rectifier_ripple` | M | 1 | 1.000 | 1.000 | 0.700 | n/a |
+| `diff_amp` | M | 2 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `half_wave_rectifier` | S | 2 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `inv_amp` | M | 3 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `lc_lowpass_2nd` | M | 2 | 1.000 | 1.000 | 0.550 | 1.000 |
+| `lc_resonator` | M | 2 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `noninv_amp` | M | 3 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `opamp_buffer` | S | 3 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `opamp_integrator` | M | 2 | 1.000 | 0.718 | 1.000 | 0.201 |
+| `opamp_summer` | M | 2 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `rc_highpass_ac` | S | 3 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `rc_lowpass_ac` | M | 1 | 1.000 | 1.000 | 0.775 | 0.775 |
+| `rc_pulse_response` | S | 3 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `rl_lowpass_ac` | S | 3 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `rl_step` | S | 3 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `rlc_bandpass` | S | 2 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `rlc_notch` | M | 1 | 1.000 | 1.000 | 0.700 | 0.700 |
+| `rlc_step_overdamped` | M | 2 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `rlc_step_underdamped` | M | 2 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `sallen_key_lp` | M | 2 | 1.000 | 1.000 | 1.000 | 1.000 |
+| **Completed Mean** | | | **1.000** | **0.986** | **0.936** | **0.930** |
+| **Assigned Mean** | | | **1.000** | **0.986** | **0.936** | **0.884** |
 
 ## Observations
 

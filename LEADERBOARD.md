@@ -16,13 +16,14 @@ model run completes.
 | MVP scored gate | 20 | LTspice oracle-verified |
 | OpenFOAM public tasks | 3 | v0.2 will expand once more oracles are written |
 
-### Current Results · v0.1 (2026-05-06)
+### Current Results · v0.1 (2026-05-07)
 
 #### LTspice circuits (20 tasks)
 
 | Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Notes |
 |---|---|---:|---:|---:|---:|---:|---|
 | `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 20 | 0 | **1.000** | **1.000** | reference upper bound |
+| `release-v0.1-ltspice20-claude-opus46-20260507` | claude-code · **Claude Opus 4.6** | 20 | 20 | 0 | **0.986** | **0.986** | 19/20 perfect; only `opamp_integrator` = 0.7182 |
 | `release-v0.1-ltspice20-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** (non-reasoning) | 20 | 20 | 1 | **0.936** | **0.936** | pre-final harness; all assigned tasks completed |
 | `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** (reasoning) | 20 | 19 | 2 | **0.930** | **0.884** | final harness; `bridge_rectifier_ripple` hit the wall-time cap and is counted as zero in assigned mean |
 
@@ -31,6 +32,7 @@ model run completes.
 | Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Notes |
 |---|---|---:|---:|---:|---:|---:|---|
 | `release-v0.1-openfoam3-oracle-20260506` | oracle (deterministic) | 3 | 3 | 0 | **0.999** | **0.999** | reference upper bound; flatplate cf_x097 = 0.997 within numerical noise |
+| `release-v0.1-openfoam3-claude-opus46-20260507` | claude-code · **Claude Opus 4.6** | 3 | 3 | 0 | **1.000** | **1.000** | cavity_re100 / cavity_re1000 / flatplate all 1.000 |
 | `release-v0.1-openfoam3-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** | 3 | 3 | 1 | **0.408** | **0.408** | cavity_re100 1.0 / cavity_re1000 0.225 / flatplate 0.0 |
 | `release-v0.1-openfoam3-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** | 3 | 3 | 0 | **0.284** | **0.284** | cavity_re100 0.0 from an extract-path paperwork failure / cavity_re1000 0.390 / flatplate 0.462 |
 
@@ -52,12 +54,15 @@ included in the public result set.
 
 ### Current read
 
-The useful early signal is workflow-shaped. Both MiniMax reference agents are
-strong on LTspice circuit workflows, while both remain below the oracle ceiling
-on OpenFOAM because CFD asks the agent to author the case, mesh, solve,
-post-process, and submit replayable provenance. Several misses are workflow or
-provenance failures rather than pure physics failures, which is exactly what
-this benchmark is designed to expose.
+The useful early signal is workflow-shaped. Claude Opus 4.6 essentially
+matches the oracle ceiling — 19/20 on LTspice and 3/3 on the
+oracle-available OpenFOAM subset — meaning a top-tier agent can author CFD
+cases, mesh them, solve them, and produce replayable KPI provenance from a
+natural-language prompt with no human handholds. Both MiniMax reference
+agents stay strong on LTspice circuits (≥ 0.88) but fall well below the
+oracle on OpenFOAM (< 0.5). Several MiniMax misses are workflow or
+provenance failures rather than pure physics failures — exactly the
+discriminator this benchmark is designed to expose.
 
 The historical tables below are development history (v3 / v4 / v5 / v7 / v9–v18 OpenFOAM
 work). They should not be presented as the v0.1 public result.

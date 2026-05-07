@@ -1,0 +1,51 @@
+# v0.1 reference run: Claude Opus 4.6 on the 20 LTspice circuit tasks.
+#
+# Auth flows through MiniMax's outside-platform Anthropic gateway
+# (platform-api-outside.xaminim.com). This is a native Anthropic-protocol
+# upstream, so the trial uses ClaudeCodeAnthropicDirect (no ccr translation).
+#
+# Required env on the host before `harbor run`:
+#   source ./.opus46_secret    # exports OPUS46_AUTH_TOKEN + OPUS46_BASE_URL
+
+jobs_dir: jobs/release-v0.1-ltspice20-claude-opus46
+n_concurrent_trials: 3
+timeout_multiplier: 3.0
+
+environment:
+  type: docker
+  delete: false
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeAnthropicDirect
+    model_name: claude-opus-4-6
+    kwargs:
+      max_turns: 300
+    env:
+      ANTHROPIC_API_KEY: '${OPUS46_AUTH_TOKEN}'
+      ANTHROPIC_BASE_URL: '${OPUS46_BASE_URL}'
+      ANTHROPIC_CUSTOM_HEADERS: "X-Session-Id: sim-benchmark-v0.1\nX-Sub-Module: claude-code-internal"
+      CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS: '1'
+
+datasets:
+  - path: cases/circuits
+    task_names:
+      - bridge_rectifier_ripple
+      - diff_amp
+      - half_wave_rectifier
+      - inv_amp
+      - lc_lowpass_2nd
+      - lc_resonator
+      - noninv_amp
+      - opamp_buffer
+      - opamp_integrator
+      - opamp_summer
+      - rc_highpass_ac
+      - rc_lowpass_ac
+      - rc_pulse_response
+      - rl_lowpass_ac
+      - rl_step
+      - rlc_bandpass
+      - rlc_notch
+      - rlc_step_overdamped
+      - rlc_step_underdamped
+      - sallen_key_lp

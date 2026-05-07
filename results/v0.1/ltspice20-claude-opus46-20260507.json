@@ -1,0 +1,51 @@
+{
+    "id": "2592e047-b03b-4cfd-a4ac-5eb8f94922de",
+    "started_at": "2026-05-07T15:02:31.180308",
+    "finished_at": "2026-05-07T15:48:23.988172",
+    "n_total_trials": 20,
+    "stats": {
+        "n_trials": 20,
+        "n_errors": 0,
+        "evals": {
+            "claude-code__circuits": {
+                "n_trials": 20,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "mean": 0.98591
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "score": {
+                        "1.0": [
+                            "opamp_summer__j9U2eVR",
+                            "opamp_buffer__LvDtW5x",
+                            "rl_step__qKmTdP3",
+                            "rlc_notch__xkWKXDj",
+                            "rc_lowpass_ac__z6xxeVv",
+                            "half_wave_rectifier__SBh4EnB",
+                            "rlc_step_overdamped__vktUMfG",
+                            "rlc_bandpass__xnQcaDG",
+                            "rlc_step_underdamped__emXki7B",
+                            "inv_amp__ATRUoXb",
+                            "rl_lowpass_ac__dyuWKzK",
+                            "rc_pulse_response__XR4Loo3",
+                            "bridge_rectifier_ripple__LDPiRMA",
+                            "sallen_key_lp__NtPxAza",
+                            "diff_amp__CDkU946",
+                            "noninv_amp__RBzxcqn",
+                            "lc_resonator__TXChFAs",
+                            "lc_lowpass_2nd__FqRZgkg",
+                            "rc_highpass_ac__VU6xrBn"
+                        ],
+                        "0.7182": [
+                            "opamp_integrator__EpqDdJP"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        }
+    }
+}

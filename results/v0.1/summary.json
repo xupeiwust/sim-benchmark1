@@ -138,6 +138,53 @@
       "case_result_json": "results/v0.1/openfoam3-minimax-m27-20260506.json",
       "harness": "tools.agent_harness:ClaudeCodeViaCcr",
       "notes": "OpenFOAM oracle-available subset reference run. cavity_re100 scored zero from an extract-path paperwork failure."
+    },
+    {
+      "run_id": "release-v0.1-ltspice20-claude-opus46-20260507",
+      "suite": "ltspice20",
+      "domain": "circuits",
+      "run_date": "2026-05-07",
+      "timezone": "Asia/Shanghai",
+      "agent": "claude-code",
+      "model": "Claude Opus 4.6",
+      "n_concurrent_trials": 3,
+      "assigned_tasks": 20,
+      "completed_tasks": 20,
+      "harness_exceptions": 0,
+      "completed_mean": 0.98591,
+      "assigned_mean": 0.98591,
+      "included_in_leaderboard": true,
+      "score_distribution": {
+        "1.0": 19,
+        "0.7-0.9": 1,
+        "0.5-0.7": 0,
+        "0.3-0.5": 0,
+        "0.0": 0
+      },
+      "case_result_csv": null,
+      "case_result_json": "results/v0.1/ltspice20-claude-opus46-20260507.json",
+      "harness": "tools.agent_harness:ClaudeCodeAnthropicDirect",
+      "notes": "Native Anthropic-protocol via xaminim outside-platform gateway. 19/20 perfect; only opamp_integrator at 0.7182. Wall time 45m52s."
+    },
+    {
+      "run_id": "release-v0.1-openfoam3-claude-opus46-20260507",
+      "suite": "openfoam3",
+      "domain": "fluids",
+      "run_date": "2026-05-07",
+      "timezone": "Asia/Shanghai",
+      "agent": "claude-code",
+      "model": "Claude Opus 4.6",
+      "n_concurrent_trials": 2,
+      "assigned_tasks": 3,
+      "completed_tasks": 3,
+      "harness_exceptions": 0,
+      "completed_mean": 1.0,
+      "assigned_mean": 1.0,
+      "included_in_leaderboard": true,
+      "case_result_csv": null,
+      "case_result_json": "results/v0.1/openfoam3-claude-opus46-20260507.json",
+      "harness": "tools.agent_harness:ClaudeCodeAnthropicDirect",
+      "notes": "Matches the oracle ceiling on the 3 oracle-available CFD cases (cavity_re100, cavity_re1000, flatplate_zpg_subsonic). Wall time 50m51s."
     }
   ],
   "superseded_runs": [

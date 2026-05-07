@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="#quick-start"><img src="https://img.shields.io/badge/Quick_Start-2_min-3b82f6?style=for-the-badge" alt="Quick Start"></a>
-  <a href="#first-reference-runs"><img src="https://img.shields.io/badge/Reference_runs-MiniMax_M2.5hs_%E2%80%A2_M2.7-8b5cf6?style=for-the-badge" alt="MiniMax reference"></a>
+  <a href="#first-reference-runs"><img src="https://img.shields.io/badge/Reference_runs-Claude_Opus_4.6_%E2%80%A2_MiniMax_M2.5hs_%E2%80%A2_M2.7-8b5cf6?style=for-the-badge" alt="Reference models"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-eab308?style=for-the-badge" alt="License"></a>
 </p>
 
@@ -68,21 +68,24 @@ Every task ships with a deterministic `solution/solve.sh` oracle. Running
 the oracle gives the verifier's upper-bound sanity check; model rows are
 read against that ceiling.
 
-We include first reference runs with MiniMax-M2.5-highspeed and MiniMax-M2.7
-through a claude-code harness.
+We include first reference runs with Claude Opus 4.6, MiniMax-M2.5-highspeed,
+and MiniMax-M2.7 through a claude-code harness.
 
-| Suite | Tasks | MiniMax-M2.5-highspeed | MiniMax-M2.7 | Oracle ceiling |
-|---|---:|---:|---:|---:|
-| LTspice circuits | 20 | **0.936** | **0.884** | 1.000 |
-| OpenFOAM fluids | 3 | **0.408** | **0.284** | 0.999 |
+| Suite | Tasks | Claude Opus 4.6 | MiniMax-M2.5-highspeed | MiniMax-M2.7 | Oracle ceiling |
+|---|---:|---:|---:|---:|---:|
+| LTspice circuits | 20 | **0.986** | **0.936** | **0.884** | 1.000 |
+| OpenFOAM fluids | 3 | **1.000** | **0.408** | **0.284** | 0.999 |
 
 Reads:
-- **LTspice**: both reference agents already complete many artifact-grounded
-  circuit workflows. Parameter sweeps and design-selection tasks still
-  discriminate.
+- **LTspice**: all three agents complete most artifact-grounded circuit
+  workflows. Opus 4.6 is at 19/20 perfect (only `opamp_integrator` at 0.72);
+  the MiniMax pair leave more headroom and parameter-sweep / design-selection
+  tasks still discriminate between them.
 - **OpenFOAM**: CFD remains much harder — agents must author case files,
   mesh, run solvers, post-process fields, and produce replayable KPI
-  provenance. Every step is a chance to lose the score.
+  provenance. Opus 4.6 reaches the oracle ceiling on the 3 oracle-available
+  cases; the MiniMax pair are below 0.5 and lose on a mix of physics, mesh
+  setup, and provenance-paperwork failures.
 
 These are reference runs, not a mature cross-model leaderboard. Per-case
 scores, completion policy, harness-exception accounting, and superseded-run
