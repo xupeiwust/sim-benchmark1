@@ -215,10 +215,10 @@ def _score_groups(kpis_spec: dict, groups_spec: dict, result: dict, sim_records:
     for name, spec in kpis_spec.items():
         per_kpi[name] = _score_one_kpi(name, spec, result.get(name), sim_records)
 
-    # Annotate each per-KPI dict with a stable failure_class enum so
-    # downstream tooling can group "physics fails" vs "paperwork fails"
-    # vs "agent didn't even claim the KPI" without re-parsing free text.
-    failure_class_counts = annotate_per_kpi(per_kpi, result)
+    # Annotate each per-KPI dict with two-axis failure classification
+    # (provenance_stage × solver_stage) plus a v3.1 backward-compat
+    # `failure_class` field. See sim-proj #125 RFC.
+    axis_counts = annotate_per_kpi(per_kpi, result)
 
     per_group: dict[str, dict] = {}
     weighted_sum = 0.0
@@ -239,7 +239,9 @@ def _score_groups(kpis_spec: dict, groups_spec: dict, result: dict, sim_records:
     return round(weighted_sum, 4), {
         "per_group": per_group,
         "per_kpi": per_kpi,
-        "failure_class_counts": failure_class_counts,
+        # New canonical axis distributions (reward-v3.2)
+        "solver_stage_counts":     axis_counts["solver_stage_counts"],
+        "provenance_stage_counts": axis_counts["provenance_stage_counts"],
     }
 
 
@@ -328,7 +330,7 @@ def main(argv: list[str] | None = None) -> int:
     args.reward_out.write_text(json.dumps({"score": final}, indent=2))
 
     detail = {
-        "schema_version": "reward-v3.1",
+        "schema_version": "reward-v3.2",
         "case_id":        spec.get("case_id", args.kpis.parent.name),
         "weights":        {"meta": W_META, "kpi": W_KPI},
         "meta_score":     round(meta_score, 4),

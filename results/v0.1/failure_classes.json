@@ -3,7 +3,7 @@
     {
       "run_label": "2026-05-06__17-13-51",
       "n_trials": 20,
-      "counts": {
+      "legacy_counts": {
         "null": 60,
         "physics": 0,
         "convergence": 0,
@@ -13,17 +13,52 @@
         "hallucination": 0,
         "spec_error": 0
       },
+      "provenance_stage_counts": {
+        "P0_hallucination": 0,
+        "P1_path_invalid": 0,
+        "P2_extract_unrunnable": 0,
+        "P3_extract_mismatch": 4,
+        "P4_pass": 60,
+        "spec_error": 0
+      },
+      "solver_stage_counts": {
+        "L0_input_syntax": 0,
+        "L1_input_semantics": 0,
+        "L2_solver_crash": 0,
+        "L3_convergence": 0,
+        "L4_conservation": 0,
+        "L5_physics": 0,
+        "L5_quantitative": 0,
+        "L6_pass": 60,
+        "null": 4
+      },
       "trials": [
         {
           "trial": "bridge_rectifier_ripple__THiwmps",
           "case": "bridge_rectifier_ripple",
           "per_kpi": {
-            "sim_completed": "null",
-            "selected_cap_uF": "extract_format",
-            "vout_avg": "null",
-            "vrip_pp": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "selected_cap_uF": {
+              "solver_stage": null,
+              "provenance_stage": "P3_extract_mismatch",
+              "failure_class": "extract_format"
+            },
+            "vout_avg": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vrip_pp": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -33,6 +68,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 1,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 1
+          },
           "kpi_score": 0.7,
           "final_score": 0.7
         },
@@ -40,11 +94,23 @@
           "trial": "diff_amp__fsGRHMa",
           "case": "diff_amp",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain_diff": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_diff": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -53,6 +119,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -61,11 +146,23 @@
           "trial": "half_wave_rectifier__eSBZyVh",
           "case": "half_wave_rectifier",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_avg": "null",
-            "vrip_pp": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_avg": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vrip_pp": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -74,6 +171,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -82,11 +198,23 @@
           "trial": "inv_amp__edbhfkV",
           "case": "inv_amp",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -96,6 +224,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -103,11 +250,23 @@
           "trial": "lc_lowpass_2nd__dTJqwZP",
           "case": "lc_lowpass_2nd",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_dc": "extract_format",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_dc": {
+              "solver_stage": null,
+              "provenance_stage": "P3_extract_mismatch",
+              "failure_class": "extract_format"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 2,
             "physics": 0,
             "convergence": 0,
@@ -117,6 +276,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 1,
+            "P4_pass": 2,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 2,
+            "null": 1
+          },
           "kpi_score": 0.55,
           "final_score": 0.55
         },
@@ -124,11 +302,23 @@
           "trial": "lc_resonator__mJnptXE",
           "case": "lc_resonator",
           "per_kpi": {
-            "sim_completed": "null",
-            "f_resonance": "null",
-            "v_peak": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_resonance": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "v_peak": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -137,6 +327,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -145,11 +354,23 @@
           "trial": "noninv_amp__LMwUDmW",
           "case": "noninv_amp",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -158,6 +379,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -166,11 +406,23 @@
           "trial": "opamp_buffer__rBvDzdW",
           "case": "opamp_buffer",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -179,6 +431,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -187,11 +458,23 @@
           "trial": "opamp_integrator__RTrboSz",
           "case": "opamp_integrator",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pp": "null",
-            "vout_avg": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pp": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_avg": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -200,6 +483,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -208,11 +510,23 @@
           "trial": "opamp_summer__ubZudaZ",
           "case": "opamp_summer",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "vout_avg": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_avg": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -221,6 +535,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -229,11 +562,23 @@
           "trial": "rc_highpass_ac__4FiCrtW",
           "case": "rc_highpass_ac",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_hf": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_hf": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -243,6 +588,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -250,13 +614,33 @@
           "trial": "rc_lowpass_ac__zwindrQ",
           "case": "rc_lowpass_ac",
           "per_kpi": {
-            "sim_completed": "null",
-            "selected_cap_uF": "extract_format",
-            "gain_10hz": "null",
-            "atten_1khz": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "selected_cap_uF": {
+              "solver_stage": null,
+              "provenance_stage": "P3_extract_mismatch",
+              "failure_class": "extract_format"
+            },
+            "gain_10hz": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "atten_1khz": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 4,
             "physics": 0,
             "convergence": 0,
@@ -266,6 +650,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 1,
+            "P4_pass": 4,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 4,
+            "null": 1
+          },
           "kpi_score": 0.775,
           "final_score": 0.775
         },
@@ -273,11 +676,23 @@
           "trial": "rc_pulse_response__aryzcZL",
           "case": "rc_pulse_response",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_settled": "null",
-            "t_rise": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_settled": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "t_rise": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -286,6 +701,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -294,11 +728,23 @@
           "trial": "rl_lowpass_ac__nU3xeuh",
           "case": "rl_lowpass_ac",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_dc": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_dc": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -307,6 +753,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -315,11 +780,23 @@
           "trial": "rl_step__k6UMpJJ",
           "case": "rl_step",
           "per_kpi": {
-            "sim_completed": "null",
-            "i_settled": "null",
-            "t_rise": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "i_settled": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "t_rise": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -328,6 +805,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -336,11 +832,23 @@
           "trial": "rlc_bandpass__wRDXebN",
           "case": "rlc_bandpass",
           "per_kpi": {
-            "sim_completed": "null",
-            "peak_freq": "null",
-            "peak_gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "peak_freq": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "peak_gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -350,6 +858,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -357,12 +884,28 @@
           "trial": "rlc_notch__F4sCLEs",
           "case": "rlc_notch",
           "per_kpi": {
-            "sim_completed": "null",
-            "selected_cap_nF": "extract_format",
-            "dc_gain": "null",
-            "notch_depth": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "selected_cap_nF": {
+              "solver_stage": null,
+              "provenance_stage": "P3_extract_mismatch",
+              "failure_class": "extract_format"
+            },
+            "dc_gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "notch_depth": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -372,6 +915,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 1,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 1
+          },
           "kpi_score": 0.7,
           "final_score": 0.7
         },
@@ -379,11 +941,23 @@
           "trial": "rlc_step_overdamped__pcwFmA6",
           "case": "rlc_step_overdamped",
           "per_kpi": {
-            "sim_completed": "null",
-            "vss": "null",
-            "t90": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vss": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "t90": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -392,6 +966,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -400,11 +993,23 @@
           "trial": "rlc_step_underdamped__VueNFey",
           "case": "rlc_step_underdamped",
           "per_kpi": {
-            "sim_completed": "null",
-            "vmax": "null",
-            "vss": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vmax": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vss": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -413,6 +1018,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -421,11 +1045,23 @@
           "trial": "sallen_key_lp__JU2WQWf",
           "case": "sallen_key_lp",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_dc": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_dc": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -434,6 +1070,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -443,7 +1098,7 @@
     {
       "run_label": "2026-05-06__22-06-27",
       "n_trials": 19,
-      "counts": {
+      "legacy_counts": {
         "null": 56,
         "physics": 1,
         "convergence": 1,
@@ -453,16 +1108,47 @@
         "hallucination": 0,
         "spec_error": 0
       },
+      "provenance_stage_counts": {
+        "P0_hallucination": 0,
+        "P1_path_invalid": 0,
+        "P2_extract_unrunnable": 0,
+        "P3_extract_mismatch": 2,
+        "P4_pass": 58,
+        "spec_error": 0
+      },
+      "solver_stage_counts": {
+        "L0_input_syntax": 0,
+        "L1_input_semantics": 0,
+        "L2_solver_crash": 0,
+        "L3_convergence": 0,
+        "L4_conservation": 0,
+        "L5_physics": 1,
+        "L5_quantitative": 1,
+        "L6_pass": 56,
+        "null": 2
+      },
       "trials": [
         {
           "trial": "diff_amp__M5TErwG",
           "case": "diff_amp",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain_diff": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_diff": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -471,6 +1157,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -479,11 +1184,23 @@
           "trial": "half_wave_rectifier__4Qg8ysd",
           "case": "half_wave_rectifier",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_avg": "null",
-            "vrip_pp": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_avg": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vrip_pp": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -492,6 +1209,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -500,11 +1236,23 @@
           "trial": "inv_amp__JEGxp8V",
           "case": "inv_amp",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -513,6 +1261,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -521,11 +1288,23 @@
           "trial": "lc_lowpass_2nd__J9Rk4ms",
           "case": "lc_lowpass_2nd",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_dc": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_dc": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -534,6 +1313,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -542,11 +1340,23 @@
           "trial": "lc_resonator__FRFAjgr",
           "case": "lc_resonator",
           "per_kpi": {
-            "sim_completed": "null",
-            "f_resonance": "null",
-            "v_peak": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_resonance": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "v_peak": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -555,6 +1365,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -563,11 +1392,23 @@
           "trial": "noninv_amp__ARxJpBm",
           "case": "noninv_amp",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -576,6 +1417,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -584,11 +1444,23 @@
           "trial": "opamp_buffer__tRXYyzf",
           "case": "opamp_buffer",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -598,6 +1470,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -605,11 +1496,23 @@
           "trial": "opamp_integrator__gyH9itw",
           "case": "opamp_integrator",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pp": "convergence",
-            "vout_avg": "physics"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pp": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            },
+            "vout_avg": {
+              "solver_stage": "L5_physics",
+              "provenance_stage": "P4_pass",
+              "failure_class": "physics"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 1,
             "physics": 1,
             "convergence": 1,
@@ -619,6 +1522,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 1,
+            "L5_quantitative": 1,
+            "L6_pass": 1,
+            "null": 0
+          },
           "kpi_score": 0.2011,
           "final_score": 0.2011
         },
@@ -626,11 +1548,23 @@
           "trial": "opamp_summer__ZdFebBc",
           "case": "opamp_summer",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "vout_avg": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_avg": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -639,6 +1573,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -647,11 +1600,23 @@
           "trial": "rc_highpass_ac__UNQTipz",
           "case": "rc_highpass_ac",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_hf": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_hf": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -661,6 +1626,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -668,13 +1652,33 @@
           "trial": "rc_lowpass_ac__yD3uG7b",
           "case": "rc_lowpass_ac",
           "per_kpi": {
-            "sim_completed": "null",
-            "selected_cap_uF": "extract_format",
-            "gain_10hz": "null",
-            "atten_1khz": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "selected_cap_uF": {
+              "solver_stage": null,
+              "provenance_stage": "P3_extract_mismatch",
+              "failure_class": "extract_format"
+            },
+            "gain_10hz": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "atten_1khz": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 4,
             "physics": 0,
             "convergence": 0,
@@ -684,6 +1688,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 1,
+            "P4_pass": 4,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 4,
+            "null": 1
+          },
           "kpi_score": 0.775,
           "final_score": 0.775
         },
@@ -691,11 +1714,23 @@
           "trial": "rc_pulse_response__EkSqzQk",
           "case": "rc_pulse_response",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_settled": "null",
-            "t_rise": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_settled": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "t_rise": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -704,6 +1739,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -712,11 +1766,23 @@
           "trial": "rl_lowpass_ac__UzXMhWT",
           "case": "rl_lowpass_ac",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_dc": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_dc": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -725,6 +1791,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -733,11 +1818,23 @@
           "trial": "rl_step__jTf6qic",
           "case": "rl_step",
           "per_kpi": {
-            "sim_completed": "null",
-            "i_settled": "null",
-            "t_rise": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "i_settled": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "t_rise": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -746,6 +1843,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -754,11 +1870,23 @@
           "trial": "rlc_bandpass__Esz7rVR",
           "case": "rlc_bandpass",
           "per_kpi": {
-            "sim_completed": "null",
-            "peak_freq": "null",
-            "peak_gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "peak_freq": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "peak_gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -768,6 +1896,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -775,12 +1922,28 @@
           "trial": "rlc_notch__zkgzKhi",
           "case": "rlc_notch",
           "per_kpi": {
-            "sim_completed": "null",
-            "selected_cap_nF": "extract_format",
-            "dc_gain": "null",
-            "notch_depth": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "selected_cap_nF": {
+              "solver_stage": null,
+              "provenance_stage": "P3_extract_mismatch",
+              "failure_class": "extract_format"
+            },
+            "dc_gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "notch_depth": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -790,6 +1953,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 1,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 1
+          },
           "kpi_score": 0.7,
           "final_score": 0.7
         },
@@ -797,11 +1979,23 @@
           "trial": "rlc_step_overdamped__xsjaqDF",
           "case": "rlc_step_overdamped",
           "per_kpi": {
-            "sim_completed": "null",
-            "vss": "null",
-            "t90": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vss": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "t90": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -810,6 +2004,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -818,11 +2031,23 @@
           "trial": "rlc_step_underdamped__yVYfny9",
           "case": "rlc_step_underdamped",
           "per_kpi": {
-            "sim_completed": "null",
-            "vmax": "null",
-            "vss": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vmax": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vss": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -831,6 +2056,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -839,11 +2083,23 @@
           "trial": "sallen_key_lp__spDHa2o",
           "case": "sallen_key_lp",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_dc": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_dc": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -852,6 +2108,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -861,7 +2136,7 @@
     {
       "run_label": "2026-05-06__22-06-27",
       "n_trials": 3,
-      "counts": {
+      "legacy_counts": {
         "null": 7,
         "physics": 0,
         "convergence": 3,
@@ -871,19 +2146,62 @@
         "hallucination": 0,
         "spec_error": 0
       },
+      "provenance_stage_counts": {
+        "P0_hallucination": 0,
+        "P1_path_invalid": 0,
+        "P2_extract_unrunnable": 6,
+        "P3_extract_mismatch": 0,
+        "P4_pass": 10,
+        "spec_error": 0
+      },
+      "solver_stage_counts": {
+        "L0_input_syntax": 0,
+        "L1_input_semantics": 0,
+        "L2_solver_crash": 0,
+        "L3_convergence": 0,
+        "L4_conservation": 0,
+        "L5_physics": 0,
+        "L5_quantitative": 3,
+        "L6_pass": 7,
+        "null": 6
+      },
       "trials": [
         {
           "trial": "flatplate_zpg_subsonic__SEg2Pbh",
           "case": "flatplate_zpg_subsonic",
           "per_kpi": {
-            "y_plus_max": "extract_runnable",
-            "max_non_orthogonality": "extract_runnable",
-            "mesh_cell_count": "extract_runnable",
-            "final_residual_U": "extract_runnable",
-            "cf_x097": "extract_runnable",
-            "drag_coefficient": "extract_runnable"
+            "y_plus_max": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "max_non_orthogonality": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "mesh_cell_count": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "final_residual_U": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "cf_x097": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "drag_coefficient": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 0,
             "physics": 0,
             "convergence": 0,
@@ -893,6 +2211,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 6,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 0,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 0,
+            "null": 6
+          },
           "kpi_score": 0.0,
           "final_score": 0.0
         },
@@ -900,13 +2237,33 @@
           "trial": "lid_driven_cavity_re1000__g7PnGnt",
           "case": "lid_driven_cavity_re1000",
           "per_kpi": {
-            "mesh_cell_count": "convergence",
-            "max_non_orthogonality": "null",
-            "final_residual_p": "null",
-            "u_centerline_y0p5": "convergence",
-            "u_min_along_x0p5": "convergence"
+            "mesh_cell_count": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            },
+            "max_non_orthogonality": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "final_residual_p": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "u_centerline_y0p5": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            },
+            "u_min_along_x0p5": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 2,
             "physics": 0,
             "convergence": 3,
@@ -916,6 +2273,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 5,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 3,
+            "L6_pass": 2,
+            "null": 0
+          },
           "kpi_score": 0.225,
           "final_score": 0.225
         },
@@ -923,13 +2299,33 @@
           "trial": "lid_driven_cavity_re100__u4p32AU",
           "case": "lid_driven_cavity_re100",
           "per_kpi": {
-            "mesh_cell_count": "null",
-            "max_non_orthogonality": "null",
-            "final_residual_p": "null",
-            "u_centerline_y0p5": "null",
-            "u_min_along_x0p5": "null"
+            "mesh_cell_count": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "max_non_orthogonality": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "final_residual_p": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "u_centerline_y0p5": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "u_min_along_x0p5": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 5,
             "physics": 0,
             "convergence": 0,
@@ -938,6 +2334,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 5,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 5,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -947,7 +2362,7 @@
     {
       "run_label": "2026-05-06__22-06-30",
       "n_trials": 3,
-      "counts": {
+      "legacy_counts": {
         "null": 3,
         "physics": 1,
         "convergence": 6,
@@ -957,19 +2372,62 @@
         "hallucination": 0,
         "spec_error": 0
       },
+      "provenance_stage_counts": {
+        "P0_hallucination": 0,
+        "P1_path_invalid": 0,
+        "P2_extract_unrunnable": 6,
+        "P3_extract_mismatch": 0,
+        "P4_pass": 10,
+        "spec_error": 0
+      },
+      "solver_stage_counts": {
+        "L0_input_syntax": 0,
+        "L1_input_semantics": 0,
+        "L2_solver_crash": 0,
+        "L3_convergence": 0,
+        "L4_conservation": 0,
+        "L5_physics": 1,
+        "L5_quantitative": 6,
+        "L6_pass": 3,
+        "null": 6
+      },
       "trials": [
         {
           "trial": "flatplate_zpg_subsonic__NkfYiJb",
           "case": "flatplate_zpg_subsonic",
           "per_kpi": {
-            "y_plus_max": "physics",
-            "max_non_orthogonality": "null",
-            "mesh_cell_count": "null",
-            "final_residual_U": "null",
-            "cf_x097": "convergence",
-            "drag_coefficient": "convergence"
+            "y_plus_max": {
+              "solver_stage": "L5_physics",
+              "provenance_stage": "P4_pass",
+              "failure_class": "physics"
+            },
+            "max_non_orthogonality": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "mesh_cell_count": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "final_residual_U": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "cf_x097": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            },
+            "drag_coefficient": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 1,
             "convergence": 2,
@@ -979,6 +2437,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 6,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 1,
+            "L5_quantitative": 2,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 0.4617,
           "final_score": 0.4617
         },
@@ -986,13 +2463,33 @@
           "trial": "lid_driven_cavity_re1000__vaZ62bY",
           "case": "lid_driven_cavity_re1000",
           "per_kpi": {
-            "mesh_cell_count": "convergence",
-            "max_non_orthogonality": "extract_runnable",
-            "final_residual_p": "convergence",
-            "u_centerline_y0p5": "convergence",
-            "u_min_along_x0p5": "convergence"
+            "mesh_cell_count": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            },
+            "max_non_orthogonality": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "final_residual_p": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            },
+            "u_centerline_y0p5": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            },
+            "u_min_along_x0p5": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 0,
             "physics": 0,
             "convergence": 4,
@@ -1002,6 +2499,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 1,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 4,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 4,
+            "L6_pass": 0,
+            "null": 1
+          },
           "kpi_score": 0.3903,
           "final_score": 0.3903
         },
@@ -1009,13 +2525,33 @@
           "trial": "lid_driven_cavity_re100__Y4JvHxP",
           "case": "lid_driven_cavity_re100",
           "per_kpi": {
-            "mesh_cell_count": "extract_runnable",
-            "max_non_orthogonality": "extract_runnable",
-            "final_residual_p": "extract_runnable",
-            "u_centerline_y0p5": "extract_runnable",
-            "u_min_along_x0p5": "extract_runnable"
+            "mesh_cell_count": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "max_non_orthogonality": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "final_residual_p": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "u_centerline_y0p5": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            },
+            "u_min_along_x0p5": {
+              "solver_stage": null,
+              "provenance_stage": "P2_extract_unrunnable",
+              "failure_class": "extract_runnable"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 0,
             "physics": 0,
             "convergence": 0,
@@ -1025,6 +2561,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 5,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 0,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 0,
+            "null": 5
+          },
           "kpi_score": 0.0,
           "final_score": 0.0
         }
@@ -1033,7 +2588,7 @@
     {
       "run_label": "2026-05-07__15-02-30",
       "n_trials": 20,
-      "counts": {
+      "legacy_counts": {
         "null": 63,
         "physics": 0,
         "convergence": 1,
@@ -1043,17 +2598,52 @@
         "hallucination": 0,
         "spec_error": 0
       },
+      "provenance_stage_counts": {
+        "P0_hallucination": 0,
+        "P1_path_invalid": 0,
+        "P2_extract_unrunnable": 0,
+        "P3_extract_mismatch": 0,
+        "P4_pass": 64,
+        "spec_error": 0
+      },
+      "solver_stage_counts": {
+        "L0_input_syntax": 0,
+        "L1_input_semantics": 0,
+        "L2_solver_crash": 0,
+        "L3_convergence": 0,
+        "L4_conservation": 0,
+        "L5_physics": 0,
+        "L5_quantitative": 1,
+        "L6_pass": 63,
+        "null": 0
+      },
       "trials": [
         {
           "trial": "bridge_rectifier_ripple__LDPiRMA",
           "case": "bridge_rectifier_ripple",
           "per_kpi": {
-            "sim_completed": "null",
-            "selected_cap_uF": "null",
-            "vout_avg": "null",
-            "vrip_pp": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "selected_cap_uF": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_avg": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vrip_pp": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 4,
             "physics": 0,
             "convergence": 0,
@@ -1063,6 +2653,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 4,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 4,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -1070,11 +2679,23 @@
           "trial": "diff_amp__CDkU946",
           "case": "diff_amp",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain_diff": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_diff": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1083,6 +2704,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1091,11 +2731,23 @@
           "trial": "half_wave_rectifier__SBh4EnB",
           "case": "half_wave_rectifier",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_avg": "null",
-            "vrip_pp": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_avg": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vrip_pp": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1104,6 +2756,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1112,11 +2783,23 @@
           "trial": "inv_amp__ATRUoXb",
           "case": "inv_amp",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1125,6 +2808,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1133,11 +2835,23 @@
           "trial": "lc_lowpass_2nd__FqRZgkg",
           "case": "lc_lowpass_2nd",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_dc": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_dc": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1146,6 +2860,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1154,11 +2887,23 @@
           "trial": "lc_resonator__TXChFAs",
           "case": "lc_resonator",
           "per_kpi": {
-            "sim_completed": "null",
-            "f_resonance": "null",
-            "v_peak": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_resonance": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "v_peak": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1167,6 +2912,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1175,11 +2939,23 @@
           "trial": "noninv_amp__RBzxcqn",
           "case": "noninv_amp",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1188,6 +2964,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1196,11 +2991,23 @@
           "trial": "opamp_buffer__LvDtW5x",
           "case": "opamp_buffer",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1210,6 +3017,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -1217,11 +3043,23 @@
           "trial": "opamp_integrator__EpqDdJP",
           "case": "opamp_integrator",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pp": "null",
-            "vout_avg": "convergence"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pp": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_avg": {
+              "solver_stage": "L5_quantitative",
+              "provenance_stage": "P4_pass",
+              "failure_class": "convergence"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 2,
             "physics": 0,
             "convergence": 1,
@@ -1231,6 +3069,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 1,
+            "L6_pass": 2,
+            "null": 0
+          },
           "kpi_score": 0.7182,
           "final_score": 0.7182
         },
@@ -1238,11 +3095,23 @@
           "trial": "opamp_summer__j9U2eVR",
           "case": "opamp_summer",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_pk": "null",
-            "vout_avg": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_pk": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_avg": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1251,6 +3120,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1259,11 +3147,23 @@
           "trial": "rc_highpass_ac__VU6xrBn",
           "case": "rc_highpass_ac",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_hf": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_hf": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1273,6 +3173,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -1280,13 +3199,33 @@
           "trial": "rc_lowpass_ac__z6xxeVv",
           "case": "rc_lowpass_ac",
           "per_kpi": {
-            "sim_completed": "null",
-            "selected_cap_uF": "null",
-            "gain_10hz": "null",
-            "atten_1khz": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "selected_cap_uF": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_10hz": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "atten_1khz": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 5,
             "physics": 0,
             "convergence": 0,
@@ -1296,6 +3235,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 5,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 5,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -1303,11 +3261,23 @@
           "trial": "rc_pulse_response__XR4Loo3",
           "case": "rc_pulse_response",
           "per_kpi": {
-            "sim_completed": "null",
-            "vout_settled": "null",
-            "t_rise": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vout_settled": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "t_rise": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1316,6 +3286,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1324,11 +3313,23 @@
           "trial": "rl_lowpass_ac__dyuWKzK",
           "case": "rl_lowpass_ac",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_dc": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_dc": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1337,6 +3338,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1345,11 +3365,23 @@
           "trial": "rl_step__qKmTdP3",
           "case": "rl_step",
           "per_kpi": {
-            "sim_completed": "null",
-            "i_settled": "null",
-            "t_rise": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "i_settled": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "t_rise": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1358,6 +3390,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1366,11 +3417,23 @@
           "trial": "rlc_bandpass__xnQcaDG",
           "case": "rlc_bandpass",
           "per_kpi": {
-            "sim_completed": "null",
-            "peak_freq": "null",
-            "peak_gain": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "peak_freq": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "peak_gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1380,6 +3443,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -1387,12 +3469,28 @@
           "trial": "rlc_notch__xkWKXDj",
           "case": "rlc_notch",
           "per_kpi": {
-            "sim_completed": "null",
-            "selected_cap_nF": "null",
-            "dc_gain": "null",
-            "notch_depth": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "selected_cap_nF": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "dc_gain": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "notch_depth": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 4,
             "physics": 0,
             "convergence": 0,
@@ -1402,6 +3500,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 4,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 4,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -1409,11 +3526,23 @@
           "trial": "rlc_step_overdamped__vktUMfG",
           "case": "rlc_step_overdamped",
           "per_kpi": {
-            "sim_completed": "null",
-            "vss": "null",
-            "t90": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vss": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "t90": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1422,6 +3551,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1430,11 +3578,23 @@
           "trial": "rlc_step_underdamped__emXki7B",
           "case": "rlc_step_underdamped",
           "per_kpi": {
-            "sim_completed": "null",
-            "vmax": "null",
-            "vss": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vmax": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "vss": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1443,6 +3603,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1451,11 +3630,23 @@
           "trial": "sallen_key_lp__NtPxAza",
           "case": "sallen_key_lp",
           "per_kpi": {
-            "sim_completed": "null",
-            "gain_dc": "null",
-            "f_3db": "null"
+            "sim_completed": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "gain_dc": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "f_3db": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 3,
             "physics": 0,
             "convergence": 0,
@@ -1464,6 +3655,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 3,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 3,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1473,7 +3683,7 @@
     {
       "run_label": "2026-05-07__15-11-43",
       "n_trials": 3,
-      "counts": {
+      "legacy_counts": {
         "null": 16,
         "physics": 0,
         "convergence": 0,
@@ -1483,19 +3693,62 @@
         "hallucination": 0,
         "spec_error": 0
       },
+      "provenance_stage_counts": {
+        "P0_hallucination": 0,
+        "P1_path_invalid": 0,
+        "P2_extract_unrunnable": 0,
+        "P3_extract_mismatch": 0,
+        "P4_pass": 16,
+        "spec_error": 0
+      },
+      "solver_stage_counts": {
+        "L0_input_syntax": 0,
+        "L1_input_semantics": 0,
+        "L2_solver_crash": 0,
+        "L3_convergence": 0,
+        "L4_conservation": 0,
+        "L5_physics": 0,
+        "L5_quantitative": 0,
+        "L6_pass": 16,
+        "null": 0
+      },
       "trials": [
         {
           "trial": "flatplate_zpg_subsonic__Jcbnv2c",
           "case": "flatplate_zpg_subsonic",
           "per_kpi": {
-            "y_plus_max": "null",
-            "max_non_orthogonality": "null",
-            "mesh_cell_count": "null",
-            "final_residual_U": "null",
-            "cf_x097": "null",
-            "drag_coefficient": "null"
+            "y_plus_max": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "max_non_orthogonality": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "mesh_cell_count": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "final_residual_U": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "cf_x097": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "drag_coefficient": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 6,
             "physics": 0,
             "convergence": 0,
@@ -1505,6 +3758,25 @@
             "hallucination": 0,
             "spec_error": 0
           },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 6,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 6,
+            "null": 0
+          },
           "kpi_score": 1.0,
           "final_score": 1.0
         },
@@ -1512,13 +3784,33 @@
           "trial": "lid_driven_cavity_re1000__Gk7eFBt",
           "case": "lid_driven_cavity_re1000",
           "per_kpi": {
-            "mesh_cell_count": "null",
-            "max_non_orthogonality": "null",
-            "final_residual_p": "null",
-            "u_centerline_y0p5": "null",
-            "u_min_along_x0p5": "null"
+            "mesh_cell_count": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "max_non_orthogonality": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "final_residual_p": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "u_centerline_y0p5": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "u_min_along_x0p5": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 5,
             "physics": 0,
             "convergence": 0,
@@ -1527,6 +3819,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 5,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 5,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0
@@ -1535,13 +3846,33 @@
           "trial": "lid_driven_cavity_re100__YkVCJAZ",
           "case": "lid_driven_cavity_re100",
           "per_kpi": {
-            "mesh_cell_count": "null",
-            "max_non_orthogonality": "null",
-            "final_residual_p": "null",
-            "u_centerline_y0p5": "null",
-            "u_min_along_x0p5": "null"
+            "mesh_cell_count": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "max_non_orthogonality": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "final_residual_p": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "u_centerline_y0p5": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            },
+            "u_min_along_x0p5": {
+              "solver_stage": "L6_pass",
+              "provenance_stage": "P4_pass",
+              "failure_class": "null"
+            }
           },
-          "counts": {
+          "legacy_counts": {
             "null": 5,
             "physics": 0,
             "convergence": 0,
@@ -1550,6 +3881,25 @@
             "extract_format": 0,
             "hallucination": 0,
             "spec_error": 0
+          },
+          "provenance_stage_counts": {
+            "P0_hallucination": 0,
+            "P1_path_invalid": 0,
+            "P2_extract_unrunnable": 0,
+            "P3_extract_mismatch": 0,
+            "P4_pass": 5,
+            "spec_error": 0
+          },
+          "solver_stage_counts": {
+            "L0_input_syntax": 0,
+            "L1_input_semantics": 0,
+            "L2_solver_crash": 0,
+            "L3_convergence": 0,
+            "L4_conservation": 0,
+            "L5_physics": 0,
+            "L5_quantitative": 0,
+            "L6_pass": 5,
+            "null": 0
           },
           "kpi_score": 1.0,
           "final_score": 1.0

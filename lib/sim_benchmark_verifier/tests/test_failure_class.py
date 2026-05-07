@@ -3,6 +3,10 @@
 Each test exercises one classifier branch using a synthetic
 `_score_one_kpi` output dict. Real verifier runs feed strings of the
 shape these tests check.
+
+Tests are split into two sections: legacy single-axis (v3.1
+``classify_kpi``) and the two-axis (v3.2 ``classify_provenance`` /
+``classify_solver_stage``).
 """
 from __future__ import annotations
 
@@ -10,8 +14,12 @@ import pytest
 
 from sim_benchmark_verifier.failure_class import (
     PER_KPI_CLASSES,
+    PROVENANCE_STAGES,
+    SOLVER_STAGES,
     annotate_per_kpi,
     classify_kpi,
+    classify_provenance,
+    classify_solver_stage,
 )
 
 
@@ -103,7 +111,9 @@ def test_partial_t_decay_classifies_convergence():
 
 # ── annotate_per_kpi mutates + returns counts ───────────────────────────
 
-def test_annotate_mutates_and_counts():
+def test_annotate_legacy_failure_class_field_set_correctly():
+    # v3.1 consumers read per_kpi[*]["failure_class"]; verify the legacy
+    # field is still emitted with v3.1 values.
     per_kpi = {
         "good":     {"kpi_score": 1.0, "source_verified": 1.0, "physics_pass": 1.0, "t_decay": 1.0},
         "no_file":  {"kpi_score": 0.0, "source_verified": 0.0, "physics_pass": 0.0, "t_decay": 0.0,
@@ -111,13 +121,10 @@ def test_annotate_mutates_and_counts():
         "absent":   {"kpi_score": 0.0, "source_verified": 0.0, "physics_pass": 0.0, "t_decay": 0.0,
                      "why": "KPI absent from result.json"},
     }
-    counts = annotate_per_kpi(per_kpi, {"good": {"value": 1, "source": {}}, "no_file": {"value": 1, "source": {}}})
+    annotate_per_kpi(per_kpi, {"good": {"value": 1, "source": {}}, "no_file": {"value": 1, "source": {}}})
     assert per_kpi["good"]["failure_class"] == "null"
     assert per_kpi["no_file"]["failure_class"] == "provenance_path"
     assert per_kpi["absent"]["failure_class"] == "hallucination"
-    assert counts["null"] == 1
-    assert counts["provenance_path"] == 1
-    assert counts["hallucination"] == 1
 
 
 def test_all_classes_in_enum():
@@ -128,3 +135,104 @@ def test_all_classes_in_enum():
             assert isinstance(cls, str)
     assert "null" in PER_KPI_CLASSES
     assert "physics" in PER_KPI_CLASSES
+
+
+# ── two-axis tests (v3.2) ───────────────────────────────────────────────
+
+def test_provenance_passed_returns_P4_pass():
+    r = {"kpi_score": 1.0, "source_verified": 1.0, "physics_pass": 1.0,
+         "t_decay": 1.0, "value": 1.0}
+    assert classify_provenance(r, {"value": 1.0, "source": {}}) == "P4_pass"
+
+
+def test_provenance_path_invalid():
+    r = {"kpi_score": 0.0, "source_verified": 0.0,
+         "why": "source verification failed: source file not found: /tmp/nope.log"}
+    assert classify_provenance(r, {"value": 1, "source": {}}) == "P1_path_invalid"
+
+
+def test_provenance_extract_unrunnable():
+    r = {"kpi_score": 0.0, "source_verified": 0.0,
+         "why": "source verification failed: extractor exited 1: awk: cannot open"}
+    assert classify_provenance(r, {"value": 1, "source": {}}) == "P2_extract_unrunnable"
+
+
+def test_provenance_extract_mismatch():
+    r = {"kpi_score": 0.0, "source_verified": 0.0,
+         "why": "source verification failed: value mismatch: claim 175.6, file 159.18, diff 16.42"}
+    assert classify_provenance(r, {"value": 175.6, "source": {}}) == "P3_extract_mismatch"
+
+
+def test_provenance_hallucination_kpi_absent():
+    r = {"kpi_score": 0.0, "source_verified": 0.0,
+         "why": "KPI absent from result.json"}
+    assert classify_provenance(r, None) == "P0_hallucination"
+
+
+def test_solver_stage_pass_when_score_one():
+    r = {"kpi_score": 1.0, "source_verified": 1.0, "physics_pass": 1.0,
+         "t_decay": 1.0, "value": 1.0}
+    assert classify_solver_stage(r) == "L6_pass"
+
+
+def test_solver_stage_physics_fail():
+    r = {"kpi_score": 0.0, "source_verified": 1.0, "physics_pass": 0.0,
+         "t_decay": 0.0, "value": 5e6}
+    assert classify_solver_stage(r) == "L5_physics"
+
+
+def test_solver_stage_quantitative_fail():
+    r = {"kpi_score": 0.0, "source_verified": 1.0, "physics_pass": 1.0,
+         "t_decay": 0.0, "value": 100.0}
+    assert classify_solver_stage(r) == "L5_quantitative"
+
+
+def test_solver_stage_partial_decay_is_quantitative():
+    r = {"kpi_score": 0.5, "source_verified": 1.0, "physics_pass": 1.0,
+         "t_decay": 0.5, "value": 175.6}
+    assert classify_solver_stage(r) == "L5_quantitative"
+
+
+def test_solver_stage_null_when_provenance_failed():
+    # Cascading: source not verified → can't trust solver-axis signal
+    r = {"kpi_score": 0.0, "source_verified": 0.0, "physics_pass": 0.0,
+         "t_decay": 0.0, "why": "source verification failed: source file not found"}
+    assert classify_solver_stage(r) is None
+
+
+def test_annotate_emits_both_axes():
+    per_kpi = {
+        "good":   {"kpi_score": 1.0, "source_verified": 1.0, "physics_pass": 1.0, "t_decay": 1.0},
+        "miss":   {"kpi_score": 0.0, "source_verified": 0.0, "physics_pass": 0.0,
+                   "t_decay": 0.0, "why": "source verification failed: source file not found: /x"},
+        "phys":   {"kpi_score": 0.0, "source_verified": 1.0, "physics_pass": 0.0,
+                   "t_decay": 0.0, "value": 5e6},
+    }
+    counts = annotate_per_kpi(
+        per_kpi,
+        {"good": {"value": 1, "source": {}}, "miss": {"value": 1, "source": {}}, "phys": {"value": 5e6, "source": {}}},
+    )
+    assert per_kpi["good"]["solver_stage"]     == "L6_pass"
+    assert per_kpi["good"]["provenance_stage"] == "P4_pass"
+    assert per_kpi["good"]["failure_class"]    == "null"
+
+    assert per_kpi["miss"]["solver_stage"]     is None
+    assert per_kpi["miss"]["provenance_stage"] == "P1_path_invalid"
+    assert per_kpi["miss"]["failure_class"]    == "provenance_path"
+
+    assert per_kpi["phys"]["solver_stage"]     == "L5_physics"
+    assert per_kpi["phys"]["provenance_stage"] == "P4_pass"
+    assert per_kpi["phys"]["failure_class"]    == "physics"
+
+    assert counts["solver_stage_counts"]["L6_pass"]     == 1
+    assert counts["solver_stage_counts"]["L5_physics"]  == 1
+    assert counts["solver_stage_counts"]["null"]        == 1
+    assert counts["provenance_stage_counts"]["P4_pass"]        == 2
+    assert counts["provenance_stage_counts"]["P1_path_invalid"] == 1
+
+
+def test_legacy_failure_class_still_correct():
+    # v3.1 callers expect the old name to keep returning the same values.
+    r = {"kpi_score": 0.0, "source_verified": 0.0, "physics_pass": 0.0,
+         "t_decay": 0.0, "why": "source verification failed: extractor rejected: forbidden binary"}
+    assert classify_kpi(r, {"value": 1, "source": {}}) == "extract_runnable"

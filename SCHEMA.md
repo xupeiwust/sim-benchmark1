@@ -187,37 +187,67 @@ aggregate metric.
 
 The verifier also writes `reward_detail.json` with:
 
-- `schema_version` (currently `reward-v3.1`)
+- `schema_version` (currently `reward-v3.2`)
 - diagnostic `meta_score` and `meta_detail`
 - `kpi_score`
-- per-group and per-KPI scoring detail (each per-KPI entry carries a
-  `failure_class` enum — see below)
-- `kpi_detail.failure_class_counts` — class → count distribution across
-  the case's KPIs
+- per-group and per-KPI scoring detail (each per-KPI entry carries
+  `solver_stage` + `provenance_stage` + legacy `failure_class` — see below)
+- `kpi_detail.solver_stage_counts` and `kpi_detail.provenance_stage_counts`
+  — distributions of each axis across the case's KPIs
 - `final_score`
 
-### `failure_class` enum (per-KPI diagnostic layer)
+### Two-axis failure classification (per-KPI diagnostic layer)
 
-Schema `reward-v3.1` adds a stable enum so downstream tooling can group
-"physics fail" vs "paperwork fail" vs "agent didn't even claim the KPI"
-without re-parsing the free-text `why` string. Values:
+Schema `reward-v3.2` carries two orthogonal axes per KPI, both
+deterministic. Inspired by ccl-evaluator's L0–L6 design (see
+sim-proj #125 RFC). Each axis answers a different question.
+
+**`provenance_stage`** — solver-agnostic. Did the agent honestly record
+what they got?
 
 | Value | Meaning |
 |---|---|
-| `null` | KPI passed (kpi_score = 1.0) |
-| `physics` | value outside `[physics_min, physics_max]` |
-| `convergence` | physics ok but `|pred − gt| > T_bad` (or partial T_decay) |
-| `provenance_path` | `source.path` missing / not a file / not absolute |
-| `extract_runnable` | `source.extract` failed to run (sandbox reject, exit ≠ 0, timeout) |
-| `extract_format` | extract ran fine but extracted value differs from claim |
-| `hallucination` | KPI absent / claim has no `source` / unknown `source.kind` |
-| `spec_error` | the case's `kpis.json` is itself malformed (not the agent's fault) |
+| `P0_hallucination` | KPI absent / claim has no source / unknown `source.kind` |
+| `P1_path_invalid` | `source.path` missing / not absolute / file doesn't exist |
+| `P2_extract_unrunnable` | `source.extract` failed to run (sandbox reject, non-zero exit, timeout) |
+| `P3_extract_mismatch` | extract runs fine, extracted value differs from claim |
+| `P4_pass` | extract reproduces the claim |
+| `spec_error` | case author's `kpis.json` is malformed (not the agent's fault) |
 
-Trial-level classes (`wall_time`, `turn_cap`, `infra`) are NOT set by
-the verifier — they're populated post-hoc by an aggregator that reads
-the harness transcript. Per-KPI failure_class needs only the verifier's
-output; trial-level classes need the harness, so they're a separate
-layer (tracked in sim-proj #121).
+**`solver_stage`** — solver-agnostic axis, solver-specific detector.
+How far did the simulation make it? `null` when the verifier doesn't
+have enough signal (cascading provenance failure, or detector for that
+solver hasn't been written yet).
+
+| Value | Meaning |
+|---|---|
+| `L0_input_syntax` | input file doesn't parse (per-solver detector) |
+| `L1_input_semantics` | input not well-posed / contradicts intent |
+| `L2_solver_crash` | solver started then died, or refused to start |
+| `L3_convergence` | solver ran but did not converge |
+| `L4_conservation` | converged but conservation broken (where applicable) |
+| `L5_physics` | value outside `[physics_min, physics_max]` |
+| `L5_quantitative` | value matches physics range but `|pred − gt| > T_bad` |
+| `L6_pass` | nothing wrong on this axis |
+
+Phase 1 (current commit) populates only `L5_physics` / `L5_quantitative`
+/ `L6_pass` from data the verifier already has. `L0` / `L1` / `L2` /
+`L3` / `L4` require solver-specific detectors and emit `null` until
+phases 2–4 (sim-benchmark #4) land.
+
+**Why two axes.** A KPI that passes provenance but fails physics is a
+model-capability problem; a KPI that passes physics but fails
+provenance is a paperwork / SKILL-prompt problem. Different fixes,
+different routing. A flat enum can't represent the cross-product —
+`(L6_pass, P3_extract_mismatch)` is the most interesting analytical
+cell ("simulated correctly but recorded badly").
+
+**Backward compatibility.** The legacy v3.1 `failure_class` field is
+still emitted on each per-KPI entry (mapped from the two-axis values),
+so reward-v3.1 readers continue to work. Trial-level classes
+(`wall_time`, `turn_cap`, `infra`) are NOT on either axis — they need
+the harness transcript, populated post-hoc by an aggregator
+(sim-proj #121 follow-up).
 
 The final public score is KPI-only:
 

@@ -19,7 +19,11 @@ from pathlib import Path
 
 from sim_benchmark_verifier.failure_class import (
     PER_KPI_CLASSES,
+    PROVENANCE_STAGES,
+    SOLVER_STAGES,
     classify_kpi,
+    classify_provenance,
+    classify_solver_stage,
 )
 
 
@@ -40,19 +44,33 @@ def classify_trial(trial_dir: Path) -> dict | None:
         name: ({"value": k.get("value")} if k.get("value") is not None else None)
         for name, k in per_kpi.items()
     }
-    counts: dict[str, int] = {c: 0 for c in PER_KPI_CLASSES}
-    rows: dict[str, str] = {}
+    legacy_counts: dict[str, int] = {c: 0 for c in PER_KPI_CLASSES}
+    prov_counts: dict[str, int]   = {p: 0 for p in PROVENANCE_STAGES}
+    solver_counts: dict[str, int] = {s: 0 for s in SOLVER_STAGES}
+    solver_counts["null"] = 0
+    rows: dict[str, dict] = {}
     for name, kpi_result in per_kpi.items():
-        cls = classify_kpi(kpi_result, result_obj.get(name))
-        rows[name] = cls
-        counts[cls] = counts.get(cls, 0) + 1
+        prov = classify_provenance(kpi_result, result_obj.get(name))
+        solver = classify_solver_stage(kpi_result)
+        legacy = classify_kpi(kpi_result, result_obj.get(name))
+        rows[name] = {
+            "solver_stage": solver,
+            "provenance_stage": prov,
+            "failure_class": legacy,
+        }
+        legacy_counts[legacy] = legacy_counts.get(legacy, 0) + 1
+        prov_counts[prov]   = prov_counts.get(prov, 0) + 1
+        solver_counts[solver if solver is not None else "null"] = \
+            solver_counts.get(solver if solver is not None else "null", 0) + 1
     return {
-        "trial":      trial_dir.name,
-        "case":       trial_dir.name.rsplit("__", 1)[0],
-        "per_kpi":    rows,
-        "counts":     counts,
-        "kpi_score":  d.get("kpi_score"),
-        "final_score": d.get("final_score"),
+        "trial":            trial_dir.name,
+        "case":             trial_dir.name.rsplit("__", 1)[0],
+        "per_kpi":          rows,
+        "legacy_counts":    legacy_counts,
+        "provenance_stage_counts": prov_counts,
+        "solver_stage_counts":     solver_counts,
+        "kpi_score":        d.get("kpi_score"),
+        "final_score":      d.get("final_score"),
     }
 
 
@@ -74,15 +92,24 @@ def main(argv: list[str] | None = None) -> int:
             row = classify_trial(sub)
             if row:
                 trials.append(row)
-        run_counts: dict[str, int] = {c: 0 for c in PER_KPI_CLASSES}
+        legacy_run: dict[str, int] = {c: 0 for c in PER_KPI_CLASSES}
+        prov_run: dict[str, int]   = {p: 0 for p in PROVENANCE_STAGES}
+        solver_run: dict[str, int] = {s: 0 for s in SOLVER_STAGES}
+        solver_run["null"] = 0
         for t in trials:
-            for c, n in t["counts"].items():
-                run_counts[c] = run_counts.get(c, 0) + n
+            for c, n in t["legacy_counts"].items():
+                legacy_run[c] = legacy_run.get(c, 0) + n
+            for p, n in t["provenance_stage_counts"].items():
+                prov_run[p] = prov_run.get(p, 0) + n
+            for s, n in t["solver_stage_counts"].items():
+                solver_run[s] = solver_run.get(s, 0) + n
         overall["runs"].append({
-            "run_label": jd.name,
-            "n_trials":  len(trials),
-            "counts":    run_counts,
-            "trials":    trials,
+            "run_label":               jd.name,
+            "n_trials":                len(trials),
+            "legacy_counts":           legacy_run,
+            "provenance_stage_counts": prov_run,
+            "solver_stage_counts":     solver_run,
+            "trials":                  trials,
         })
 
     if args.output_json:
@@ -91,11 +118,11 @@ def main(argv: list[str] | None = None) -> int:
                                     encoding="utf-8")
         print(f"wrote {args.output_json}")
 
-    # Brief table to stdout
+    # Brief table to stdout (provenance axis only — most actionable)
     print()
-    print(f"{'Run':<50} " + " ".join(f"{c[:6]:>7}" for c in PER_KPI_CLASSES))
+    print(f"{'Run':<50} " + " ".join(f"{p.split('_',1)[0]:>5}" for p in PROVENANCE_STAGES))
     for run in overall["runs"]:
-        cells = " ".join(f"{run['counts'].get(c, 0):>7}" for c in PER_KPI_CLASSES)
+        cells = " ".join(f"{run['provenance_stage_counts'].get(p, 0):>5}" for p in PROVENANCE_STAGES)
         print(f"{run['run_label']:<50} {cells}")
     return 0
 
