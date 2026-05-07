@@ -71,14 +71,23 @@ read against that ceiling.
 We include first reference runs with MiniMax-M2.5-highspeed and MiniMax-M2.7
 through a claude-code harness.
 
-| Suite | Reference models | Read |
-|---|---|---|
-| LTspice circuits | MiniMax-M2.5-highspeed and MiniMax-M2.7 both land around the 0.9 range | Strong agents can already complete many artifact-grounded circuit workflows. Parameter sweeps and design-selection tasks still discriminate. |
-| OpenFOAM fluids | Both MiniMax runs are below 0.5 on the oracle-available CFD subset | CFD remains much harder: agents must author case files, mesh, run solvers, post-process fields, and produce replayable KPI provenance. |
+| Suite | Tasks | MiniMax-M2.5-highspeed | MiniMax-M2.7 | Oracle ceiling |
+|---|---:|---:|---:|---:|
+| LTspice circuits | 20 | **0.936** | **0.884** | 1.000 |
+| OpenFOAM fluids | 3 | **0.408** | **0.284** | 0.999 |
 
-These are reference runs, not a mature cross-model leaderboard. Exact scores,
-completion policy, per-case artifacts, and superseded-run notes live in
-[`LEADERBOARD.md`](LEADERBOARD.md) and [`results/v0.1/`](results/v0.1/).
+Reads:
+- **LTspice**: both reference agents already complete many artifact-grounded
+  circuit workflows. Parameter sweeps and design-selection tasks still
+  discriminate.
+- **OpenFOAM**: CFD remains much harder — agents must author case files,
+  mesh, run solvers, post-process fields, and produce replayable KPI
+  provenance. Every step is a chance to lose the score.
+
+These are reference runs, not a mature cross-model leaderboard. Per-case
+scores, completion policy, harness-exception accounting, and superseded-run
+notes live in [`LEADERBOARD.md`](LEADERBOARD.md) and
+[`results/v0.1/`](results/v0.1/).
 
 The useful early signal is workflow-shaped: artifact-grounded grading
 separates agents that can talk about simulation from agents that can produce
