@@ -51,27 +51,27 @@ See [`CASES.md`](CASES.md) for the full catalog with leakage, tier, and
 oracle-status flags per case. See [`SCHEMA.md`](SCHEMA.md) for the case /
 verifier contract.
 
-## Day-one results (reference run)
+## First reference runs
 
-Every task ships with a deterministic `solution/solve.sh` (the *oracle*).
-Running the oracle produces the maximum reachable score under the current
-verifier; any model's score is read against this upper bound.
+Every task ships with a deterministic `solution/solve.sh` oracle. Running
+the oracle gives the verifier's upper-bound sanity check; model rows are
+read against that ceiling.
 
-| Run | Agent / Model | Tasks | Errors | **Mean reward** | Notes |
-|---|---|---:|---:|---:|---|
-| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 0 | **1.000** | reference upper bound |
-| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | 20 | 1 | **0.936** | non-reasoning |
-| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 20 | 3 | **0.776** | reasoning |
+We include first reference runs with MiniMax-M2.5-highspeed and MiniMax-M2.7
+through a claude-code harness.
 
-**v0.1 read.** M2.5-highspeed (non-reasoning) wins by 16 points over M2.7 (reasoning).
-M2.7 had three zero-score cases that failed to submit `result.json` at all — likely
-consumed reasoning budget under the 80-turn cap. Both models bottom out on the upgraded
-design tasks (`bridge_rectifier_ripple`, `rc_lowpass_ac`, `rlc_notch`, `lc_lowpass_2nd`)
-where the model has to sweep a parameter and choose by spec rather than just measure.
+| Suite | Reference models | Read |
+|---|---|---|
+| LTspice circuits | MiniMax-M2.5-highspeed and MiniMax-M2.7 both land around the 0.9 range | Strong agents can already complete many artifact-grounded circuit workflows. Parameter sweeps and design-selection tasks still discriminate. |
+| OpenFOAM fluids | Both MiniMax runs are below 0.5 on the oracle-available CFD subset | CFD remains much harder: agents must author case files, mesh, run solvers, post-process fields, and produce replayable KPI provenance. |
 
-Per-case scores and machine-readable artifacts live in
-[`results/v0.1/`](results/v0.1/). [`LEADERBOARD.md`](LEADERBOARD.md) tracks
-historical and ablation results.
+These are reference runs, not a mature cross-model leaderboard. Exact scores,
+completion policy, per-case artifacts, and superseded-run notes live in
+[`LEADERBOARD.md`](LEADERBOARD.md) and [`results/v0.1/`](results/v0.1/).
+
+The useful early signal is workflow-shaped: artifact-grounded grading
+separates agents that can talk about simulation from agents that can produce
+solver artifacts that survive replay.
 
 ## Why three audiences should care
 

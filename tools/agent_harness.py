@@ -459,18 +459,33 @@ if __name__ == "__main__":
 # without leaking semantic info (gt_value, T_decay, or even claim-vs-extract
 # value comparisons).
 _RESULT_CHECK_HOOK_SRC = r'''#!/usr/bin/env python3
-"""Stop hook: schema-validate /tmp/agent/result.json before letting claude stop.
+"""Stop hook: validate /tmp/agent/result.json before letting claude stop.
 
-Three states:
-  - File missing → block + onboarding reason (how to write result.json)
-  - File present but schema-broken → block + per-KPI structural errors
-  - File present + schema-valid → exit 0, claude stops normally
+Two-pass validation:
+  Pass 1 (schema): file present, JSON parses, every KPI has the right
+    shape, source.kind is recognised, extract uses only allow-listed
+    binaries, run_id exists in `sim --json logs` history.
+  Pass 2 (runnability, file_extract only): the agent's extract pipeline
+    re-runs against source.path's content (piped as stdin, just like the
+    verifier does post-hoc) and produces *something* on stdout.
 
-Schema checks ONLY (no value comparisons): we tell the agent which fields
-are malformed, but never reveal whether their claimed value matches the
-extracted value, what the gt_value is, or where they sit on the T_decay
-curve. This keeps the post-hoc verifier as the only judge of correctness;
-the hook is just bookkeeping triage.
+Pass 2 catches the common case where physics-correct trials fail because
+the agent wrote `grep foo log.txt` (relative path, no cwd guarantee) when
+the verifier needs `grep foo /abs/log.txt` or `grep foo` (stdin).
+Empirically observed on M2.7 OpenFOAM cavity: agent ran the solver
+correctly (u_centerline within 2 % of Ghia 1982), then submitted extracts
+that returned empty when verifier replayed them, scoring 0/5 KPIs.
+
+Pass 2 NEVER reveals the value extracted, whether it matches the agent's
+claim, or where it sits on the T_decay curve — only that the pipeline
+returns something non-empty. That stays within the existing hook contract
+(schema/bookkeeping yes, semantics no).
+
+States:
+  - File missing → block + onboarding reason
+  - Schema broken → block + per-KPI structural errors (Pass 1)
+  - Extract returns empty / errors → block + per-KPI runnability hint (Pass 2)
+  - Schema valid + extract returns non-empty → exit 0, claude stops normally
 """
 import datetime
 import json
@@ -535,6 +550,57 @@ def check_extract(extract) -> str | None:
         if head not in ALLOWED_BINARIES:
             allowed = ", ".join(sorted(ALLOWED_BINARIES))
             return f"first token {head!r} not in allowed binaries ({allowed})"
+    return None
+
+
+def check_extract_runnable(entry):
+    """Pass 2: re-run the agent's extract pipeline as the verifier will.
+
+    Reveals one bit only: did stdout come out empty / did the pipeline
+    error. Never reveals the actual extracted value, whether it matches
+    the agent's claim, or any GT-adjacent semantics. Scope: file_extract
+    only — ltspice_log / sim_run_* have their own verifier paths.
+
+    Returns None if runnable, else a why-string.
+    """
+    src = entry.get("source") or {}
+    if src.get("kind") != "file_extract":
+        return None
+    path = src.get("path")
+    extract = src.get("extract")
+    if not isinstance(path, str) or not path:
+        return None  # caught by schema pass
+    if not isinstance(extract, str) or not extract.strip():
+        return None  # caught by schema pass
+    full = Path(path)
+    if not full.is_absolute():
+        return ("source.path must be absolute (verifier reads it from a fixed cwd, "
+                f"got {path!r})")
+    if not full.is_file():
+        return f"source.path does not exist or is not a file at {path!r}"
+    try:
+        file_text = full.read_text(encoding="utf-8", errors="replace")
+    except OSError as e:
+        return f"source.path could not be read: {e}"
+    try:
+        proc = subprocess.run(
+            ["bash", "-c", extract],
+            input=file_text, capture_output=True, text=True, timeout=10,
+        )
+    except subprocess.TimeoutExpired:
+        return "extract timed out (>10 s) when re-run against source.path content"
+    if proc.returncode != 0:
+        return f"extract exited {proc.returncode}: {proc.stderr.strip()[:120]}"
+    if not proc.stdout.strip():
+        return ("extract produced empty stdout when re-run against source.path "
+                "content. Common causes: (1) extract refers to a relative path "
+                "(e.g. `grep foo log.checkMesh`) — verifier's cwd is NOT your case "
+                "dir, so the file is not found. Either use absolute paths in the "
+                "pipeline (`grep foo /root/case/log.checkMesh`) or read from stdin "
+                "(`grep foo` / `awk ...` with no filename arg, since the verifier "
+                "pipes source.path's content via stdin). (2) regex/awk pattern "
+                "doesn't match the actual file content; sanity check the file with "
+                "`head` / `tail` / `wc -l` first")
     return None
 
 
@@ -638,29 +704,55 @@ def main() -> int:
         if errs:
             failures[name] = errs
 
-    if not failures:
-        return 0  # All KPIs schema-valid; let claude stop.
-
-    lines = [f"{RESULT_PATH} has schema problems — fix these before stopping:"]
-    for name in sorted(failures):
-        lines.append(f"  {name}:")
-        for e in failures[name]:
-            lines.append(f"    - {e}")
-    lines.append("")
-    if run_ids is not None:
-        if run_ids:
-            lines.append(f"run_ids in sim history: {sorted(run_ids)}")
-            lines.append("Find the right one with: sim --json logs last | jq -r .run_id")
+    if failures:
+        lines = [f"{RESULT_PATH} has schema problems — fix these before stopping:"]
+        for name in sorted(failures):
+            lines.append(f"  {name}:")
+            for e in failures[name]:
+                lines.append(f"    - {e}")
+        lines.append("")
+        if run_ids is not None:
+            if run_ids:
+                lines.append(f"run_ids in sim history: {sorted(run_ids)}")
+                lines.append("Find the right one with: sim --json logs last | jq -r .run_id")
+            else:
+                lines.append("No sim runs in history yet. Run `sim run --solver ltspice <netlist>` first.")
         else:
-            lines.append("No sim runs in history yet. Run `sim run --solver ltspice <netlist>` first.")
-    else:
-        lines.append("`sim` CLI is not available in this container (no `sim --json logs`).")
-        lines.append("Drive the simulator natively (e.g. `wine-ltspice <netlist>`) and use")
-        lines.append("source.kind=\"ltspice_log\" with path pointing at the .log LTspice")
-        lines.append("produces. Use source.kind=\"file_extract\" only as a fallback for")
-        lines.append("non-LTspice artifacts or custom post-processed files.")
-    lines.append("Allowed extract binaries: " + ", ".join(sorted(ALLOWED_BINARIES)))
-    return block("\n".join(lines))
+            lines.append("`sim` CLI is not available in this container (no `sim --json logs`).")
+            lines.append("Drive the simulator natively (e.g. `wine-ltspice <netlist>`) and use")
+            lines.append("source.kind=\"ltspice_log\" with path pointing at the .log LTspice")
+            lines.append("produces. Use source.kind=\"file_extract\" only as a fallback for")
+            lines.append("non-LTspice artifacts or custom post-processed files.")
+        lines.append("Allowed extract binaries: " + ", ".join(sorted(ALLOWED_BINARIES)))
+        return block("\n".join(lines))
+
+    # Pass 2: extract-runnability. Schema OK, but does the file_extract
+    # pipeline actually produce stdout when verifier re-runs it?
+    runnability_failures = {}
+    for name, entry in result.items():
+        why = check_extract_runnable(entry)
+        if why:
+            runnability_failures[name] = why
+
+    if runnability_failures:
+        lines = [
+            f"{RESULT_PATH} schema is valid, but file_extract pipelines fail to "
+            "produce output when re-run as the verifier will. The verifier scores "
+            "these KPIs 0 because it pipes source.path's contents into your "
+            "extract and reads stdout — your pipeline returns nothing. Fix and "
+            "re-stop:",
+        ]
+        for name in sorted(runnability_failures):
+            lines.append(f"  {name}:")
+            lines.append(f"    {runnability_failures[name]}")
+        lines.append("")
+        lines.append(
+            "This check only reveals empty-vs-non-empty stdout, never the value "
+            "or whether it matches your claim. That stays the verifier's job."
+        )
+        return block("\n".join(lines))
+
+    return 0  # schema valid + every file_extract is runnable
 
 
 if __name__ == "__main__":

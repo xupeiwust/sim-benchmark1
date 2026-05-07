@@ -1,0 +1,34 @@
+{
+    "id": "80da151b-eee3-4bf5-9510-259f5002810a",
+    "started_at": "2026-05-06T21:23:27.881156",
+    "finished_at": "2026-05-06T21:29:02.535173",
+    "n_total_trials": 3,
+    "stats": {
+        "n_trials": 3,
+        "n_errors": 0,
+        "evals": {
+            "oracle__fluids": {
+                "n_trials": 3,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "mean": 0.9991
+                    }
+                ],
+                "pass_at_k": {},
+                "reward_stats": {
+                    "score": {
+                        "1.0": [
+                            "lid_driven_cavity_re1000__aLiuTPL",
+                            "lid_driven_cavity_re100__cGKMwJj"
+                        ],
+                        "0.9973": [
+                            "flatplate_zpg_subsonic__ByeTs93"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        }
+    }
+}

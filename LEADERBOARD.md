@@ -16,24 +16,48 @@ model run completes.
 | MVP scored gate | 20 | LTspice oracle-verified |
 | OpenFOAM public tasks | 16 | Public catalog; base image/oracle packaging still needs release work |
 
-### Current Results
+### Current Results · v0.1 (2026-05-06)
 
-| Run | Agent / Model | Scope | Tasks | Completed | Errors | **Mean** | Notes |
-|---|---|---|---:|---:|---:|---:|---|
-| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | LTspice circuits | 20 | 20/20 | 0 | **1.000** | reference upper bound |
-| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | LTspice circuits | 20 | 20/20 | 1 | **0.936** | non-reasoning (16×1.0, 1×0.78, 2×0.7, 1×0.55) |
-| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | LTspice circuits | 20 | 20/20 | 3 | **0.776** | reasoning (15×1.0, 1×0.33, 1×0.20, **3×0.0**) |
-| `release-v0.1-openfoam3-oracle-20260503` | oracle | OpenFOAM oracle-available | 3 | 0/3 | n/a | n/a | environment build failed before solver: `svd-ai-lab/sim-benchmark-base:latest` not pullable |
+#### LTspice circuits (20 tasks)
 
-Per-case scores in [`results/v0.1/README.md`](./results/v0.1/README.md). Machine-readable
-artifacts at `results/v0.1/{summary.json, ltspice20-{run}-*.csv, ltspice20-{run}-*.json}`.
+| Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Notes |
+|---|---|---:|---:|---:|---:|---:|---|
+| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 20 | 0 | **1.000** | **1.000** | reference upper bound |
+| `release-v0.1-ltspice20-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** (non-reasoning) | 20 | 20 | 1 | **0.936** | **0.936** | pre-final harness; all assigned tasks completed |
+| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** (reasoning) | 20 | 19 | 2 | **0.930** | **0.884** | final harness; `bridge_rectifier_ripple` hit the wall-time cap and is counted as zero in assigned mean |
 
-**v0.1 read.** M2.5-highspeed (non-reasoning) wins by 16 points over M2.7 (reasoning) on
-this LTspice suite, contrary to the usual reasoning-helps prior. M2.7's three zero-score
-cases (`bridge_rectifier_ripple`, `half_wave_rectifier`, `rl_lowpass_ac`) failed to submit
-`/tmp/agent/result.json` at all — likely consumed reasoning budget under the 80-turn cap.
-Both models bottom out on the upgraded design tasks (sweep + select capacitor) — leakage 1
-cases discriminate as designed.
+#### OpenFOAM fluids (3 oracle-available tasks)
+
+| Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Notes |
+|---|---|---:|---:|---:|---:|---:|---|
+| `release-v0.1-openfoam3-oracle-20260506` | oracle (deterministic) | 3 | 3 | 0 | **0.999** | **0.999** | reference upper bound; flatplate cf_x097 = 0.997 within numerical noise |
+| `release-v0.1-openfoam3-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** | 3 | 3 | 1 | **0.408** | **0.408** | cavity_re100 1.0 / cavity_re1000 0.225 / flatplate 0.0 |
+| `release-v0.1-openfoam3-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** | 3 | 3 | 0 | **0.284** | **0.284** | cavity_re100 0.0 from an extract-path paperwork failure / cavity_re1000 0.390 / flatplate 0.462 |
+
+Per-case scores in [`results/v0.1/README.md`](./results/v0.1/README.md). JSON artifacts in
+`results/v0.1/`.
+
+`Completed Mean` averages completed trials only. `Assigned Mean` counts
+assigned but incomplete tasks as zero. `Harness exceptions` are agent or
+runner exit-status events; they are not always zero-score tasks because the
+verifier may still have replayable artifacts.
+
+### Superseded run note
+
+An earlier MiniMax-M2.7 LTspice run is superseded. It was invalidated by a
+claude-code-router reasoning-content translation bug plus a too-low turn cap,
+both fixed before the current M2.7 reference row. Git history preserves the
+full superseded artifact for audit; current release artifacts list only rows
+included in the public result set.
+
+### Current read
+
+The useful early signal is workflow-shaped. Both MiniMax reference agents are
+strong on LTspice circuit workflows, while both remain below the oracle ceiling
+on OpenFOAM because CFD asks the agent to author the case, mesh, solve,
+post-process, and submit replayable provenance. Several misses are workflow or
+provenance failures rather than pure physics failures, which is exactly what
+this benchmark is designed to expose.
 
 The historical tables below are development history (v3 / v4 / v5 / v7 / v9–v18 OpenFOAM
 work). They should not be presented as the v0.1 public result.
