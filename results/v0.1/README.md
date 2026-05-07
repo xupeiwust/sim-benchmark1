@@ -1,55 +1,73 @@
 # v0.1 MVP Results
 
-This directory contains release-facing result artifacts for the v0.1 MVP gate. The public benchmark release ships 36 public runnable tasks; the scored MVP gate is the 20-task LTspice circuit suite.
+This directory contains current release-facing result artifacts for the
+initial public benchmark release. Git history is the archive for superseded
+runs; files kept here are the current public result set.
 
 ## Summary
 
-| Run | Agent / Model | Tasks | Completed | Errored | **Mean** | Status |
-|---|---|---:|---:|---:|---:|---|
-| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 20 | 0 | **1.000** | reference upper bound |
-| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | 20 | 20 | 1 | **0.936** | non-reasoning |
-| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 20 | 20 | 3 | **0.776** | reasoning |
+| Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Status |
+|---|---|---:|---:|---:|---:|---:|---|
+| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 20 | 0 | **1.000** | **1.000** | reference upper bound |
+| `release-v0.1-ltspice20-minimax-m25-20260506` | claude-code · MiniMax-M2.5-highspeed | 20 | 20 | 1 | **0.936** | **0.936** | included |
+| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 20 | 19 | 2 | **0.930** | **0.884** | included; `bridge_rectifier_ripple` wall-time capped |
+| `release-v0.1-openfoam3-oracle-20260506` | oracle (deterministic) | 3 | 3 | 0 | **0.999** | **0.999** | reference upper bound |
+| `release-v0.1-openfoam3-minimax-m25hs-20260506` | claude-code · MiniMax-M2.5-highspeed | 3 | 3 | 1 | **0.408** | **0.408** | included |
+| `release-v0.1-openfoam3-minimax-m27-20260506` | claude-code · MiniMax-M2.7 | 3 | 3 | 0 | **0.284** | **0.284** | included |
 
-Read this as: the oracle baseline is what the verifier scores when the solve.sh ships the right answer; any model row reads against that ceiling.
+`Completed Mean` averages completed trials only. `Assigned Mean` counts
+assigned but incomplete tasks as zero. `Harness exceptions` are agent or
+runner exit-status events; they are not always zero-score tasks because the
+verifier may still have replayable artifacts.
 
 ## Files
 
-- `summary.json` — machine-readable release summary (above table + dependency snapshot).
-- `ltspice20-oracle-20260503.{csv,json}` — oracle reference run.
-- `ltspice20-minimax-m25-20260506.{csv,json}` — MiniMax-M2.5-highspeed run.
-- `ltspice20-minimax-m27-20260506.{csv,json}` — MiniMax-M2.7 run.
+- `summary.json` - machine-readable current release summary.
+- `ltspice20-oracle-20260503.{csv,json}` - LTspice oracle reference run.
+- `ltspice20-minimax-m25-20260506.{csv,json}` - MiniMax-M2.5-highspeed LTspice run.
+- `ltspice20-minimax-m27-20260506-final.{csv,json}` - MiniMax-M2.7 LTspice final run.
+- `openfoam3-{oracle,minimax-m25hs,minimax-m27}-20260506.json` - OpenFOAM reference subset.
+
+An earlier MiniMax-M2.7 LTspice run was superseded by the final run after a
+reasoning-content router fix and turn-cap correction. It is intentionally not
+kept beside current artifacts.
 
 ## Per-Case Comparison (LTspice 20)
 
-| Case | Tier | Leakage | Oracle | M2.5 | M2.7 |
+| Case | Tier | Leakage | Oracle | M2.5 | M2.7 final |
 |---|---|---:|---:|---:|---:|
-| `bridge_rectifier_ripple` | M | 1 | 1.000 | 0.700 | **0.000** |
+| `bridge_rectifier_ripple` | M | 1 | 1.000 | 0.700 | n/a |
 | `diff_amp` | M | 2 | 1.000 | 1.000 | 1.000 |
-| `half_wave_rectifier` | S | 2 | 1.000 | 1.000 | **0.000** |
+| `half_wave_rectifier` | S | 2 | 1.000 | 1.000 | 1.000 |
 | `inv_amp` | M | 3 | 1.000 | 1.000 | 1.000 |
-| `lc_lowpass_2nd` | M | 2 | 1.000 | **0.550** | 1.000 |
+| `lc_lowpass_2nd` | M | 2 | 1.000 | 0.550 | 1.000 |
 | `lc_resonator` | M | 2 | 1.000 | 1.000 | 1.000 |
 | `noninv_amp` | M | 3 | 1.000 | 1.000 | 1.000 |
 | `opamp_buffer` | S | 3 | 1.000 | 1.000 | 1.000 |
-| `opamp_integrator` | M | 2 | 1.000 | 1.000 | **0.202** |
+| `opamp_integrator` | M | 2 | 1.000 | 1.000 | 0.201 |
 | `opamp_summer` | M | 2 | 1.000 | 1.000 | 1.000 |
 | `rc_highpass_ac` | S | 3 | 1.000 | 1.000 | 1.000 |
-| `rc_lowpass_ac` | M | 1 | 1.000 | **0.775** | **0.325** |
+| `rc_lowpass_ac` | M | 1 | 1.000 | 0.775 | 0.775 |
 | `rc_pulse_response` | S | 3 | 1.000 | 1.000 | 1.000 |
-| `rl_lowpass_ac` | S | 3 | 1.000 | 1.000 | **0.000** |
+| `rl_lowpass_ac` | S | 3 | 1.000 | 1.000 | 1.000 |
 | `rl_step` | S | 3 | 1.000 | 1.000 | 1.000 |
 | `rlc_bandpass` | S | 2 | 1.000 | 1.000 | 1.000 |
-| `rlc_notch` | M | 1 | 1.000 | **0.700** | 1.000 |
+| `rlc_notch` | M | 1 | 1.000 | 0.700 | 0.700 |
 | `rlc_step_overdamped` | M | 2 | 1.000 | 1.000 | 1.000 |
 | `rlc_step_underdamped` | M | 2 | 1.000 | 1.000 | 1.000 |
 | `sallen_key_lp` | M | 2 | 1.000 | 1.000 | 1.000 |
-| **Mean** | | | **1.000** | **0.936** | **0.776** |
+| **Completed Mean** | | | **1.000** | **0.936** | **0.930** |
+| **Assigned Mean** | | | **1.000** | **0.936** | **0.884** |
 
 ## Observations
 
-- **M2.5 outperforms M2.7 on this task suite** by a wide margin (+0.16 mean). The difference is concentrated in three cases where M2.7 returned 0 — the reasoning variant appears to have spent its 80-turn budget on planning and never submitted `/tmp/agent/result.json`. M2.5's worst cases are still partial credit (0.55–0.78), no zero-score outright failures.
-- **Both models bottom out on the upgraded design tasks** (`bridge_rectifier_ripple`, `rc_lowpass_ac`, `rlc_notch`, `lc_lowpass_2nd`). These are the cases where the model has to sweep a parameter (capacitor value) and choose by spec — not just measure. Leakage 1 cases (bridge_rectifier_ripple, rc_lowpass_ac, rlc_notch) are the deliberately novel-variant tasks and behave as designed: they discriminate.
-- **No analytical-shortcut hits seen.** Both models actually ran LTspice (every passing trial has a real `.log` and `.raw` artifact).
+- The LTspice reference agents are both strong on many circuit workflows.
+  Parameter-sweep and design-selection tasks remain more discriminating than
+  simple measurement tasks.
+- OpenFOAM is substantially harder because the agent must author case files,
+  mesh, solve, post-process, and submit replayable KPI provenance.
+- Several misses are workflow or provenance failures rather than pure physics
+  failures. That is a core benchmark signal, not just bookkeeping noise.
 
 ## Reproduction
 
@@ -65,4 +83,7 @@ harbor run -c configs/release-v0.1-ltspice20-minimax-m25.yaml --force-build -y
 harbor run -c configs/release-v0.1-ltspice20-minimax-m27.yaml --force-build -y
 ```
 
-The MiniMax runs are routed via [`claude-code-router`](https://github.com/musistudio/claude-code-router); the harness wires it up at trial setup. See `tools/agent_harness.py:ClaudeCodeViaCcr`.
+The MiniMax runs are routed via
+[`claude-code-router`](https://github.com/musistudio/claude-code-router);
+the harness wires it up at trial setup. See
+`tools/agent_harness.py:ClaudeCodeViaCcr`.

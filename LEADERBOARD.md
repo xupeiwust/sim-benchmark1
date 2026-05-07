@@ -20,44 +20,44 @@ model run completes.
 
 #### LTspice circuits (20 tasks)
 
-| Run | Agent / Model | Tasks | Errors | **Mean** | Notes |
-|---|---|---:|---:|---:|---|
-| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20/20 | 0 | **1.000** | reference upper bound |
-| `release-v0.1-ltspice20-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** (non-reasoning) | 20/20 | 1 | **0.936** | original 80-turn harness; per-case audit shows ~0.948 expected with v0.1-final harness |
-| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** (reasoning) | 19/20 | 2 | **0.930** | v0.1-final harness (300-turn cap, ccr reasoning-block fix, Pass-2 hook). Up from 0.776 in 80-turn run. 1 case (bridge_rectifier_ripple) terminated at wall-time cap |
+| Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Notes |
+|---|---|---:|---:|---:|---:|---:|---|
+| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 20 | 0 | **1.000** | **1.000** | reference upper bound |
+| `release-v0.1-ltspice20-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** (non-reasoning) | 20 | 20 | 1 | **0.936** | **0.936** | pre-final harness; all assigned tasks completed |
+| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** (reasoning) | 20 | 19 | 2 | **0.930** | **0.884** | final harness; `bridge_rectifier_ripple` hit the wall-time cap and is counted as zero in assigned mean |
 
 #### OpenFOAM fluids (3 oracle-available tasks)
 
-| Run | Agent / Model | Tasks | Errors | **Mean** | Notes |
-|---|---|---:|---:|---:|---|
-| `release-v0.1-openfoam3-oracle-20260506` | oracle (deterministic) | 3/3 | 0 | **0.999** | reference upper bound; flatplate cf_x097 = 0.997 (within numerical noise) |
-| `release-v0.1-openfoam3-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** | 3/3 | 1 | **0.408** | cavity_re100 1.0 / cavity_re1000 0.225 / flatplate 0.0 |
-| `release-v0.1-openfoam3-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** | 3/3 | 0 | **0.284** | cavity_re100 0.0 (extract paperwork bug — see caveat) / cavity_re1000 0.390 / flatplate 0.462 |
+| Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Notes |
+|---|---|---:|---:|---:|---:|---:|---|
+| `release-v0.1-openfoam3-oracle-20260506` | oracle (deterministic) | 3 | 3 | 0 | **0.999** | **0.999** | reference upper bound; flatplate cf_x097 = 0.997 within numerical noise |
+| `release-v0.1-openfoam3-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** | 3 | 3 | 1 | **0.408** | **0.408** | cavity_re100 1.0 / cavity_re1000 0.225 / flatplate 0.0 |
+| `release-v0.1-openfoam3-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** | 3 | 3 | 0 | **0.284** | **0.284** | cavity_re100 0.0 from an extract-path paperwork failure / cavity_re1000 0.390 / flatplate 0.462 |
 
 Per-case scores in [`results/v0.1/README.md`](./results/v0.1/README.md). JSON artifacts in
 `results/v0.1/`.
 
-### v0.1 reads (corrected after harness audit)
+`Completed Mean` averages completed trials only. `Assigned Mean` counts
+assigned but incomplete tasks as zero. `Harness exceptions` are agent or
+runner exit-status events; they are not always zero-score tasks because the
+verifier may still have replayable artifacts.
 
-The v0.1 first-cut leaderboard (M2.5-highspeed 0.936 vs M2.7 0.776 on LTspice) **was
-mostly an artifact of two harness limitations** that have since been fixed:
+### Superseded run note
 
-1. **ccr-plugins reasoning-block translation bug** (commit `b8d7372`): claude-code-router's
-   OpenAI→Anthropic response translator could not map `reasoning_content` blocks to a valid
-   Anthropic content type, exiting trials with `API Error: Content block is not a text
-   block`. M2.7 hit this on 3/20 LTspice cases; M2.5-highspeed (non-reasoning) never hit it.
-   After fix: those 3 cases now score 1.000 each. M2.7 mean rose **0.776 → 0.930** on the
-   same suite.
-2. **`max_turns: 80`** was tight enough for M2.5-highspeed (median ~25 turns) but cut off
-   M2.5-highspeed's bridge_rectifier_ripple at turn 81 (0.7) and several M2.7 cases. Bumped
-   to 300 in commit `df37b24`.
+An earlier MiniMax-M2.7 LTspice run is superseded. It was invalidated by a
+claude-code-router reasoning-content translation bug plus a too-low turn cap,
+both fixed before the current M2.7 reference row. Git history preserves the
+full superseded artifact for audit; current release artifacts list only rows
+included in the public result set.
 
-**Real model-capability finding** (only after harness fixes): M2.5-highspeed and M2.7 are
-within ~0.6 % on LTspice (0.936 vs 0.930) — close to noise. M2.7 reasoning gives no
-measurable LTspice headroom over fast non-reasoning, while costing ~10× per-turn latency.
-**OpenFOAM tells a different story** that v0.2 needs more data to resolve — the M2.7 cases
-that scored 0 are paperwork-related (relative paths in `extract` pipelines), not physics
-failures, and v0.1's new Pass-2 Stop hook should fix that for v0.2.
+### Current read
+
+The useful early signal is workflow-shaped. Both MiniMax reference agents are
+strong on LTspice circuit workflows, while both remain below the oracle ceiling
+on OpenFOAM because CFD asks the agent to author the case, mesh, solve,
+post-process, and submit replayable provenance. Several misses are workflow or
+provenance failures rather than pure physics failures, which is exactly what
+this benchmark is designed to expose.
 
 The historical tables below are development history (v3 / v4 / v5 / v7 / v9–v18 OpenFOAM
 work). They should not be presented as the v0.1 public result.

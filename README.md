@@ -10,8 +10,6 @@
 [![Tasks](https://img.shields.io/badge/v0.1-36%20public%20tasks-success)](CASES.md)
 [![Solvers](https://img.shields.io/badge/solvers-OpenFOAM%20%7C%20LTspice-informational)]()
 
-中文版 → [`README.zh.md`](README.zh.md)
-
 ---
 
 ## What this measures
@@ -53,45 +51,27 @@ See [`CASES.md`](CASES.md) for the full catalog with leakage, tier, and
 oracle-status flags per case. See [`SCHEMA.md`](SCHEMA.md) for the case /
 verifier contract.
 
-## Day-one results (reference run)
+## First reference runs
 
-Every task ships with a deterministic `solution/solve.sh` (the *oracle*).
-Running the oracle produces the maximum reachable score under the current
-verifier; any model's score is read against this upper bound.
+Every task ships with a deterministic `solution/solve.sh` oracle. Running
+the oracle gives the verifier's upper-bound sanity check; model rows are
+read against that ceiling.
 
-**LTspice circuits (20 tasks)**
+We include first reference runs with MiniMax-M2.5-highspeed and MiniMax-M2.7
+through a claude-code harness.
 
-| Run | Agent / Model | Tasks | Errors | **Mean** |
-|---|---|---:|---:|---:|
-| oracle (deterministic) | — | 20/20 | 0 | **1.000** |
-| **MiniMax-M2.5-highspeed** (non-reasoning) | claude-code | 20/20 | 1 | **0.936** |
-| **MiniMax-M2.7** (reasoning) | claude-code | 19/20 | 2 | **0.930** |
+| Suite | Reference models | Read |
+|---|---|---|
+| LTspice circuits | MiniMax-M2.5-highspeed and MiniMax-M2.7 both land around the 0.9 range | Strong agents can already complete many artifact-grounded circuit workflows. Parameter sweeps and design-selection tasks still discriminate. |
+| OpenFOAM fluids | Both MiniMax runs are below 0.5 on the oracle-available CFD subset | CFD remains much harder: agents must author case files, mesh, run solvers, post-process fields, and produce replayable KPI provenance. |
 
-**OpenFOAM fluids (3 oracle-available tasks)**
+These are reference runs, not a mature cross-model leaderboard. Exact scores,
+completion policy, per-case artifacts, and superseded-run notes live in
+[`LEADERBOARD.md`](LEADERBOARD.md) and [`results/v0.1/`](results/v0.1/).
 
-| Run | Agent / Model | Tasks | Errors | **Mean** |
-|---|---|---:|---:|---:|
-| oracle (deterministic) | — | 3/3 | 0 | **0.999** |
-| **MiniMax-M2.5-highspeed** | claude-code | 3/3 | 1 | **0.408** |
-| **MiniMax-M2.7** | claude-code | 3/3 | 0 | **0.284** |
-
-**v0.1 read.** On LTspice, **M2.5-highspeed and M2.7 are within ~0.6 %** (0.936 vs
-0.930) — reasoning gives no measurable LTspice headroom over fast non-reasoning, at
-~10 × the per-turn latency. Both models bottom out on the upgraded design tasks
-(`bridge_rectifier_ripple`, `rc_lowpass_ac`, `rlc_notch`, `lc_lowpass_2nd`) where the
-model has to sweep a parameter and choose by spec rather than just measure.
-
-**OpenFOAM is harder** for both: the agent has to write blockMeshDict, system/, 0/,
-constant/ from scratch, run blockMesh + simpleFoam + checkMesh + postProcess, and
-parse multi-format logs. M2.7's `cavity_re100 = 0.0` is **not a physics failure** —
-it solved the cavity correctly (u_centerline within 2 % of Ghia 1982 GT) but wrote
-extract pipelines using relative paths that the verifier cannot replay. v0.1's new
-Pass-2 Stop hook ([`docs/hooks.md`](docs/hooks.md)) catches this paperwork failure
-mode in future runs. v0.2 will revisit OpenFOAM with that hook in place.
-
-Per-case scores and machine-readable artifacts live in
-[`results/v0.1/`](results/v0.1/). [`LEADERBOARD.md`](LEADERBOARD.md) tracks
-historical and ablation results.
+The useful early signal is workflow-shaped: artifact-grounded grading
+separates agents that can talk about simulation from agents that can produce
+solver artifacts that survive replay.
 
 ## Why three audiences should care
 
