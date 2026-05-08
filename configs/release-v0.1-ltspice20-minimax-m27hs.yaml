@@ -1,0 +1,54 @@
+# v0.1 reference run: MiniMax-M2.7-highspeed on all 20 LTspice circuit tasks.
+#
+# M2.7-highspeed is the non-reasoning fast variant of M2.7 (the reasoning
+# model that ran ~25 min/case in the May 6 prior runs). Same upstream
+# (api.minimaxi.com OpenAI-compat endpoint), same CCR translation chain
+# as M2.5-highspeed.
+#
+# Coverage check 2026-05-08: line 7 key in E:\simcli\sim-benchmark\API
+# is the only key with a plan that includes M2.7-highspeed. Line 8 returns
+# `2061 your current token plan not support model`. Make sure
+# MINIMAX_API_KEY in the host env points at line 7.
+
+jobs_dir: jobs/release-v0.1-ltspice20-minimax-m27hs
+n_concurrent_trials: 5
+timeout_multiplier: 3.0
+
+environment:
+  type: docker
+  delete: false
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeViaCcr
+    model_name: MiniMax-M2.7-highspeed
+    kwargs:
+      max_turns: 300
+    env:
+      ANTHROPIC_API_KEY: 'harbor-ccr-2026'
+      ANTHROPIC_BASE_URL: 'http://127.0.0.1:3456'
+      CCR_UPSTREAM_BASE: 'https://api.minimaxi.com/v1/chat/completions'
+      CCR_UPSTREAM_KEY: '${MINIMAX_API_KEY}'
+
+datasets:
+  - path: cases/circuits
+    task_names:
+      - bridge_rectifier_ripple
+      - diff_amp
+      - half_wave_rectifier
+      - inv_amp
+      - lc_lowpass_2nd
+      - lc_resonator
+      - noninv_amp
+      - opamp_buffer
+      - opamp_integrator
+      - opamp_summer
+      - rc_highpass_ac
+      - rc_lowpass_ac
+      - rc_pulse_response
+      - rl_lowpass_ac
+      - rl_step
+      - rlc_bandpass
+      - rlc_notch
+      - rlc_step_overdamped
+      - rlc_step_underdamped
+      - sallen_key_lp
