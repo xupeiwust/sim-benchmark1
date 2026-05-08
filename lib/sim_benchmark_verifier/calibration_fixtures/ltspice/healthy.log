@@ -1,0 +1,17 @@
+LTspice 26.0.1 for Windows
+Circuit: Z:\work\rc_highpass_ac.net
+Start Time: Fri May  8 05:24:33 2026
+solver = Normal
+Maximum thread count: 64
+tnom = 27
+temp = 27
+method = trap
+.OP point found by inspection.
+.OP point found by inspection.
+Total elapsed time: 0.055 seconds.
+
+Files loaded:
+Z:\work\rc_highpass_ac.net
+
+gain_hf: mag(V(out)) =(-1.1000793806e-05dB,0°) at 100000
+f_3db: mag(V(out))=gain_hf*0.7071  AT 159.180351831

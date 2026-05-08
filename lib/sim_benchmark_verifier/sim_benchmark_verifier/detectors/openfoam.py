@@ -52,7 +52,10 @@ OF_SOLVERS: tuple[str, ...] = (
     "chtMultiRegionFoam",
 )
 
-# Thresholds — UNVALIDATED. See module docstring.
+# Thresholds — VALIDATED 2026-05-08 against real OF cavity_re100 oracle
+# log + 4 mutated variants (lib/sim_benchmark_verifier/EVIDENCE.md).
+# TPR=1.0, FPR=0.0 across the calibration fixture set. May need
+# re-validation when extending to non-cavity OF cases.
 RESIDUAL_TOLERANCE: float = 1e-2     # final residual on last step must be ≤
 CONTINUITY_TOLERANCE: float = 1e-3   # max |local| continuity error must be ≤
 
