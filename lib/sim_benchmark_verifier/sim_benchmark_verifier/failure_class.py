@@ -140,63 +140,71 @@ def classify_provenance(kpi_result: dict, claim) -> str:
     return "P2_extract_unrunnable"
 
 
-def classify_solver_stage(kpi_result: dict, sim_records: list[dict] | None = None) -> str | None:
+def classify_solver_stage(
+    kpi_result: dict,
+    sim_records: list[dict] | None = None,
+    case_dir=None,
+    solver_label: str | None = None,
+) -> str | None:
     """Reduce a per-KPI score dict to a ``solver_stage`` value, or ``None``.
 
-    Phase 1 derives L5_physics / L5_quantitative / L6_pass from the
-    verifier's existing per-KPI fields when ``source_verified == 1``.
+    Phase 3a routes through the ``detectors/`` plugin layer. Each
+    registered ``SolverStageDetector`` (universal + any solver-specific
+    extensions) gets a chance to attribute; first non-None wins.
 
-    Phase 2 adds L2_solver_crash attribution from ``sim_records``
-    (`sim --json logs`'s output). When provenance failed AND every sim
-    record on the trial reports failure (no ``ok=True`` / ``exit_code=0``),
-    we attribute L2.
+    Phase 1 stages (L5_physics / L5_quantitative / L6_pass) and Phase 2
+    (L2_solver_crash from sim_records) live in ``detectors/universal.py``.
+    Phase 3b will add ``detectors/openfoam.py`` for L3 / L4.
 
-    L0 (input syntax), L1 (semantics), L3 (convergence), L4 (conservation)
-    require solver-specific detectors that don't exist yet — those phases
-    will land per-solver (RFC sim-proj #125, sim-benchmark #4).
-
-    ``None`` is returned when (a) provenance failed but sim_records gives
-    no signal (e.g. agent bypassed sim-cli, or records weren't preserved)
-    — we don't fabricate a stage we can't verify.
+    ``None`` is returned when no detector can attribute — we don't
+    fabricate a stage we can't verify.
     """
-    if kpi_result.get("source_verified") == 1.0:
-        if kpi_result.get("kpi_score") == 1.0:
-            return "L6_pass"
-        if kpi_result.get("physics_pass") == 0.0:
-            return "L5_physics"
-        # In physics range but T_decay short of 1.0 (either 0 or partial).
-        return "L5_quantitative"
+    from .detectors import TrialContext, dispatch
 
-    # Provenance failed — try to attribute via sim records.
-    if sim_records:
-        runs = [r for r in sim_records if r.get("kind", "run") == "run"]
-        if runs:
-            ok_runs = [
-                r for r in runs
-                if r.get("ok") is True or r.get("exit_code") == 0
-            ]
-            if not ok_runs:
-                # Solver was invoked but every invocation failed.
-                return "L2_solver_crash"
-    return None
+    ctx = TrialContext(
+        sim_records=sim_records or [],
+        case_dir=case_dir,
+        solver_label=solver_label,
+    )
+    return dispatch(kpi_result, ctx)
 
 
-def annotate_per_kpi(per_kpi: dict, result_obj: dict, sim_records: list[dict] | None = None) -> dict:
+def annotate_per_kpi(
+    per_kpi: dict,
+    result_obj: dict,
+    sim_records: list[dict] | None = None,
+    case_dir=None,
+    solver_label: str | None = None,
+) -> dict:
     """Mutate ``per_kpi`` in place: add ``solver_stage`` /
     ``provenance_stage`` / ``failure_class`` (legacy) fields to each
     entry. Return a small summary dict with both-axis distributions.
 
-    ``sim_records`` is the list of `sim --json logs` records for this
-    trial (from ``meta_detail.records``); when present the solver-stage
-    detector can attribute L2_solver_crash (Phase 2).
+    Routes solver-stage classification through the ``detectors/`` plugin
+    layer (RFC sim-proj#125 phase 3a). The trial-context arguments —
+    ``sim_records`` (from ``meta_detail.records``), ``case_dir`` (the
+    agent's workspace), ``solver_label`` (from
+    ``task.toml.metadata.sim.solver``) — are bundled into a
+    ``TrialContext`` and passed to every applicable detector.
     """
-    solver_counts: dict[str, int] = {s: 0 for s in SOLVER_STAGES}
+    from .detectors import TrialContext, all_known_stages, dispatch
+
+    ctx = TrialContext(
+        sim_records=sim_records or [],
+        case_dir=case_dir,
+        solver_label=solver_label,
+    )
+
+    # Counts dict keys = union of every registered detector's STAGES,
+    # plus "null" for KPIs no detector could attribute. Open enum →
+    # adding a new detector automatically extends this.
+    solver_counts: dict[str, int] = {s: 0 for s in all_known_stages()}
     solver_counts["null"] = 0
     prov_counts: dict[str, int] = {p: 0 for p in PROVENANCE_STAGES}
 
     for name, kpi_result in per_kpi.items():
         prov = classify_provenance(kpi_result, result_obj.get(name))
-        solver = classify_solver_stage(kpi_result, sim_records)
+        solver = dispatch(kpi_result, ctx)
         kpi_result["provenance_stage"] = prov
         kpi_result["solver_stage"] = solver
         # v3.1 backward-compat field
