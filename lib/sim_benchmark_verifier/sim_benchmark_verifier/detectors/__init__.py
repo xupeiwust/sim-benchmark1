@@ -101,6 +101,7 @@ def dispatch(kpi_result: dict, ctx: TrialContext) -> str | None:
 
 
 # ── Auto-register builtin detectors ──────────────────────────────────────
-# Keep ``universal`` last — solver-specific detectors should register
-# above this line (see Phase 3b for openfoam).
+# Solver-specific detectors first (so they get first crack at attributing),
+# universal detector last (fallback for L0/L2/L5/L6).
+from . import openfoam   # noqa: F401, E402
 from . import universal  # noqa: F401, E402

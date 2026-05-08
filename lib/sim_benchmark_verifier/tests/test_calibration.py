@@ -208,11 +208,170 @@ def test_calib_happy_path_no_off_target_failures(tmp_path, monkeypatch):
     assert sum(v for k, v in counts_s.items() if k != "L6_pass") == 0
 
 
+# ─── Phase 3b: OpenFOAM detector fixtures ──────────────────────────────
+#
+# UNVALIDATED thresholds (RESIDUAL_TOLERANCE, CONTINUITY_TOLERANCE) are
+# being exercised with synthetic logs; once we have real broken-OF runs
+# we'll calibrate TPR/FPR and record evidence.
+
+
+def _of_log_clean() -> str:
+    """Synthetic clean simpleFoam log: small residuals + small continuity
+    errors + final 'End' marker."""
+    return (
+        "Exec   : simpleFoam\n\n"
+        "Time = 1\n"
+        "smoothSolver:  Solving for Ux, Initial residual = 1, "
+        "Final residual = 0.1, No Iterations 5\n"
+        "smoothSolver:  Solving for Uy, Initial residual = 1, "
+        "Final residual = 0.1, No Iterations 5\n"
+        "GAMG:  Solving for p, Initial residual = 1, "
+        "Final residual = 0.05, No Iterations 8\n"
+        "time step continuity errors : sum local = 1e-09, "
+        "global = 1e-12, cumulative = 1e-12\n"
+        "ExecutionTime = 0.1 s\n\n"
+        "Time = 100\n"
+        "smoothSolver:  Solving for Ux, Initial residual = 1e-06, "
+        "Final residual = 1e-09, No Iterations 1\n"
+        "smoothSolver:  Solving for Uy, Initial residual = 1e-06, "
+        "Final residual = 1e-09, No Iterations 1\n"
+        "GAMG:  Solving for p, Initial residual = 1e-05, "
+        "Final residual = 1e-08, No Iterations 2\n"
+        "time step continuity errors : sum local = 1e-10, "
+        "global = 1e-13, cumulative = 1e-13\n"
+        "ExecutionTime = 10 s\n\n"
+        "End\n"
+    )
+
+
+def test_calib_OF_L3_no_end_marker(tmp_path, monkeypatch):
+    """Solver killed mid-run — no 'End' marker → L3_convergence."""
+    _patch_sim(monkeypatch, [{"kind": "run", "ok": True}])
+    (tmp_path / "log.simpleFoam").write_text(
+        _of_log_clean().rstrip("End\n") + "killed by user\n"
+    )
+    data = tmp_path / "Ux.txt"
+    data.write_text("0.5\n")
+    kpis = _write_kpis(tmp_path, {"gt_value": 0.5, "T_good": 0.05, "T_bad": 0.3})
+    rd = _run(tmp_path, kpis, {
+        "u": {"value": 0.5, "source": {
+            "kind": "file_extract", "path": str(data), "extract": "cat",
+        }},
+    })
+    k = rd["kpi_detail"]["per_kpi"]["u"]
+    # OF detector overrides universal's L6_pass because the run was cut short
+    assert k["solver_stage"] == "L3_convergence"
+
+
+def test_calib_OF_L3_high_final_residuals(tmp_path, monkeypatch):
+    """Run completed but last-block residuals exceed tolerance → L3."""
+    _patch_sim(monkeypatch, [{"kind": "run", "ok": True}])
+    bad_log = (
+        "Exec   : simpleFoam\n\n"
+        "Time = 100\n"
+        "smoothSolver:  Solving for Ux, Initial residual = 0.5, "
+        "Final residual = 0.3, No Iterations 5\n"  # 0.3 > tol 1e-2
+        "GAMG:  Solving for p, Initial residual = 0.5, "
+        "Final residual = 0.2, No Iterations 8\n"
+        "time step continuity errors : sum local = 1e-09, "
+        "global = 1e-12, cumulative = 1e-12\n"
+        "ExecutionTime = 50 s\n\n"
+        "End\n"
+    )
+    (tmp_path / "log.simpleFoam").write_text(bad_log)
+    data = tmp_path / "Ux.txt"
+    data.write_text("0.5\n")
+    kpis = _write_kpis(tmp_path, {"gt_value": 0.5, "T_good": 0.05, "T_bad": 0.3})
+    rd = _run(tmp_path, kpis, {
+        "u": {"value": 0.5, "source": {
+            "kind": "file_extract", "path": str(data), "extract": "cat",
+        }},
+    })
+    k = rd["kpi_detail"]["per_kpi"]["u"]
+    assert k["solver_stage"] == "L3_convergence"
+
+
+def test_calib_OF_L4_continuity_error(tmp_path, monkeypatch):
+    """Residuals fine, End present, but max |local| continuity error
+    exceeds threshold → L4_conservation."""
+    _patch_sim(monkeypatch, [{"kind": "run", "ok": True}])
+    leaky_log = (
+        "Exec   : simpleFoam\n\n"
+        "Time = 1\n"
+        "smoothSolver:  Solving for Ux, Initial residual = 1, "
+        "Final residual = 1e-08, No Iterations 1\n"
+        "GAMG:  Solving for p, Initial residual = 1, "
+        "Final residual = 1e-09, No Iterations 1\n"
+        "time step continuity errors : sum local = 0.05, "  # 0.05 > tol 1e-3
+        "global = 1e-04, cumulative = 1e-04\n"
+        "ExecutionTime = 1 s\n\n"
+        "End\n"
+    )
+    (tmp_path / "log.simpleFoam").write_text(leaky_log)
+    data = tmp_path / "Ux.txt"
+    data.write_text("0.5\n")
+    kpis = _write_kpis(tmp_path, {"gt_value": 0.5, "T_good": 0.05, "T_bad": 0.3})
+    rd = _run(tmp_path, kpis, {
+        "u": {"value": 0.5, "source": {
+            "kind": "file_extract", "path": str(data), "extract": "cat",
+        }},
+    })
+    k = rd["kpi_detail"]["per_kpi"]["u"]
+    assert k["solver_stage"] == "L4_conservation"
+
+
+def test_calib_OF_clean_log_falls_through_to_universal_L6(tmp_path, monkeypatch):
+    """Clean OF log + passing KPI: OF detector returns None, universal
+    fires L6_pass. Verifies dispatch precedence is correct (OF doesn't
+    falsely claim a stage when there's nothing to flag)."""
+    _patch_sim(monkeypatch, [{"kind": "run", "ok": True}])
+    (tmp_path / "log.simpleFoam").write_text(_of_log_clean())
+    data = tmp_path / "Ux.txt"
+    data.write_text("0.5\n")
+    kpis = _write_kpis(tmp_path, {
+        "gt_value": 0.5, "T_good": 0.05, "T_bad": 0.3,
+        "physics_min": 0.0, "physics_max": 1.0,
+    })
+    rd = _run(tmp_path, kpis, {
+        "u": {"value": 0.5, "source": {
+            "kind": "file_extract", "path": str(data), "extract": "cat",
+        }},
+    })
+    k = rd["kpi_detail"]["per_kpi"]["u"]
+    assert k["provenance_stage"] == "P4_pass"
+    assert k["solver_stage"] == "L6_pass"  # universal fired, OF stayed silent
+
+
+def test_calib_OF_L3_overrides_universal_L5_quantitative(tmp_path, monkeypatch):
+    """Cut-short OF log + KPI value far from GT: OF detector should win
+    with L3 (root cause is divergence, not numerical drift). Without
+    this precedence, the user would see 'L5_quantitative' and chase a
+    numerical-tolerance question instead of fixing the run."""
+    _patch_sim(monkeypatch, [{"kind": "run", "ok": True}])
+    (tmp_path / "log.simpleFoam").write_text(
+        _of_log_clean().rstrip("End\n") + "FOAM FATAL ERROR\n"
+    )
+    data = tmp_path / "Ux.txt"
+    data.write_text("0.95\n")  # in physics range, far from gt 0.5
+    kpis = _write_kpis(tmp_path, {
+        "gt_value": 0.5, "T_good": 0.05, "T_bad": 0.3,
+        "physics_min": 0.0, "physics_max": 1.0,
+    })
+    rd = _run(tmp_path, kpis, {
+        "u": {"value": 0.95, "source": {
+            "kind": "file_extract", "path": str(data), "extract": "cat",
+        }},
+    })
+    k = rd["kpi_detail"]["per_kpi"]["u"]
+    # Without OF detector, this would be L5_quantitative. With it, L3 wins.
+    assert k["solver_stage"] == "L3_convergence"
+
+
 # ─── Calibration manifest test ──────────────────────────────────────────
 
 
 def test_calibration_covers_every_currently_implemented_class():
-    """Self-check: every class produced by Phase 1+2 detectors has at
+    """Self-check: every class produced by current detectors has at
     least one fixture above. If you add a new class without a fixture,
     this fails."""
     implemented = {
@@ -220,21 +379,26 @@ def test_calibration_covers_every_currently_implemented_class():
         # is a case-author bug surface, not a model failure mode)
         "P0_hallucination", "P1_path_invalid",
         "P2_extract_unrunnable", "P3_extract_mismatch", "P4_pass",
-        # solver — Phase 1 + Phase 2
+        # solver universal — Phase 1 + Phase 2
         "L5_physics", "L5_quantitative", "L6_pass", "L2_solver_crash",
+        # solver openfoam — Phase 3b
+        "L3_convergence", "L4_conservation",
     }
     fixtures = {
         # provenance
-        "P0_hallucination":     "test_calib_P0_hallucination_bare_number",
-        "P1_path_invalid":      "test_calib_P1_path_invalid",
+        "P0_hallucination":      "test_calib_P0_hallucination_bare_number",
+        "P1_path_invalid":       "test_calib_P1_path_invalid",
         "P2_extract_unrunnable": "test_calib_P2_extract_unrunnable",
-        "P3_extract_mismatch":  "test_calib_P3_extract_mismatch",
-        "P4_pass":              "test_calib_P4_pass_happy_path",
-        # solver
-        "L5_physics":           "test_calib_L5_physics_outside_range",
-        "L5_quantitative":      "test_calib_L5_quantitative_far_from_gt",
-        "L6_pass":              "test_calib_P4_pass_happy_path",
-        "L2_solver_crash":      "test_calib_L2_solver_crash_when_records_all_failed",
+        "P3_extract_mismatch":   "test_calib_P3_extract_mismatch",
+        "P4_pass":               "test_calib_P4_pass_happy_path",
+        # solver universal
+        "L5_physics":            "test_calib_L5_physics_outside_range",
+        "L5_quantitative":       "test_calib_L5_quantitative_far_from_gt",
+        "L6_pass":               "test_calib_P4_pass_happy_path",
+        "L2_solver_crash":       "test_calib_L2_solver_crash_when_records_all_failed",
+        # solver openfoam
+        "L3_convergence":        "test_calib_OF_L3_no_end_marker",
+        "L4_conservation":       "test_calib_OF_L4_continuity_error",
     }
     missing = implemented - set(fixtures)
     assert not missing, f"calibration coverage gap: {missing}"

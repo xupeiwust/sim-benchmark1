@@ -202,7 +202,14 @@ def _score_one_kpi(name: str, spec: dict, claim, sim_records: list[dict]) -> dic
     }
 
 
-def _score_groups(kpis_spec: dict, groups_spec: dict, result: dict, sim_records: list[dict]) -> tuple[float, dict]:
+def _score_groups(
+    kpis_spec: dict,
+    groups_spec: dict,
+    result: dict,
+    sim_records: list[dict],
+    case_dir=None,
+    solver_label=None,
+) -> tuple[float, dict]:
     """Run each KPI through verification + scoring; aggregate by group.
 
     Group score = unweighted mean of its member KPI scores. The missing-from-
@@ -217,9 +224,14 @@ def _score_groups(kpis_spec: dict, groups_spec: dict, result: dict, sim_records:
 
     # Annotate each per-KPI dict with two-axis failure classification
     # (provenance_stage × solver_stage) plus a v3.1 backward-compat
-    # `failure_class` field. ``sim_records`` lets the solver-stage
-    # detector attribute L2_solver_crash. See sim-proj #125 RFC.
-    axis_counts = annotate_per_kpi(per_kpi, result, sim_records)
+    # `failure_class` field. The trial-context arguments — sim_records,
+    # case_dir, solver_label — are bundled into a TrialContext that the
+    # detector plugin layer (Phase 3a) routes to every applicable
+    # detector. See sim-proj #125 RFC.
+    axis_counts = annotate_per_kpi(
+        per_kpi, result, sim_records,
+        case_dir=case_dir, solver_label=solver_label,
+    )
 
     per_group: dict[str, dict] = {}
     weighted_sum = 0.0
@@ -291,6 +303,33 @@ def main(argv: list[str] | None = None) -> int:
     kpis_spec = spec.get("kpis", {})
     groups_spec = spec.get("kpi_groups", {})
 
+    # Trial-context for the solver-stage detectors (sim-proj#125 phase 3).
+    # case_dir = where the agent put result.json — typically /tmp/agent
+    # in container, or tmp_path in tests. Detectors scan this for
+    # solver artifacts (log files, output dirs, etc.).
+    case_dir = args.result.parent if args.result else None
+    # solver_label = case-author's declared solver, when task.toml is
+    # alongside the kpis.json (cases/<x>/tests/kpis.json sits next to
+    # cases/<x>/task.toml).
+    solver_label: str | None = None
+    task_toml = args.kpis.parent.parent / "task.toml"
+    if task_toml.is_file():
+        try:
+            import tomllib
+        except ModuleNotFoundError:
+            try:
+                import tomli as tomllib  # type: ignore[no-redef]
+            except ModuleNotFoundError:
+                tomllib = None  # type: ignore[assignment]
+        if tomllib is not None:
+            try:
+                tdata = tomllib.loads(task_toml.read_text(encoding="utf-8"))
+                solver_label = (
+                    ((tdata.get("metadata") or {}).get("sim") or {}).get("solver")
+                )
+            except Exception:
+                pass
+
     spec_err = _validate_groups(groups_spec, kpis_spec)
     if spec_err:
         # Hard fail — the case is malformed; refuse to score.
@@ -326,7 +365,10 @@ def main(argv: list[str] | None = None) -> int:
         kpi_score = 0.0
         kpi_detail = {"why": result_err}
     else:
-        kpi_score, kpi_detail = _score_groups(kpis_spec, groups_spec, result_obj, sim_records)
+        kpi_score, kpi_detail = _score_groups(
+            kpis_spec, groups_spec, result_obj, sim_records,
+            case_dir=case_dir, solver_label=solver_label,
+        )
 
     final = round(W_META * meta_score + W_KPI * kpi_score, 4)
 
