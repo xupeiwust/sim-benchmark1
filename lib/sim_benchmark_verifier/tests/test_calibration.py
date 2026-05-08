@@ -367,6 +367,103 @@ def test_calib_OF_L3_overrides_universal_L5_quantitative(tmp_path, monkeypatch):
     assert k["solver_stage"] == "L3_convergence"
 
 
+# ─── Phase 3c: LTspice detector fixtures ──────────────────────────────
+
+
+def _ltspice_log_clean() -> str:
+    """Synthetic clean LTspice .log: analysis ran, completed, no errors."""
+    return (
+        "Circuit: * test_case\n"
+        "\n"
+        ".tran 1m\n"
+        "\n"
+        "Date: ...\n"
+        "Total elapsed time: 0.123 seconds.\n"
+    )
+
+
+def test_calib_LTspice_L2_crash_from_error_marker(tmp_path, monkeypatch):
+    """`*** Cannot find` style LTspice error → LTspice detector emits
+    L2_solver_crash from artifact, even when sim_records is empty
+    (agent bypassed sim-cli)."""
+    _patch_sim(monkeypatch, [])  # no sim_records
+    (tmp_path / "rc.log").write_text(
+        "Circuit: * rc test\n"
+        ".tran 1m\n"
+        "*** Cannot find subcircuit 'opamp_x'\n"
+    )
+    kpis = _write_kpis(tmp_path, {"gt_value": 0.5, "T_good": 0.05, "T_bad": 0.3})
+    rd = _run(tmp_path, kpis, {
+        "u": {"value": 0.5, "source": {
+            "kind": "file_extract", "path": "/tmp/rc_output.txt", "extract": "cat",
+        }},
+    })
+    k = rd["kpi_detail"]["per_kpi"]["u"]
+    # Provenance fails (file doesn't exist) — LTspice detector then sees
+    # the .log error markers and attributes L2.
+    assert k["provenance_stage"] == "P1_path_invalid"
+    assert k["solver_stage"] == "L2_solver_crash"
+
+
+def test_calib_LTspice_L3_from_timestep_too_small(tmp_path, monkeypatch):
+    """LTspice 'Time step too small' → L3_convergence (overrides L2 even
+    though the *** marker is also present, since L3 is more specific)."""
+    _patch_sim(monkeypatch, [])
+    (tmp_path / "diverging.log").write_text(
+        "Circuit: * diverging case\n"
+        ".tran 100m\n"
+        "*** Time step too small at time=12.3ms; aborting\n"
+    )
+    kpis = _write_kpis(tmp_path, {"gt_value": 0.5, "T_good": 0.05, "T_bad": 0.3})
+    rd = _run(tmp_path, kpis, {
+        "u": {"value": 0.5, "source": {
+            "kind": "file_extract", "path": "/tmp/diverging_out.txt", "extract": "cat",
+        }},
+    })
+    k = rd["kpi_detail"]["per_kpi"]["u"]
+    assert k["solver_stage"] == "L3_convergence"
+
+
+def test_calib_LTspice_clean_log_falls_through_to_universal(tmp_path, monkeypatch):
+    """Clean LTspice log + passing KPI → LTspice silent, universal L6."""
+    _patch_sim(monkeypatch, [])
+    (tmp_path / "ok.log").write_text(_ltspice_log_clean())
+    data = tmp_path / "v.txt"
+    data.write_text("0.5\n")
+    kpis = _write_kpis(tmp_path, {
+        "gt_value": 0.5, "T_good": 0.05, "T_bad": 0.3,
+        "physics_min": 0.0, "physics_max": 1.0,
+    })
+    rd = _run(tmp_path, kpis, {
+        "u": {"value": 0.5, "source": {
+            "kind": "file_extract", "path": str(data), "extract": "cat",
+        }},
+    })
+    k = rd["kpi_detail"]["per_kpi"]["u"]
+    assert k["provenance_stage"] == "P4_pass"
+    assert k["solver_stage"] == "L6_pass"
+
+
+def test_calib_LTspice_utf16_log_handled(tmp_path, monkeypatch):
+    """LTspice writes UTF-16-LE logs by default; detector must handle
+    the encoding (mirror provenance._read_ltspice_log)."""
+    _patch_sim(monkeypatch, [])
+    text = (
+        "Circuit: * test\n"
+        ".tran 1m\n"
+        "*** Convergence failed at .OP\n"
+    )
+    (tmp_path / "u16.log").write_bytes(b"\xff\xfe" + text.encode("utf-16-le"))
+    kpis = _write_kpis(tmp_path, {"gt_value": 0.5, "T_good": 0.05, "T_bad": 0.3})
+    rd = _run(tmp_path, kpis, {
+        "u": {"value": 0.5, "source": {
+            "kind": "file_extract", "path": "/tmp/no.txt", "extract": "cat",
+        }},
+    })
+    k = rd["kpi_detail"]["per_kpi"]["u"]
+    assert k["solver_stage"] == "L3_convergence"
+
+
 # ─── Calibration manifest test ──────────────────────────────────────────
 
 

@@ -104,4 +104,5 @@ def dispatch(kpi_result: dict, ctx: TrialContext) -> str | None:
 # Solver-specific detectors first (so they get first crack at attributing),
 # universal detector last (fallback for L0/L2/L5/L6).
 from . import openfoam   # noqa: F401, E402
+from . import ltspice    # noqa: F401, E402
 from . import universal  # noqa: F401, E402
