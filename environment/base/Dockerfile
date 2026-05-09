@@ -24,7 +24,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Pinned by commit SHA — never track main.
 ARG SIM_CLI_REF=main
 RUN pip install --no-cache-dir --break-system-packages \
-        "sim-cli @ git+https://github.com/svd-ai-lab/sim-cli@${SIM_CLI_REF}" \
+        "sim-cli-core @ git+https://gh-proxy.com/https://github.com/svd-ai-lab/sim-cli@${SIM_CLI_REF}" \
+        "sim-plugin-openfoam @ git+https://gh-proxy.com/https://github.com/svd-ai-lab/sim-plugin-openfoam" \
         asciinema
 
 # -- sim-benchmark-verifier (the grader library) -----------------------

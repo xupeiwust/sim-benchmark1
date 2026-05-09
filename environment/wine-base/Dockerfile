@@ -7,6 +7,21 @@
 #
 # Single canonical target — runs on any Linux host (paratera, rserver,
 # Docker Desktop on Win/Mac via WSL2/HyperKit). No Windows host required.
+#
+# ---------------------------------------------------------------------------
+# Default build (international networks, e.g. Docker Desktop, GitHub Actions):
+#   docker build -t sim-benchmark-wine-base environment/wine-base/
+#
+# CN networks where dl.winehq.org / github.com is slow or blocked
+# (e.g. paratera, rserver). Pass build-args to swap mirrors:
+#   docker build -t sim-benchmark-wine-base \
+#     --build-arg WINEHQ_KEY_URL=https://mirrors.ustc.edu.cn/wine-builds/winehq.key \
+#     --build-arg WINEHQ_POOL_BASE=https://mirrors.cernet.edu.cn/wine-builds \
+#     environment/wine-base/
+#
+# Pin to a specific sim-cli / sim-skills commit for reproducibility:
+#   docker build ... --build-arg SIM_CLI_REF=<sha> --build-arg SIM_SKILLS_REF=<sha>
+# ---------------------------------------------------------------------------
 
 FROM ubuntu:22.04
 
@@ -26,8 +41,8 @@ USER root
 # Mirror layout (paratera/rserver can't reach dl.winehq.org):
 # - Key: USTC (has winehq.key, but its .deb pool returns 404)
 # - Pool/index: cernet (redirects to TUNA, has full file set)
-ARG WINEHQ_KEY_URL=https://mirrors.ustc.edu.cn/wine-builds/winehq.key
-ARG WINEHQ_POOL_BASE=https://mirrors.cernet.edu.cn/wine-builds
+ARG WINEHQ_KEY_URL=http://dl.winehq.org/wine-builds/winehq.key
+ARG WINEHQ_POOL_BASE=http://dl.winehq.org/wine-builds
 RUN dpkg --add-architecture i386 && \
     apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates curl gnupg \
@@ -55,7 +70,7 @@ RUN WINEDLLOVERRIDES="mscoree=,mshtml=" xvfb-run -a wineboot --init || true
 # v0: shipped in wine-base because LTspice is the first user. When a
 # second Win-only solver lands (Flotherm), split this into a child
 # image (sim-benchmark-ltspice-base FROM sim-benchmark-wine-base).
-RUN wget -q https://ltspice.analog.com/software/LTspice64.msi -O /tmp/lt.msi && \
+RUN wget -q --no-check-certificate https://ltspice.analog.com/software/LTspice64.msi -O /tmp/lt.msi && \
     xvfb-run -a wine msiexec /i /tmp/lt.msi /quiet /norestart && \
     rm /tmp/lt.msi
 
@@ -132,10 +147,10 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && 
 # Install from public GitHub. Pin to a ref via build-arg for reproducibility.
 ARG SIM_CLI_REF=main
 RUN pip install --no-cache-dir \
-        "sim-cli @ git+https://github.com/svd-ai-lab/sim-cli@${SIM_CLI_REF}"
+        "sim-cli-core @ git+https://github.com/svd-ai-lab/sim-cli@${SIM_CLI_REF}"
 
 # -- sim-ltspice (Python API for LTspice; sim-cli driver delegates here) -
-RUN pip install --no-cache-dir 'sim-ltspice>=0.2.2'
+RUN pip install --no-cache-dir sim-plugin-ltspice
 
 # -- sim-benchmark-verifier (the grader library) -------------------------
 COPY lib/sim_benchmark_verifier /opt/sim-benchmark-verifier/

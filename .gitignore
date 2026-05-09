@@ -3,6 +3,7 @@ __pycache__/
 *.pyo
 *.egg-info/
 .venv/
+.venv-*/
 .sim/
 /logs/
 /tmp/
@@ -20,6 +21,8 @@ lib/*/uv.lock
 
 # Local API credentials (never commit)
 API
+*_API.json
+claude_API.json
 _attic/
 *.bak
 # vv-sources/: working scratch space for case-source mining (PDFs, papers,
@@ -33,3 +36,4 @@ vv-sources/
 /sim-ltspice
 /sim-plugin-ltspice
 /sim-skills
+runs-attic-*/

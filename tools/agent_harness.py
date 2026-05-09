@@ -88,6 +88,97 @@ async def _ensure_node_and_claude(agent, environment, claude_version):
     )
 
 
+SOFT_LANDING_TURNS = 30  # reserve last N turns for wrap-up phase
+
+WRAP_UP_INSTRUCTION = (
+    "TIME BUDGET LOW — wrap-up phase only.\n\n"
+    "You are out of solve budget. Do NOT run new solvers (no blockMesh, "
+    "simpleFoam, icoFoam, etc.) and do NOT optimize further.\n\n"
+    "Your single task now: read whatever state already exists and write "
+    "your best-effort answer to /tmp/agent/result.json:\n"
+    "  - case files / mesh / time directories under /root/case/\n"
+    "  - any /root/case/postProcessing/ outputs (fieldMinMax, sample, probes)\n"
+    "  - any prior /tmp/agent/result.json you wrote earlier\n"
+    "  - your own scratch notes in this session\n\n"
+    "Write /tmp/agent/result.json using the JSON schema specified in the "
+    "case's instruction.md (re-read it if you don't remember). Typically the "
+    "schema is `{\"kpis\": {<kpi_name>: <number>, ...}, \"converged\": <bool>}` "
+    "with the exact KPI key names listed in instruction.md. Do NOT invent a "
+    "different top-level key (e.g. do not wrap values under \"RESULT\").\n"
+    "A rough estimate is better than no answer. If you genuinely have no "
+    "data at all, write a documented placeholder with converged=false.\n"
+)
+
+
+async def _result_json_is_valid(agent, environment) -> bool:
+    """Check that /tmp/agent/result.json parses and has at least one numeric value
+    somewhere in its nested structure. Schema-agnostic so this works for any
+    case's instruction.md (kpis: {...}, RESULT: {...}, top-level numbers, etc.)."""
+    check = await agent.exec_as_agent(
+        environment,
+        command=(
+            "python3 -c \"import json,sys; "
+            "d=json.load(open('/tmp/agent/result.json')); "
+            "f=lambda x: (isinstance(x,(int,float)) and not isinstance(x,bool)) "
+            "or (isinstance(x,dict) and any(f(v) for v in x.values())) "
+            "or (isinstance(x,list) and any(f(v) for v in x)); "
+            "sys.exit(0 if isinstance(d,dict) and f(d) else 1)\" "
+            "2>/dev/null && echo OK || echo FAIL"
+        ),
+    )
+    out = (check.stdout if check else "") or ""
+    return "OK" in out
+
+
+async def _two_phase_run(agent, instruction, environment, context):
+    """Phase 1 (solve, reduced max_turns) → check → Phase 2 (wrap-up, reserved turns).
+
+    Phase 2 only fires if /tmp/agent/result.json is missing or invalid.
+    Both phases append to /logs/agent/claude-code.txt (Phase 1's log is moved
+    aside before Phase 2 overwrites the canonical path, then concatenated back).
+    """
+    original_max_turns = agent._resolved_flags.get("max_turns")
+    if isinstance(original_max_turns, int) and original_max_turns > SOFT_LANDING_TURNS:
+        agent._resolved_flags["max_turns"] = original_max_turns - SOFT_LANDING_TURNS
+    try:
+        # Phase 1: solve
+        await ClaudeCode.run(agent, instruction, environment, context)
+    finally:
+        if original_max_turns is not None:
+            agent._resolved_flags["max_turns"] = original_max_turns
+
+    if await _result_json_is_valid(agent, environment):
+        return  # Phase 1 produced a valid answer; we are done.
+
+    # Phase 2: wrap-up. Preserve Phase 1 log, then concatenate after Phase 2.
+    await agent.exec_as_agent(
+        environment,
+        command=(
+            "[ -f /logs/agent/claude-code.txt ] && "
+            "cp /logs/agent/claude-code.txt /logs/agent/claude-code.solve.txt || true"
+        ),
+    )
+    if isinstance(original_max_turns, int):
+        agent._resolved_flags["max_turns"] = SOFT_LANDING_TURNS
+    try:
+        await ClaudeCode.run(agent, WRAP_UP_INSTRUCTION, environment, context)
+    finally:
+        if original_max_turns is not None:
+            agent._resolved_flags["max_turns"] = original_max_turns
+
+    # Concatenate solve + wrap so cost_meter / forensics see both phases.
+    await agent.exec_as_agent(
+        environment,
+        command=(
+            "if [ -f /logs/agent/claude-code.solve.txt ]; then "
+            "  cp /logs/agent/claude-code.txt /logs/agent/claude-code.wrap.txt && "
+            "  cat /logs/agent/claude-code.solve.txt /logs/agent/claude-code.wrap.txt "
+            "       > /logs/agent/claude-code.txt; "
+            "fi"
+        ),
+    )
+
+
 class ClaudeCodeAnthropicDirect(ClaudeCode):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -101,6 +192,9 @@ class ClaudeCodeAnthropicDirect(ClaudeCode):
         await _ensure_node_and_claude(self, environment, self._version)
         await _register_sim_skills(self, environment)
         await _install_hooks(self, environment)
+
+    async def run(self, instruction, environment, context):
+        await _two_phase_run(self, instruction, environment, context)
 
 
 class ClaudeCodeViaCcr(ClaudeCode):
@@ -149,6 +243,12 @@ class ClaudeCodeViaCcr(ClaudeCode):
         PROXY_PORT = 3457
         USAGE_LOG = "/logs/agent/proxy-usage.jsonl"
 
+        # Embed the minimax-system-merge ccr plugin so cases without
+        # /opt/ccr-plugins/ baked in still work.
+        plugin_src = (Path(__file__).parent / "ccr-plugins" / "minimax_system_merge.js").read_text(encoding="utf-8")
+        plugin_b64 = base64.b64encode(plugin_src.encode()).decode()
+        PLUGIN_PATH = "/opt/ccr-plugins/minimax_system_merge.js"
+
         # Per-provider transformer chain. `tooluse` is generic. MiniMax's
         # OpenAI endpoint additionally rejects mid-conversation system
         # messages (error 2013), so we layer the local minimax-system-merge
@@ -195,8 +295,9 @@ class ClaudeCodeViaCcr(ClaudeCode):
                 # aiohttp for the proxy; --quiet to keep install logs short.
                 "pip install --quiet --break-system-packages aiohttp 2>/dev/null || "
                 "pip install --quiet aiohttp && "
-                "mkdir -p ~/.claude-code-router /logs/agent && "
+                "mkdir -p ~/.claude-code-router /logs/agent /opt/ccr-plugins && "
                 f"echo {proxy_b64} | base64 -d > {PROXY_PATH} && "
+                f"echo {plugin_b64} | base64 -d > {PLUGIN_PATH} && "
                 f"echo {cfg_b64} | base64 -d > ~/.claude-code-router/config.json && "
                 "mkdir -p /logs/agent/ccr && "
                 "ln -sfn /logs/agent/ccr/ ~/.claude-code-router/logs && "
@@ -221,6 +322,9 @@ class ClaudeCodeViaCcr(ClaudeCode):
         )
         await _register_sim_skills(self, environment)
         await _install_hooks(self, environment)
+
+    async def run(self, instruction, environment, context):
+        await _two_phase_run(self, instruction, environment, context)
 
 
 # ──────────────────────────────────────────────────────────────────────────

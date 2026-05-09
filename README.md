@@ -21,10 +21,9 @@
   <img src="https://img.shields.io/badge/circuits-LTspice-blue" alt="LTspice">
   <img src="https://img.shields.io/badge/CFD-OpenFOAM-orange" alt="OpenFOAM">
   <img src="https://img.shields.io/badge/scoring-source--provenance-7c3aed" alt="Source provenance">
-  <img src="https://img.shields.io/badge/status-v0.1-f97316" alt="Status: v0.1">
 </p>
 
-[What this measures](#what-this-measures) · [Scope](#v01-release-scope) · [Reference runs](#first-reference-runs) · [Quick start](#quick-start) · [Scoring](#how-scoring-works-in-60-seconds) · [Layout](#repository-layout)
+[What this measures](#what-this-measures) · [Scope](#scope) · [Reference runs](#first-reference-runs) · [Quick start](#quick-start) · [Scoring](#how-scoring-works-in-60-seconds) · [Layout](#repository-layout)
 
 </div>
 
@@ -46,17 +45,17 @@ the agent to use any specific tool or library — `sim-cli`, native solver
 CLIs, Python wrappers, or the agent's own scratch scripts are all valid
 launch routes. Tooling is implementation, not the thing being benchmarked.
 
-## v0.1 release scope
+## Scope
 
 | Domain | Tasks | Backing solver |
 |---|---:|---|
 | Circuits / SPICE | 20 | LTspice (free, open-format) |
-| Fluids / CFD | 3 | OpenFOAM (open source) |
+| Fluids / CFD | 11 | OpenFOAM (open source) |
 
-Every v0.1 task has a deterministic `solution/solve.sh` oracle that produces
-the verifier's upper-bound sanity check. Future releases extend the OpenFOAM
-side (turbulent boundary layers, transonic airfoils, multiphase, separated
-flows) once their oracles are written and validated.
+Every task has a deterministic `solution/solve.sh` oracle that produces
+the verifier's upper-bound sanity check. Coverage will keep growing on the
+OpenFOAM side (more turbulent boundary layers, transonic airfoils, separated
+flows) as new oracles are written and validated.
 
 See [`CASES.md`](CASES.md) for the full catalog with leakage, tier, and
 oracle-status flags per case. See [`SCHEMA.md`](SCHEMA.md) for the case /
@@ -69,28 +68,33 @@ the oracle gives the verifier's upper-bound sanity check; model rows are
 read against that ceiling.
 
 We include first reference runs with Claude Opus 4.6, MiniMax-M2.5-highspeed,
-and MiniMax-M2.7 through a claude-code harness.
+MiniMax-M2.7-highspeed, and MiniMax-M2.7 through a claude-code harness.
 
-| Suite | Tasks | Claude Opus 4.6 | MiniMax-M2.5-highspeed | MiniMax-M2.7 | Oracle ceiling |
-|---|---:|---:|---:|---:|---:|
-| LTspice circuits | 20 | **0.986** | **0.936** | **0.884** | 1.000 |
-| OpenFOAM fluids | 3 | **1.000** | **0.408** | **0.284** | 0.999 |
+| Suite | Tasks | Claude Opus 4.6 | MiniMax-M2.7-highspeed | MiniMax-M2.5-highspeed | MiniMax-M2.7 | Oracle ceiling |
+|---|---:|---:|---:|---:|---:|---:|
+| LTspice circuits | 20 | **0.986** | **0.899** | **0.899** | **0.838** | 1.000 |
+| OpenFOAM fluids | 11 | **0.918** | **0.804** | **0.706** | **0.675** | n/a* |
+
+\* OpenFOAM oracle reference run not yet produced; oracles are calibrated and `solution/solve.sh` is in repo.
 
 Reads:
-- **LTspice**: all three agents complete most artifact-grounded circuit
+- **LTspice**: all four agents complete most artifact-grounded circuit
   workflows. Opus 4.6 is at 19/20 perfect (only `opamp_integrator` at 0.72);
   the MiniMax pair leave more headroom and parameter-sweep / design-selection
   tasks still discriminate between them.
-- **OpenFOAM**: CFD remains much harder — agents must author case files,
-  mesh, run solvers, post-process fields, and produce replayable KPI
-  provenance. Opus 4.6 reaches the oracle ceiling on the 3 oracle-available
-  cases; the MiniMax pair are below 0.5 and lose on a mix of physics, mesh
-  setup, and provenance-paperwork failures.
+- **OpenFOAM**: CFD is the harder suite — agents must author case files,
+  mesh, run solvers, post-process fields, and produce replayable KPI provenance.
+  The 11-case set covers Bénard convection, dam-break multiphase, DNS
+  turbulence, oblique shock, non-Newtonian flow, pitzdaily, and lid-driven
+  cavities at Re=100/400/1000. Opus opens a clear ~11-point gap;
+  M2.7-highspeed is the strongest MiniMax variant on this suite;
+  the reasoning M2.7 underperforms its highspeed sibling on CFD;
+  `pitzdaily-bfs-rans` is a model watershed (Opus 0.978 vs M2.7 0.000).
 
 These are reference runs, not a mature cross-model leaderboard. Per-case
-scores, completion policy, harness-exception accounting, and superseded-run
-notes live in [`LEADERBOARD.md`](LEADERBOARD.md) and
-[`results/v0.1/`](results/v0.1/).
+scores, completion policy, and harness-exception accounting live in
+[`LEADERBOARD.md`](LEADERBOARD.md) and the per-run records under
+[`results/`](results/).
 
 The useful early signal is workflow-shaped: artifact-grounded grading
 separates agents that can talk about simulation from agents that can produce
@@ -222,23 +226,22 @@ sim-benchmark/
 ├── lib/
 │   └── sim_benchmark_verifier/   # the grader (Python)
 ├── tools/                 # harness, lint, aggregation, scoring helpers
-├── results/v0.1/          # published reference-run artifacts
+├── results/               # per-run record artifacts
 ├── CASES.md               # public catalog with status / leakage / tier
 ├── LEADERBOARD.md         # current and historical results
 ├── ORACLE.md              # oracle baseline + verifier sanity checks
-├── RELEASE.md             # v0.1 release gate
+├── RELEASE.md             # release gate
 ├── REPRODUCING.md         # three reproduction paths
 └── SCHEMA.md              # case + verifier contract
 ```
 
 ## Roadmap
 
-- **v0.1 (current)** — deterministic verifier, in-trial Stop hook with
-  schema and extract-runnability passes, MiniMax reference rows.
-- **v0.2** — broader OpenFOAM coverage (turbulent boundary layer,
-  transonic airfoil, multiphase, separated flows); harden Docker Hub
-  package distribution.
-- **later** — stable schema, public leaderboard, multi-org submission flow.
+- **Now** — deterministic verifier, in-trial Stop hook with schema and
+  extract-runnability passes, four reference model rows.
+- **Next** — broader OpenFOAM coverage (transonic airfoil, more separated
+  flows, more multiphase), harden Docker Hub package distribution.
+- **Later** — stable schema, public leaderboard, multi-org submission flow.
 
 Track open work on [GitHub Issues](https://github.com/svd-ai-lab/sim-benchmark/issues).
 
@@ -261,8 +264,7 @@ PRs welcome. Two common contributions:
   title  = {sim-benchmark: An Industrial Simulation Agent Benchmark},
   author = {{svd-ai-lab}},
   year   = {2026},
-  url    = {https://github.com/svd-ai-lab/sim-benchmark},
-  note   = {v0.1}
+  url    = {https://github.com/svd-ai-lab/sim-benchmark}
 }
 ```
 
