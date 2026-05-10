@@ -1,0 +1,37 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/dambreak-multiphase"
+description = "Two-phase dam break (VOF, interFoam) — peak velocity magnitude after collapse"
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["openfoam", "cfd", "multiphase", "vof", "interfoam", "transient", "2d"]
+
+[environment]
+cpus           = 2
+memory_mb      = 4096
+allow_internet = true
+
+[agent]
+timeout_sec = 1800
+user        = "root"
+
+[verifier]
+timeout_sec = 120
+user        = "root"
+
+[metadata.sim]
+solver          = "openfoam"
+source_type     = "tutorial"
+source_citation = "Adapted from ESI OpenFOAM v2412 tutorial multiphase/interFoam/laminar/damBreak/damBreak (water column collapse, VOF, gravity = -9.81 y, end t=1s). Reference value computed by our oracle (high-fidelity-solver GT)."
+source_url      = "https://github.com/OpenFOAM/OpenFOAM-v2412/tree/master/tutorials/multiphase/interFoam/laminar/damBreak/damBreak"
+difficulty_tier = "M"
+gt_type         = "high-fidelity-solver"
+tags            = ["transient", "multiphase", "vof", "2d", "free-surface", "gravity-driven"]
+
+[[metadata.sim.kpis]]
+name         = "peak_U_magnitude"
+description  = "peak |U| anywhere in the water phase over the interval t=0..1s [m/s] (post-collapse splash)"
+gt_value     = 4.41
+gt_source    = "oracle-self-calibrated 2026-04-21; max |U| = 4.4092 m/s at t=1.0s"
+range_value  = 5.0
+weight       = 1.0

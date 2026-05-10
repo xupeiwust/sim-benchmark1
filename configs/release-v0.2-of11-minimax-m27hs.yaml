@@ -1,0 +1,36 @@
+# v0.2 OpenFOAM expanded run: MiniMax-M2.7-highspeed on the 11 newly-calibrated
+# OF cases.
+
+jobs_dir: jobs/release-v0.2-of11-minimax-m27hs
+n_concurrent_trials: 3
+timeout_multiplier: 3.0
+
+environment:
+  type: docker
+  delete: false
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeViaCcr
+    model_name: MiniMax-M2.7-highspeed
+    kwargs:
+      max_turns: 300
+    env:
+      ANTHROPIC_API_KEY: 'harbor-ccr-2026'
+      ANTHROPIC_BASE_URL: 'http://127.0.0.1:3456'
+      CCR_UPSTREAM_BASE: 'https://api.minimaxi.com/v1/chat/completions'
+      CCR_UPSTREAM_KEY: '${MINIMAX_API_KEY}'
+
+datasets:
+  - path: cases/fluids
+    task_names:
+      - bernard-cells-3d
+      - cavity-re100-foundation-v11
+      - cylinder-nonnewtonian
+      - dambreak-multiphase
+      - dns-boxturb16
+      - hotroom-buoyant
+      - lid-driven-cavity-re100
+      - lid-driven-cavity-re1000
+      - lid-driven-cavity-re400
+      - oblique-shock
+      - pitzdaily-bfs-rans

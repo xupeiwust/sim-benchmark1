@@ -95,6 +95,7 @@ SHARED_DIRS: list[str] = [
     ".claude/skills/readme-blueprint-generator",
     "lib/sim_benchmark_verifier",
     "results/v0.1",
+    "results/v0.2",
     "tools/ccr-plugins",
 ]
 
@@ -104,6 +105,7 @@ SHARED_DIRS: list[str] = [
 # you make a deliberate decision about which configs go public.
 SHARED_GLOBS: list[str] = [
     "configs/release-v0.1-*.yaml",
+    "configs/release-v0.2-*.yaml",
     "configs/template-*.yaml",
 ]
 

@@ -1,0 +1,45 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/bernard-cells-3d"
+description = "3D Benard cell natural convection between heated walls (301 K / 300 K), buoyantFoam transient (FoamBench basic/BernardCells/1)"
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["openfoam", "foambench", "buoyancy", "natural-convection", "3d", "transient", "heat-transfer"]
+
+[environment]
+cpus           = 2
+memory_mb      = 4096
+allow_internet = true
+
+[agent]
+timeout_sec = 1800
+user        = "root"
+
+[verifier]
+timeout_sec = 120
+user        = "root"
+
+[metadata.sim]
+solver          = "openfoam"
+source_type     = "paper"
+source_citation = "CFDLLMBench / NLR-Theseus FoamBench basic case 'BernardCells/1'. 3D buoyant natural convection in 9x1x2 m domain, hot wall 301 K, cold wall 300 K, buoyantFoam transient, end t=1000 s. See https://github.com/NLR-Theseus/cfdllmbench"
+source_url      = "https://www.kaggle.com/datasets/nithinsekhar/foambench/data"
+difficulty_tier = "M"
+gt_type         = "high-fidelity-solver"
+tags            = ["foambench", "transient", "3d", "buoyancy", "heat-transfer"]
+
+[[metadata.sim.kpis]]
+name         = "max_U_magnitude"
+description  = "peak |U| anywhere in the domain at t=1000 s (final time) [m/s]; measures buoyant plume intensity at ΔT=1 K"
+gt_value     = 0.0332
+gt_source    = "oracle-self-calibrated 2026-04-22 on openfoam10-paraview510:latest, max|U|=0.033181 m/s"
+range_value  = 1.0
+weight       = 0.6
+
+[[metadata.sim.kpis]]
+name         = "max_T"
+description  = "peak temperature T anywhere in the domain at t=1000 s [K]; sanity check that T stays bounded by the hot wall value ≈ 301 K"
+gt_value     = 300.96
+gt_source    = "oracle-self-calibrated 2026-04-22, max T=300.963 K"
+range_value  = 10.0
+weight       = 0.4

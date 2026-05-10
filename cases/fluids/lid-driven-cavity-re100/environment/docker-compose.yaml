@@ -1,0 +1,24 @@
+# Harbor-native build hook.
+#
+# Extends Harbor's default compose-build stack with:
+#   - build.args.BASE_REGISTRY: overrides the Dockerfile's default (docker.io)
+#     to a mirror that resolves from this build host. Daemon-side registry
+#     mirrors (registry-mirrors in /etc/docker/daemon.json) are unreliable on
+#     the CN machine we develop on; setting BASE_REGISTRY directly sidesteps
+#     the daemon's mirror table.
+#   - additional_contexts: supplies pre-cloned sim-cli source (see SCHEMA.md §9)
+#   - network: host: lets apt-get reach the host's configured mirrors
+#                    (BuildKit's default bridge can't in most CN networks)
+#
+# The sim-cli-src path must exist on the build host. Pre-clone recipe in
+# SCHEMA.md §9.
+
+services:
+  main:
+    build:
+      network: host
+      args:
+        BASE_REGISTRY: docker.1panel.live
+      additional_contexts:
+        sim-cli-src: /tmp/sim-cli-clone
+        sim-skills-src: /tmp/sim-skills-clone

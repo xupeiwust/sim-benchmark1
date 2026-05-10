@@ -1,0 +1,37 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/pitzdaily-bfs-rans"
+description = "Backward-facing step (pitzDaily geometry), RANS k-epsilon — reattachment length on lower wall"
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["openfoam", "cfd", "rans", "k-epsilon", "2d", "incompressible", "bfs", "pitzdaily"]
+
+[environment]
+cpus           = 2
+memory_mb      = 4096
+allow_internet = true
+
+[agent]
+timeout_sec = 1800
+user        = "root"
+
+[verifier]
+timeout_sec = 120
+user        = "root"
+
+[metadata.sim]
+solver          = "openfoam"
+source_type     = "paper"
+source_citation = "Prompt borrowed from MetaOpenFOAM (Terry-cyx/MetaOpenFOAM, inputs/Backward_facing_step.yaml). Geometry from ESI OpenFOAM tutorial 'pitzDaily' (after Pitz & Daily 1983, J. Fluids Eng. 105:415). Reference reattachment x_r/h ~6.5 from k-epsilon RANS literature on this geometry."
+source_url      = "https://github.com/Terry-cyx/MetaOpenFOAM/blob/main/inputs/Backward_facing_step.yaml"
+difficulty_tier = "M"
+gt_type         = "high-fidelity-solver"
+tags            = ["steady", "turbulent", "2D", "incompressible", "rans", "k-epsilon", "no-analytical-shortcut"]
+
+[[metadata.sim.kpis]]
+name         = "reattachment_x_over_h"
+description  = "dimensionless reattachment length x_r / h on the lower wall downstream of the step (h=0.0254 m), from steady RANS k-epsilon"
+gt_value     = 6.5
+gt_source    = "RANS k-epsilon literature on pitzDaily geometry (see task citation)"
+range_value  = 10.0
+weight       = 1.0

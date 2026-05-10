@@ -1,0 +1,45 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/cylinder-nonnewtonian"
+description = "Laminar flow past an offset cylinder, generalised Newtonian Cross-Power-Law viscosity, pimpleFoam transient (FoamBench basic/Cylinder/1)"
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["openfoam", "foambench", "cylinder", "non-newtonian", "pimple", "2d", "transient"]
+
+[environment]
+cpus           = 2
+memory_mb      = 4096
+allow_internet = true
+
+[agent]
+timeout_sec = 1800
+user        = "root"
+
+[verifier]
+timeout_sec = 120
+user        = "root"
+
+[metadata.sim]
+solver          = "openfoam"
+source_type     = "paper"
+source_citation = "CFDLLMBench / NLR-Theseus FoamBench basic case 'Cylinder/1'. PIMPLE + Cross-Power-Law viscosity (nuInf=10, m=0.4, n=3), inlet U=1 m/s, end t=0.5s. See https://github.com/NLR-Theseus/cfdllmbench"
+source_url      = "https://www.kaggle.com/datasets/nithinsekhar/foambench/data"
+difficulty_tier = "M"
+gt_type         = "high-fidelity-solver"
+tags            = ["foambench", "non-newtonian", "transient", "2d", "pimple"]
+
+[[metadata.sim.kpis]]
+name         = "max_U_magnitude"
+description  = "peak |U| anywhere in the domain at t=0.5 s (final time) [m/s]; measures the acceleration around the offset cylinder"
+gt_value     = 3.871
+gt_source    = "oracle-self-calibrated 2026-04-22 on openfoam10-paraview510:latest, max|U|=3.870945 m/s"
+range_value  = 10.0
+weight       = 0.6
+
+[[metadata.sim.kpis]]
+name         = "max_p"
+description  = "peak pressure p anywhere in the domain at t=0.5 s [Pa]; measures the stagnation pressure on the cylinder surface"
+gt_value     = 317.78
+gt_source    = "oracle-self-calibrated 2026-04-22, max p=317.783 Pa"
+range_value  = 1000.0
+weight       = 0.4

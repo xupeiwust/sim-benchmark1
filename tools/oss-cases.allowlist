@@ -37,7 +37,18 @@ circuits/rlc_step_overdamped
 circuits/rlc_step_underdamped
 circuits/sallen_key_lp
 
-# --- OpenFOAM fluids (v0.1 + initial v0.2 expansion) ---
+# --- OpenFOAM fluids ---
 fluids/flatplate_zpg_subsonic
 fluids/lid_driven_cavity_re100
 fluids/lid_driven_cavity_re1000
+fluids/bernard-cells-3d
+fluids/cavity-re100-foundation-v11
+fluids/cylinder-nonnewtonian
+fluids/dambreak-multiphase
+fluids/dns-boxturb16
+fluids/hotroom-buoyant
+fluids/lid-driven-cavity-re100
+fluids/lid-driven-cavity-re1000
+fluids/lid-driven-cavity-re400
+fluids/oblique-shock
+fluids/pitzdaily-bfs-rans

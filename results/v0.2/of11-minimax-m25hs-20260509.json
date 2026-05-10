@@ -1,0 +1,25 @@
+{
+  "run_id": "release-v0.2-of11-minimax-m25hs-20260509",
+  "date": "2026-05-09",
+  "agent": "claude-code (via claude-code-router)",
+  "model": "MiniMax-M2.5-highspeed",
+  "harness": "tools.agent_harness:ClaudeCodeViaCcr",
+  "max_turns": 300,
+  "soft_landing_turns": 30,
+  "completed": 11,
+  "exceptions": 2,
+  "completed_mean": 0.706,
+  "cases": [
+    {"name": "bernard-cells-3d",            "score": 0.895, "wrap_fired": true,  "rerun": true,  "note": "post wrap-up-fix rerun"},
+    {"name": "cavity-re100-foundation-v11", "score": 0.995, "wrap_fired": false, "rerun": false},
+    {"name": "cylinder-nonnewtonian",       "score": 0.878, "wrap_fired": true,  "rerun": true,  "note": "post wrap-up-fix rerun"},
+    {"name": "dambreak-multiphase",         "score": 0.700, "wrap_fired": false, "rerun": false},
+    {"name": "dns-boxturb16",               "score": 0.700, "wrap_fired": false, "rerun": false},
+    {"name": "hotroom-buoyant",             "score": 0.700, "wrap_fired": false, "rerun": false},
+    {"name": "lid-driven-cavity-re100",     "score": 0.995, "wrap_fired": false, "rerun": false},
+    {"name": "lid-driven-cavity-re1000",    "score": 0.700, "wrap_fired": false, "rerun": false},
+    {"name": "lid-driven-cavity-re400",     "score": 0.200, "wrap_fired": false, "rerun": false},
+    {"name": "oblique-shock",               "score": 1.000, "wrap_fired": true,  "rerun": true,  "note": "post wrap-up-fix rerun; perfect"},
+    {"name": "pitzdaily-bfs-rans",          "score": 0.000, "wrap_fired": false, "rerun": false}
+  ]
+}

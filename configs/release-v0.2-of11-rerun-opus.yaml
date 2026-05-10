@@ -1,0 +1,27 @@
+# v0.2 RERUN: only the case wrap-up bug-affected by Opus 4.6.
+# bernard was wrap-fired with bad WRAP_UP_INSTRUCTION → wrote `RESULT` wrapper
+# instead of `kpis`, scoring 0. Rerun after fixing agent_harness.py.
+
+jobs_dir: jobs/release-v0.2-of11-rerun-opus
+n_concurrent_trials: 1
+timeout_multiplier: 3.0
+
+environment:
+  type: docker
+  delete: false
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeAnthropicDirect
+    model_name: claude-opus-4-6
+    kwargs:
+      max_turns: 300
+    env:
+      ANTHROPIC_API_KEY: '${OPUS46_AUTH_TOKEN}'
+      ANTHROPIC_BASE_URL: '${OPUS46_BASE_URL}'
+      ANTHROPIC_CUSTOM_HEADERS: "X-Session-Id: sim-benchmark-v0.2\nX-Sub-Module: claude-code-internal"
+      CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS: '1'
+
+datasets:
+  - path: cases/fluids
+    task_names:
+      - bernard-cells-3d

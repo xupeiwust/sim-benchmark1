@@ -1,0 +1,26 @@
+# v0.2 RERUN: oblique-shock for MiniMax-M2.7. Hit the wrap-up `RESULT`
+# wrapper bug. Rerun after fix.
+
+jobs_dir: jobs/release-v0.2-of11-rerun-m27
+n_concurrent_trials: 1
+timeout_multiplier: 3.0
+
+environment:
+  type: docker
+  delete: false
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeViaCcr
+    model_name: MiniMax-M2.7
+    kwargs:
+      max_turns: 300
+    env:
+      ANTHROPIC_API_KEY: 'harbor-ccr-2026'
+      ANTHROPIC_BASE_URL: 'http://127.0.0.1:3456'
+      CCR_UPSTREAM_BASE: 'https://api.minimaxi.com/v1/chat/completions'
+      CCR_UPSTREAM_KEY: '${MINIMAX_API_KEY}'
+
+datasets:
+  - path: cases/fluids
+    task_names:
+      - oblique-shock

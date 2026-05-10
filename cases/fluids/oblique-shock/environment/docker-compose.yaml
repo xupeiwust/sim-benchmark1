@@ -1,0 +1,13 @@
+# Harbor build hook: override registry + network. No sim-cli-src: Foundation
+# base images ship Python 3.8, too old for sim-cli's Python >= 3.10 requirement.
+# Oracle runs OpenFOAM directly via subprocess; LLM agents may install a
+# newer python if they want to use sim-cli.
+
+services:
+  main:
+    build:
+      network: host
+      args:
+        BASE_REGISTRY: docker.1panel.live
+      additional_contexts:
+        sim-skills-src: /tmp/sim-skills-clone
