@@ -302,10 +302,10 @@ drafts, instead of silently hiding unfinished tasks.
 Useful local checks:
 
 ```bash
-python tools/lint_case.py cases/circuits/rc_highpass_ac
+python tools/lint_case.py cases/ltspice/circuits/rc_highpass_ac
 python tools/v19_static_validate.py
 python -m pytest lib/sim_benchmark_verifier/tests
-harbor run -p cases/circuits --agent oracle -i rc_highpass_ac
+harbor run -p cases/ltspice/circuits --agent oracle -i rc_highpass_ac
 ```
 
 On Windows with Docker Desktop, set:

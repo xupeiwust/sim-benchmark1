@@ -9,7 +9,7 @@ debug the environment before trusting any AI-agent score.
 Quick check:
 
 ```bash
-harbor run -p cases/fluids/lid_driven_cavity_re100 \
+harbor run -p cases/openfoam/fluids/lid_driven_cavity_re100 \
     --agent oracle \
     --include-task-name lid-driven-cavity-re100
 # Expect: Mean = 0.9807 ± 0.0005, wall-clock ~25 s.

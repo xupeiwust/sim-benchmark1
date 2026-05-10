@@ -16,4 +16,4 @@ agents:
     env: *pa_cc_env
 
 datasets:
-  - path: cases/fluids
+  - path: cases/openfoam/fluids

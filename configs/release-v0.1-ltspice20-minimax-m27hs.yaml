@@ -30,7 +30,7 @@ agents:
       CCR_UPSTREAM_KEY: '${MINIMAX_API_KEY}'
 
 datasets:
-  - path: cases/circuits
+  - path: cases/ltspice/circuits
     task_names:
       - bridge_rectifier_ripple
       - diff_amp

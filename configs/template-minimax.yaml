@@ -33,4 +33,4 @@ agents:
     env: *mm_cc_env
 
 datasets:
-  - path: cases/circuits
+  - path: cases/ltspice/circuits

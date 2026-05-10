@@ -25,7 +25,7 @@ agents:
       CCR_UPSTREAM_KEY: '${MINIMAX_API_KEY}'
 
 datasets:
-  - path: cases/fluids
+  - path: cases/openfoam/fluids
     task_names:
       - flatplate_zpg_subsonic
       - lid_driven_cavity_re100

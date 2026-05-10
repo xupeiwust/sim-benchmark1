@@ -260,16 +260,20 @@ def main() -> int:
         actions.extend(plan_dir_sync(src_dir, dst_dir))
 
     # 5) Cases present in oss but not on allowlist — warn.
+    # Layout is solver/physics/case-id, so walk three levels.
     if (oss / "cases").exists():
         for solver_dir in (oss / "cases").iterdir():
             if not solver_dir.is_dir():
                 continue
-            for case_dir in solver_dir.iterdir():
-                if not case_dir.is_dir():
+            for physics_dir in solver_dir.iterdir():
+                if not physics_dir.is_dir():
                     continue
-                rel = f"{solver_dir.name}/{case_dir.name}"
-                if rel not in cases_allowlist:
-                    actions.append(Action("warn_orphan_case", None, case_dir))
+                for case_dir in physics_dir.iterdir():
+                    if not case_dir.is_dir():
+                        continue
+                    rel = f"{solver_dir.name}/{physics_dir.name}/{case_dir.name}"
+                    if rel not in cases_allowlist:
+                        actions.append(Action("warn_orphan_case", None, case_dir))
 
     # Reporting + execution.
     counts = execute(actions, dry_run=args.dry_run)

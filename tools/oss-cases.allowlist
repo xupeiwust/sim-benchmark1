@@ -1,7 +1,7 @@
 # sim-benchmark-oss case allowlist.
 #
-# One <physics-class>/<case-id> per line. Lines starting with # are comments.
-# Blank lines ignored.
+# One <solver>/<physics-class>/<case-id> per line. Lines starting with #
+# are comments. Blank lines ignored.
 #
 # Anything NOT listed here stays in private only. publish_oss.py will warn
 # (not auto-delete) about cases present in the oss tree but not on this list.
@@ -15,40 +15,40 @@
 #  - Commercial-solver cases (COMSOL, Fluent, CFX, Abaqus, ...) NEVER go here.
 #  - Cases under cases/_pending/ or cases/_template/ are drafts and never go here.
 
-# --- LTspice circuits (v0.1 MVP scored gate) ---
-circuits/bridge_rectifier_ripple
-circuits/diff_amp
-circuits/half_wave_rectifier
-circuits/inv_amp
-circuits/lc_lowpass_2nd
-circuits/lc_resonator
-circuits/noninv_amp
-circuits/opamp_buffer
-circuits/opamp_integrator
-circuits/opamp_summer
-circuits/rc_highpass_ac
-circuits/rc_lowpass_ac
-circuits/rc_pulse_response
-circuits/rl_lowpass_ac
-circuits/rl_step
-circuits/rlc_bandpass
-circuits/rlc_notch
-circuits/rlc_step_overdamped
-circuits/rlc_step_underdamped
-circuits/sallen_key_lp
+# --- LTspice circuits ---
+ltspice/circuits/bridge_rectifier_ripple
+ltspice/circuits/diff_amp
+ltspice/circuits/half_wave_rectifier
+ltspice/circuits/inv_amp
+ltspice/circuits/lc_lowpass_2nd
+ltspice/circuits/lc_resonator
+ltspice/circuits/noninv_amp
+ltspice/circuits/opamp_buffer
+ltspice/circuits/opamp_integrator
+ltspice/circuits/opamp_summer
+ltspice/circuits/rc_highpass_ac
+ltspice/circuits/rc_lowpass_ac
+ltspice/circuits/rc_pulse_response
+ltspice/circuits/rl_lowpass_ac
+ltspice/circuits/rl_step
+ltspice/circuits/rlc_bandpass
+ltspice/circuits/rlc_notch
+ltspice/circuits/rlc_step_overdamped
+ltspice/circuits/rlc_step_underdamped
+ltspice/circuits/sallen_key_lp
 
 # --- OpenFOAM fluids ---
-fluids/flatplate_zpg_subsonic
-fluids/lid_driven_cavity_re100
-fluids/lid_driven_cavity_re1000
-fluids/bernard-cells-3d
-fluids/cavity-re100-foundation-v11
-fluids/cylinder-nonnewtonian
-fluids/dambreak-multiphase
-fluids/dns-boxturb16
-fluids/hotroom-buoyant
-fluids/lid-driven-cavity-re100
-fluids/lid-driven-cavity-re1000
-fluids/lid-driven-cavity-re400
-fluids/oblique-shock
-fluids/pitzdaily-bfs-rans
+openfoam/fluids/flatplate_zpg_subsonic
+openfoam/fluids/lid_driven_cavity_re100
+openfoam/fluids/lid_driven_cavity_re1000
+openfoam/fluids/bernard-cells-3d
+openfoam/fluids/cavity-re100-foundation-v11
+openfoam/fluids/cylinder-nonnewtonian
+openfoam/fluids/dambreak-multiphase
+openfoam/fluids/dns-boxturb16
+openfoam/fluids/hotroom-buoyant
+openfoam/fluids/lid-driven-cavity-re100
+openfoam/fluids/lid-driven-cavity-re1000
+openfoam/fluids/lid-driven-cavity-re400
+openfoam/fluids/oblique-shock
+openfoam/fluids/pitzdaily-bfs-rans

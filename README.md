@@ -135,8 +135,8 @@ You can use this to:
   customer-facing automation;
 - benchmark internal solver wrappers / Python APIs against the same task
   suite the open community runs;
-- propose new cases via PR — see [`cases/circuits/README.md`](cases/circuits/README.md)
-  and [`cases/fluids/README.md`](cases/fluids/README.md) for tier / leakage
+- propose new cases via PR — see [`cases/ltspice/circuits/README.md`](cases/ltspice/circuits/README.md)
+  and [`cases/openfoam/fluids/README.md`](cases/openfoam/fluids/README.md) for tier / leakage
   norms.
 
 The contract is in [`SCHEMA.md`](SCHEMA.md).
@@ -149,7 +149,7 @@ workflow", this is a yardstick. Run the oracle smoke (no LLM, free):
 ```bash
 uv tool install harbor
 git clone https://github.com/svd-ai-lab/sim-benchmark && cd sim-benchmark
-harbor run -p cases/circuits -i rc_highpass_ac --agent oracle -y
+harbor run -p cases/ltspice/circuits -i rc_highpass_ac --agent oracle -y
 # Expect: reward = 1.000, wall-clock ~1 min on Docker Desktop.
 ```
 
@@ -169,11 +169,11 @@ uv tool install harbor
 git clone https://github.com/svd-ai-lab/sim-benchmark && cd sim-benchmark
 
 # 3. oracle smoke on one circuit (no LLM, no API key)
-harbor run -p cases/circuits -i rc_highpass_ac --agent oracle -y
+harbor run -p cases/ltspice/circuits -i rc_highpass_ac --agent oracle -y
 
 # 4. oracle smoke on a CFD case (also no LLM; needs the OpenFOAM base
 #    image — see REPRODUCING.md Path B for local builds)
-harbor run -p cases/fluids -i lid_driven_cavity_re100 --agent oracle -y
+harbor run -p cases/openfoam/fluids -i lid_driven_cavity_re100 --agent oracle -y
 ```
 
 Both should print `reward: 1.000`. If you see anything else, the bug is
@@ -215,9 +215,9 @@ Total per case is a weighted sum of the per-group means. See
 
 ```text
 sim-benchmark/
-├── cases/
-│   ├── circuits/          # LTspice tasks
-│   └── fluids/            # OpenFOAM tasks
+├── cases/                       # solver/physics/case-id three-level layout
+│   ├── ltspice/circuits/        # LTspice tasks
+│   └── openfoam/fluids/         # OpenFOAM tasks
 ├── configs/               # release run configs (oracle, M2.7, M2.5)
 ├── docs/                  # design appendices
 ├── environment/

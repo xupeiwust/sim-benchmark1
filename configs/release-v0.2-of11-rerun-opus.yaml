@@ -22,6 +22,6 @@ agents:
       CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS: '1'
 
 datasets:
-  - path: cases/fluids
+  - path: cases/openfoam/fluids
     task_names:
       - bernard-cells-3d

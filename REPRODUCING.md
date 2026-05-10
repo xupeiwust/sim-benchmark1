@@ -19,7 +19,7 @@ git clone https://github.com/svd-ai-lab/sim-benchmark && cd sim-benchmark
 
 # Run the oracle. --ek docker_image=... tells Harbor to pull prebuilt
 # instead of building locally. Expect Mean: 0.981 ± 0.0005.
-harbor run -p cases/fluids/lid_driven_cavity_re100 \
+harbor run -p cases/openfoam/fluids/lid_driven_cavity_re100 \
     --agent oracle \
     --ek docker_image=ghcr.io/svd-ai-lab/sim-benchmark/openfoam-lid-driven-cavity-re100:latest
 ```
@@ -36,7 +36,7 @@ git -C /tmp/sim-cli-clone checkout $(grep '^ref' SCHEMA.md | head -1 | awk '{pri
 docker pull docker.1panel.live/opencfd/openfoam-default:2412
 docker tag  docker.1panel.live/opencfd/openfoam-default:2412 opencfd/openfoam-default:2412
 
-harbor run -p cases/fluids/lid_driven_cavity_re100 --agent oracle
+harbor run -p cases/openfoam/fluids/lid_driven_cavity_re100 --agent oracle
 ```
 
 The prebuilt image (Path A) and a from-source build (Path B) produce
