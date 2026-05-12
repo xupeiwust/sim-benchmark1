@@ -99,6 +99,45 @@ def _append_usage(usage: dict, model: str) -> None:
         print(f"[proxy] usage log write failed: {exc}", file=sys.stderr)
 
 
+def _estimate_prompt_tokens(messages) -> int:
+    """Estimate prompt tokens from an OpenAI-format messages array.
+
+    Upstreams like MiniMax M2.5-highspeed return `{"total_tokens": 0,
+    "total_characters": 0}` in their SSE final usage event regardless of
+    stream_options.include_usage. Without a non-zero input_tokens value,
+    Claude Code's auto-compact can't trigger and the conversation grows
+    until the upstream itself 400s with "context window exceeds limit".
+    We approximate at chars/3 (intentionally pessimistic — over-estimating
+    triggers compact a bit early, which is safe; under-estimating lets
+    the upstream blow). Counts message bodies, tool calls, and tool
+    results, all of which the upstream sees in its rendered prompt.
+    """
+    if not isinstance(messages, list):
+        return 0
+    total = 0
+    for m in messages:
+        if not isinstance(m, dict):
+            continue
+        c = m.get("content")
+        if isinstance(c, str):
+            total += len(c)
+        elif isinstance(c, list):
+            for block in c:
+                if isinstance(block, dict):
+                    for v in block.values():
+                        if isinstance(v, str):
+                            total += len(v)
+        for tc in m.get("tool_calls") or []:
+            if isinstance(tc, dict):
+                fn = tc.get("function") or {}
+                args = fn.get("arguments")
+                if isinstance(args, str):
+                    total += len(args)
+        # Per-message overhead (role markers, separators) ~ 10 chars.
+        total += 10
+    return total // 3
+
+
 def _strip_reasoning_content(evt: dict) -> bool:
     """Drop `reasoning_content` from streaming delta or non-streaming message.
 
@@ -138,6 +177,11 @@ async def handle_completions(request: web.Request) -> web.StreamResponse:
     # Normalize per-request cache-busting tokens (see _strip_cache_busters).
     _strip_cache_busters(body)
 
+    # Estimate prompt tokens from the rendered messages. Used to backfill
+    # zero usage from upstreams that don't honor include_usage (e.g.
+    # MiniMax M2.5-highspeed returns `{"total_tokens": 0}` regardless).
+    estimated_prompt = _estimate_prompt_tokens(body.get("messages"))
+
     headers_out = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {UPSTREAM_KEY}",
@@ -159,6 +203,9 @@ async def handle_completions(request: web.Request) -> web.StreamResponse:
                 final_usage: dict | None = None
                 model = body.get("model", "")
                 buffer = b""
+                # Track output-side chars to estimate completion_tokens
+                # when the upstream returns zeros.
+                completion_chars = 0
 
                 async for chunk in upstream.content.iter_any():
                     buffer += chunk
@@ -178,28 +225,109 @@ async def handle_completions(request: web.Request) -> web.StreamResponse:
                                 except json.JSONDecodeError:
                                     evt = None
                                 if isinstance(evt, dict):
-                                    if _strip_reasoning_content(evt):
-                                        out = b"data: " + json.dumps(evt).encode() + b"\n"
-                                    if isinstance(evt.get("usage"), dict):
-                                        final_usage = evt["usage"]
+                                    modified = _strip_reasoning_content(evt)
+                                    # Count output chars from streamed deltas.
+                                    has_finish_reason = False
+                                    for choice in evt.get("choices") or []:
+                                        delta = choice.get("delta") or {}
+                                        c = delta.get("content")
+                                        if isinstance(c, str):
+                                            completion_chars += len(c)
+                                        for tc in delta.get("tool_calls") or []:
+                                            fn = (tc or {}).get("function") or {}
+                                            args = fn.get("arguments")
+                                            if isinstance(args, str):
+                                                completion_chars += len(args)
+                                        if choice.get("finish_reason"):
+                                            has_finish_reason = True
+                                    # CCR's OpenAI→Anthropic stream translator
+                                    # `break`s on the finish_reason chunk and
+                                    # emits its message_delta from THAT chunk's
+                                    # `usage`. MiniMax puts usage in a separate
+                                    # trailing chunk that CCR never reads. So
+                                    # we must inject usage onto the
+                                    # finish_reason chunk for CCR to forward
+                                    # it to claude-code's auto-compact logic.
+                                    if has_finish_reason:
+                                        u = evt.get("usage") if isinstance(evt.get("usage"), dict) else {}
+                                        if not u.get("prompt_tokens"):
+                                            u["prompt_tokens"] = estimated_prompt
+                                        if not u.get("completion_tokens"):
+                                            u["completion_tokens"] = completion_chars // 3
+                                        if not u.get("total_tokens"):
+                                            u["total_tokens"] = u["prompt_tokens"] + u["completion_tokens"]
+                                        evt["usage"] = u
+                                        final_usage = u
                                         model = evt.get("model", model)
+                                        modified = True
+                                    # Backfill the trailing usage-only chunk
+                                    # too — costs nothing and keeps the JSONL
+                                    # log accurate when upstream returns zero.
+                                    elif isinstance(evt.get("usage"), dict):
+                                        u = evt["usage"]
+                                        if not u.get("prompt_tokens"):
+                                            u["prompt_tokens"] = estimated_prompt
+                                            modified = True
+                                        if not u.get("completion_tokens"):
+                                            u["completion_tokens"] = completion_chars // 3
+                                            modified = True
+                                        if not u.get("total_tokens"):
+                                            u["total_tokens"] = u["prompt_tokens"] + u["completion_tokens"]
+                                            modified = True
+                                        final_usage = u
+                                        model = evt.get("model", model)
+                                    if modified:
+                                        out = b"data: " + json.dumps(evt).encode() + b"\n"
                         await resp.write(out)
 
                 if buffer:
                     await resp.write(buffer)
+
+                # If upstream sent no usage event at all (some upstreams
+                # ignore stream_options.include_usage), synthesize one
+                # before EOF so CC's auto-compact still has a signal.
+                if final_usage is None:
+                    synth = {
+                        "prompt_tokens": estimated_prompt,
+                        "completion_tokens": completion_chars // 3,
+                        "total_tokens": estimated_prompt + completion_chars // 3,
+                    }
+                    synth_evt = {"usage": synth, "model": model, "choices": []}
+                    await resp.write(b"data: " + json.dumps(synth_evt).encode() + b"\n\n")
+                    final_usage = synth
+
                 await resp.write_eof()
 
-                if final_usage:
-                    _append_usage(final_usage, model)
-
+                _append_usage(final_usage, model)
                 return resp
 
             # ── non-streaming JSON branch ──
             data = await upstream.json()
             if isinstance(data, dict):
                 _strip_reasoning_content(data)
-                if isinstance(data.get("usage"), dict):
-                    _append_usage(data["usage"], data.get("model", body.get("model", "")))
+                u = data.get("usage")
+                if not isinstance(u, dict):
+                    u = {}
+                    data["usage"] = u
+                if not u.get("prompt_tokens"):
+                    u["prompt_tokens"] = estimated_prompt
+                if not u.get("completion_tokens"):
+                    # Estimate from response message bodies.
+                    out_chars = 0
+                    for ch in data.get("choices") or []:
+                        msg = (ch or {}).get("message") or {}
+                        c = msg.get("content")
+                        if isinstance(c, str):
+                            out_chars += len(c)
+                        for tc in msg.get("tool_calls") or []:
+                            fn = (tc or {}).get("function") or {}
+                            args = fn.get("arguments")
+                            if isinstance(args, str):
+                                out_chars += len(args)
+                    u["completion_tokens"] = out_chars // 3
+                if not u.get("total_tokens"):
+                    u["total_tokens"] = u["prompt_tokens"] + u["completion_tokens"]
+                _append_usage(u, data.get("model", body.get("model", "")))
             return web.json_response(data, status=upstream.status)
 
 

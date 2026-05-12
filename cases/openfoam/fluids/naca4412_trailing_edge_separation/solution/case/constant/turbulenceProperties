@@ -1,0 +1,19 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      turbulenceProperties;
+}
+
+// CFL3D-SA reference is from Spalart-Allmaras, so we match that.
+
+simulationType  RAS;
+
+RAS
+{
+    RASModel        SpalartAllmaras;
+    turbulence      on;
+    printCoeffs     on;
+}

@@ -1,0 +1,34 @@
+# v0.3 OpenFOAM expansion: MiniMax-M2.7-highspeed on 6 newly-promoted OF cases.
+# Requires line-7 MINIMAX_API_KEY (full access; line-8 China-account lacks M2.7-HS).
+
+jobs_dir: jobs/release-v0.3-of6-minimax-m27hs
+n_concurrent_trials: 2
+timeout_multiplier: 3.0
+
+environment:
+  type: docker
+  delete: false
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeViaCcr
+    model_name: MiniMax-M2.7-highspeed
+    kwargs:
+      max_turns: 300
+    env:
+      ANTHROPIC_API_KEY: 'harbor-ccr-2026'
+      ANTHROPIC_BASE_URL: 'http://127.0.0.1:3456'
+      CCR_UPSTREAM_BASE: 'https://api.minimaxi.com/v1/chat/completions'
+      CCR_UPSTREAM_KEY: '${MINIMAX_API_KEY}'
+      # Same compact threshold as m25hs/m27 — MiniMax true context is much
+      # smaller than CC's 200k default, force compact at ~46k.
+      CLAUDE_CODE_AUTO_COMPACT_WINDOW: '50000'
+
+datasets:
+  - path: cases/openfoam/fluids
+    task_names:
+      - backstep_driver_seegmiller_turbulent
+      - bump_in_channel_2d
+      - flatplate_zpg_subsonic
+      - naca0012_subsonic
+      - naca4412_trailing_edge_separation
+      - nasa_hump_separated

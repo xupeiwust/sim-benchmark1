@@ -1,0 +1,68 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+scale   1;
+
+// Background hex mesh, 100c x 100c x 0.5 (3D-thin slab in z), 100x100x5.
+// Multiple z cells avoid the snappy 2D-mesh-motion-correction lockup.
+// frontAndBack patches use slip BCs so the flow is effectively 2D.
+
+vertices
+(
+    (-50 -50 -0.25)
+    ( 50 -50 -0.25)
+    ( 50  50 -0.25)
+    (-50  50 -0.25)
+    (-50 -50  0.25)
+    ( 50 -50  0.25)
+    ( 50  50  0.25)
+    (-50  50  0.25)
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (100 100 5) simpleGrading (1 1 1)
+);
+
+edges ();
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ((0 4 7 3));
+    }
+    outlet
+    {
+        type patch;
+        faces ((1 2 6 5));
+    }
+    top
+    {
+        type patch;
+        faces ((3 7 6 2));
+    }
+    bottom
+    {
+        type patch;
+        faces ((0 1 5 4));
+    }
+    frontAndBack
+    {
+        type patch;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+
+mergePatchPairs ();

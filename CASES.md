@@ -57,7 +57,24 @@ written.
 | fluids | `flatplate_zpg_subsonic` | public_runnable | available | numerical | 2 | numerical | S |
 | fluids | `lid_driven_cavity_re100` | public_runnable | available | numerical | 3 | numerical | S |
 | fluids | `lid_driven_cavity_re1000` | public_runnable | available | numerical | 3 | numerical | S |
+| fluids | `backstep_driver_seegmiller_turbulent` | public_runnable | available | numerical | 2 | numerical | M |
+| fluids | `bump_in_channel_2d` | public_runnable | available | numerical | 1 | numerical | M |
+| fluids | `naca0012_subsonic` | public_runnable | available | numerical | 2 | numerical | M |
+| fluids | `naca4412_trailing_edge_separation` | public_runnable | available | numerical | 1 | numerical | L |
+| fluids | `nasa_hump_separated` | public_runnable | available | numerical | 2 | numerical | M |
 
-Total: 23 public-runnable cases, all with no-token oracle solutions. v0.2 will
-expand the OpenFOAM scope (turbulent boundary layer, transonic airfoil,
-multiphase, separated flows) once those oracles are written and validated.
+Total: 28 public-runnable cases, all with no-token oracle solutions.
+Recent expansion (2026-05-11) added 5 aerodynamic / boundary-layer cases:
+NASA-TMR-anchored airfoil aerodynamics (`naca0012_subsonic`,
+`naca4412_trailing_edge_separation`, `bump_in_channel_2d`), separated
+boundary layers (`nasa_hump_separated`,
+`backstep_driver_seegmiller_turbulent`). Per-case oracle scores and
+agent reference runs in [`results/v0.3/`](./results/v0.3/).
+
+Note: 11 additional fluids cases used in `results/v0.2/` and
+`results/v0.3/` evaluations (bernard-cells-3d, cavity-re100-foundation-v11,
+cylinder-nonnewtonian, dambreak-multiphase, dns-boxturb16, hotroom-buoyant,
+lid-driven-cavity-re{100,400,1000}, oblique-shock, pitzdaily-bfs-rans) live
+under `cases/openfoam/fluids/` without complete `task.toml` metadata for
+this catalog. They are referenced from
+[`results/v0.2/README.md`](./results/v0.2/README.md) directly.

@@ -62,7 +62,7 @@ ENUMS = {
                "elmer", "su2", "lammps", "mapdl", "abaqus"},
     "source_type": {"paper", "vv_standard", "novel_variant", "tutorial"},
     "difficulty_tier": {"S", "M", "L", "H"},
-    "release_status": {"public_runnable", "public_draft", "hidden_eval"},
+    "release_status": {"public_runnable", "public_draft", "hidden_eval", "private_only"},
     "oracle_status": {"available", "deferred", "not_applicable"},
     "score_template": {"measurement", "numerical", "workflow"},
     "capability_target": {"setup", "solver_execution", "numerical", "postprocess", "debugging", "physics"},

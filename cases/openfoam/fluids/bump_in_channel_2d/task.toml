@@ -1,0 +1,37 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/bump-in-channel-2d"
+description = "2D bump-in-channel at M=0.2, Re_Lref=3e6, fully turbulent. CD/Cf vs CFL3D-SA TMR reference (1409x641 grid)."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "turbulent", "bump", "channel", "2d", "vv"]
+
+[environment]
+docker_image    = "sim-benchmark-base:latest"
+cpus            = 4
+memory_gb       = 8
+internet_access = true
+
+[agent]
+timeout_s      = 3600
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "NASA TMR 2D bump-in-channel verification (CFL3D-SA on 1409x641 grid). Cross-validated by SU2 V&V (https://su2code.github.io/vandv/Bump_Channel/)."
+source_url      = "https://turbmodels.larc.nasa.gov/bump.html"
+difficulty_tier = "M"
+gt_type         = "high-fidelity"
+range_value     = 0.005
+tags            = ["solver-neutral", "scalar-kpi", "pressure-gradient", "wall-bounded"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+runtime_status  = "oracle_calibrated_local"
+score_template  = "numerical"
+leakage_risk    = 1
+capability_target = "numerical"

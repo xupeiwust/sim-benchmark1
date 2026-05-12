@@ -1,0 +1,37 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/nasa-hump-separated"
+description = "NASA wall-mounted hump CFDVAL2004 baseline (no flow control), M=0.1, Re_c=9.36e5. Smooth-body turbulent separation + reattachment vs Greenblatt 2006 experimental Cp/Cf."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "turbulent", "separation", "hump", "2d", "vv", "cfdval2004"]
+
+[environment]
+docker_image    = "sim-benchmark-base:latest"
+cpus            = 4
+memory_gb       = 8
+internet_access = true
+
+[agent]
+timeout_s      = 5400
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "Greenblatt, D., Paschal, K. B., Yao, C.-S., Harris, J., Schaeffler, N. W., Washburn, A. E. (2006). 'Experimental Investigation of Separation Control Part 1: Baseline and Steady Suction.' AIAA Journal, 44(12), 2820-2830 (doi:10.2514/1.13817). NASA TMR 2D wall-mounted hump validation case (CFDVAL2004 Case 3 baseline)."
+source_url      = "https://tmbwg.github.io/turbmodels/nasahump_val.html"
+difficulty_tier = "M"
+gt_type         = "experimental"
+range_value     = 1.0
+tags            = ["solver-neutral", "scalar-kpi", "smooth-body-separation", "cfdval2004", "no-analytical-shortcut"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+runtime_status  = "oracle_calibrated_local"
+score_template  = "numerical"
+leakage_risk    = 2
+capability_target = "numerical"

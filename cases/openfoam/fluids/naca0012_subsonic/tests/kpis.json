@@ -1,0 +1,116 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id":        "naca0012_subsonic",
+  "source": {
+    "primary_url":     "https://tmbwg.github.io/turbmodels/naca0012_val.html",
+    "data_source":     "Oracle: OpenFOAM v2412 simpleFoam + Spalart-Allmaras, snappyHexMesh background-on-airfoil ~108k cells, no addLayers (y+ ~ 1000 with wall functions). Alpha sweep at 0/4/8/10/12 deg, M=0.15, Re=6e6, c=1m, U=30 m/s, nu=5e-6.",
+    "ref_data_source": "Ladson 1988 NASA TM-4074, 120-grit zone (Re=6e6, M=0.15, transition tripped at LE). https://tmbwg.github.io/turbmodels/NACA0012_validation/CLCD_Ladson_expdata.dat",
+    "calibration_note": "gt_value comes from the oracle (this repo's solve.sh), not Ladson. Without addLayers the oracle's wall BL is under-resolved → CL underpredicted ~10% at alpha=4 and ~35-50% at alpha=10/12 (premature stall), CD overpredicted 3-9x. CL_alpha slope from oracle is 0.082/deg vs Ladson 0.109/deg. T_good is sized to allow agent runs on similar 50-200k snappy meshes without addLayers; agents that add wall layers will likely score better than the oracle. Re-anchoring against Ladson would require a y+<1 wall-resolved mesh (~1-2M cells) which is out of scope for this oracle's per-trial wall-time budget.",
+    "calibration_run":   "2026-05-11, /work/case alpha sweep on rserver naca0012_dev container",
+    "sample_points_used": "Ladson 120-grit zone; oracle reports at the script-driven angles 0/4/8/10/12 deg (not the experimental angles 4.11/8.08/10.10/12.13 deg)."
+  },
+
+  "kpi_groups": {
+    "mesh":      { "weight": 0.10 },
+    "numerical": { "weight": 0.15 },
+    "outputs":   { "weight": 0.75 }
+  },
+
+  "kpis": {
+    "mesh_cell_count": {
+      "group":         "mesh",
+      "shape":         "scalar",
+      "description":   "Total cell count of the airfoil mesh (single mesh used across alpha sweep)",
+      "gt_value":      108830,
+      "T_good":        60000,
+      "T_bad":         300000,
+      "physics_min":   20000,
+      "physics_max":   5000000,
+      "T_good_source": "Oracle's snappyHexMesh L4-L5 + nearbox/wakebox refinement gives ~108k cells. T_good wide because agents may pick L3-L6 refinement; physics_min=20k filters out single-block airfoil meshes that won't resolve LE."
+    },
+
+    "final_residual_U": {
+      "group":         "numerical",
+      "shape":         "scalar",
+      "description":   "Final momentum residual at end of alpha=8 deg solve",
+      "gt_value":      0,
+      "T_good":        1e-4,
+      "T_bad":         1e-2,
+      "physics_min":   0,
+      "physics_max":   1,
+      "T_good_source": "Oracle reaches 7e-9 in 1500 iter. Steady SA on attached subsonic airfoil should converge to 1e-5 or better."
+    },
+
+    "CL_at_alpha_4": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Lift coefficient at alpha=4 deg",
+      "gt_value":      0.3945,
+      "T_good":        0.040,
+      "T_bad":         0.150,
+      "physics_min":   0.20,
+      "physics_max":   0.60,
+      "T_good_source": "Oracle CL=0.3945 at alpha=4 deg (vs Ladson 0.4397, oracle 10% low). T_good=0.04 covers ~10% turbulence-model + grid scatter; physics_min=0.2 catches gross under-resolution, physics_max=0.6 catches lift-frame errors that report a near-1.0 value."
+    },
+
+    "CL_at_alpha_10": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Lift coefficient at alpha=10 deg",
+      "gt_value":      0.6702,
+      "T_good":        0.10,
+      "T_bad":         0.30,
+      "physics_min":   0.40,
+      "physics_max":   1.40,
+      "T_good_source": "Oracle CL=0.670 at alpha=10 deg (vs Ladson 1.077, oracle 38% low — premature stall from coarse wall mesh). T_good loose because agents with addLayers will land closer to Ladson 1.0+ and we want both regimes scoring."
+    },
+
+    "CL_at_alpha_12": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Lift coefficient at alpha=12 deg",
+      "gt_value":      0.6778,
+      "T_good":        0.12,
+      "T_bad":         0.40,
+      "physics_min":   0.40,
+      "physics_max":   1.60,
+      "T_good_source": "Oracle CL=0.678 at alpha=12 deg (vs Ladson 1.272). Same stall sensitivity as alpha=10; T_good widened further."
+    },
+
+    "CD_at_alpha_4": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Drag coefficient at alpha=4 deg",
+      "gt_value":      0.03078,
+      "T_good":        0.008,
+      "T_bad":         0.025,
+      "physics_min":   0.005,
+      "physics_max":   0.060,
+      "T_good_source": "Oracle CD=0.0308 at alpha=4 deg (vs Ladson 0.00879, oracle 3.5x high — wall under-resolved + numerical dissipation at LE). physics_min=0.005 catches a y+<1 wall-resolved oracle that reproduces Ladson; physics_max=0.06 catches gross failure."
+    },
+
+    "CD_at_alpha_10": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Drag coefficient at alpha=10 deg",
+      "gt_value":      0.10100,
+      "T_good":        0.025,
+      "T_bad":         0.080,
+      "physics_min":   0.010,
+      "physics_max":   0.20,
+      "T_good_source": "Oracle CD=0.101 at alpha=10 deg (vs Ladson 0.0118, oracle 8.6x high). Same wall under-resolution; physics_min=0.01 to allow well-resolved oracles."
+    },
+
+    "CL_alpha_slope_per_deg": {
+      "group":         "outputs",
+      "shape":         "scalar",
+      "description":   "Linear-regression slope of CL vs alpha (deg) over alpha=0,4,8 deg",
+      "gt_value":      0.0820,
+      "T_good":        0.012,
+      "T_bad":         0.040,
+      "physics_min":   0.060,
+      "physics_max":   0.130,
+      "T_good_source": "Oracle slope=0.082/deg (vs Ladson 0.109/deg, oracle 25% low — driven by stalled CL@8). Thin-airfoil theory predicts 0.110/deg; well-resolved oracles will exceed this. T_good=0.012 covers oracle-coarse to ladson-grade."
+    }
+  }
+}

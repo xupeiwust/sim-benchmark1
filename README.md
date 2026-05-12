@@ -73,7 +73,7 @@ MiniMax-M2.7-highspeed, and MiniMax-M2.7 through a claude-code harness.
 | Suite | Tasks | Claude Opus 4.6 | MiniMax-M2.7-highspeed | MiniMax-M2.5-highspeed | MiniMax-M2.7 | Oracle ceiling |
 |---|---:|---:|---:|---:|---:|---:|
 | LTspice circuits | 20 | **0.986** | **0.899** | **0.899** | **0.838** | 1.000 |
-| OpenFOAM fluids | 11 | **0.918** | **0.804** | **0.706** | **0.675** | n/a* |
+| OpenFOAM fluids | 17 | **0.814** | **0.520** | **0.457** | **0.462** | n/a* |
 
 \* OpenFOAM oracle reference run not yet produced; oracles are calibrated and `solution/solve.sh` is in repo.
 

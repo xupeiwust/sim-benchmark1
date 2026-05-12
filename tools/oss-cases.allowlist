@@ -52,3 +52,10 @@ openfoam/fluids/lid-driven-cavity-re1000
 openfoam/fluids/lid-driven-cavity-re400
 openfoam/fluids/oblique-shock
 openfoam/fluids/pitzdaily-bfs-rans
+
+# --- OpenFOAM aerodynamic 6 (v0.3) ---
+openfoam/fluids/backstep_driver_seegmiller_turbulent
+openfoam/fluids/bump_in_channel_2d
+openfoam/fluids/naca0012_subsonic
+openfoam/fluids/naca4412_trailing_edge_separation
+openfoam/fluids/nasa_hump_separated

@@ -1,0 +1,23 @@
+{
+  "run_id": "release-v0.3-of6-minimax-m25hs-20260511",
+  "date": "2026-05-11",
+  "agent": "claude-code (via claude-code-router)",
+  "model": "MiniMax-M2.5-highspeed",
+  "harness": "tools.agent_harness:ClaudeCodeViaCcr",
+  "max_turns": 300,
+  "soft_landing_turns": 30,
+  "infra_env": {
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "50000"
+  },
+  "completed": 6,
+  "exceptions": 0,
+  "completed_mean": 0.0,
+  "cases": [
+    {"name": "backstep_driver_seegmiller_turbulent", "score": 0.0, "turns": 271, "terminal": "max_turns", "note": "blockMesh failure; agent submitted garbage placeholder values with empty source"},
+    {"name": "bump_in_channel_2d",                   "score": 0.0, "turns": 271, "terminal": "max_turns", "note": "blockMesh failure"},
+    {"name": "flatplate_zpg_subsonic",               "score": 0.0, "turns": 271, "terminal": "max_turns", "note": "blockMesh failure"},
+    {"name": "naca0012_subsonic",                    "score": 0.0, "turns": 271, "terminal": "max_turns", "note": "blockMesh RuntimeError on solve.py:837 cwd=/root/case; mesh setup loop"},
+    {"name": "naca4412_trailing_edge_separation",    "score": 0.0, "turns": 271, "terminal": "max_turns", "note": "snappyHexMesh / locationInMesh retry loop; no successful sim run"},
+    {"name": "nasa_hump_separated",                  "score": 0.0, "turns": 271, "terminal": "max_turns", "note": "mesh failure"}
+  ]
+}

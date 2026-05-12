@@ -1,0 +1,32 @@
+# v0.3 OpenFOAM expansion: Claude Opus 4.6 on the 6 newly-promoted OF cases
+# (5 from 5-step iteration + 1 pre-existing never-benchmarked).
+# Requires OPUS46_AUTH_TOKEN + OPUS46_BASE_URL env vars at launch.
+
+jobs_dir: jobs/release-v0.3-of6-claude-opus46
+n_concurrent_trials: 2
+timeout_multiplier: 3.0
+
+environment:
+  type: docker
+  delete: false
+
+agents:
+  - import_path: tools.agent_harness:ClaudeCodeAnthropicDirect
+    model_name: claude-opus-4-6
+    kwargs:
+      max_turns: 300
+    env:
+      ANTHROPIC_API_KEY: '${OPUS46_AUTH_TOKEN}'
+      ANTHROPIC_BASE_URL: '${OPUS46_BASE_URL}'
+      ANTHROPIC_CUSTOM_HEADERS: "X-Session-Id: sim-benchmark-v0.3\nX-Sub-Module: claude-code-internal"
+      CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS: '1'
+
+datasets:
+  - path: cases/openfoam/fluids
+    task_names:
+      - backstep_driver_seegmiller_turbulent
+      - bump_in_channel_2d
+      - flatplate_zpg_subsonic
+      - naca0012_subsonic
+      - naca4412_trailing_edge_separation
+      - nasa_hump_separated

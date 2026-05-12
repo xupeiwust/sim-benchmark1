@@ -1,0 +1,37 @@
+schema_version = "1.1"
+
+[task]
+name        = "sim-benchmark/naca4412-trailing-edge-separation"
+description = "NACA 4412 at alpha=13.87 deg, Re_c=1.52e6, Coles-Wadcock 1979 max-lift case with massive TE separation."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "turbulent", "airfoil", "separation", "max-lift", "vv"]
+
+[environment]
+docker_image    = "sim-benchmark-base:latest"
+cpus            = 4
+memory_gb       = 8
+internet_access = true
+
+[agent]
+timeout_s      = 5400
+execution_user = "root"
+
+[verifier]
+timeout_s      = 120
+execution_user = "root"
+
+[metadata.sim]
+solver          = "neutral"
+source_type     = "vv_standard"
+source_citation = "Coles, D. & Wadcock, A. J. (1979). 'Flying-Hot-Wire Study of Flow Past an NACA 4412 Airfoil at Maximum Lift.' AIAA Journal 17(4):321-329. NASA TMR naca4412sep_val."
+source_url      = "https://tmbwg.github.io/turbmodels/naca4412sep_val.html"
+difficulty_tier = "L"
+gt_type         = "experimental"
+range_value     = 0.5
+tags            = ["solver-neutral", "scalar-kpi", "near-stall", "te-separation", "turbulence-model-sensitive"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+runtime_status  = "oracle_calibrated_local"
+score_template  = "numerical"
+leakage_risk    = 1
+capability_target = "numerical"

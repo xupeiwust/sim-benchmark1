@@ -96,6 +96,7 @@ SHARED_DIRS: list[str] = [
     "lib/sim_benchmark_verifier",
     "results/v0.1",
     "results/v0.2",
+    "results/v0.3",
     "tools/ccr-plugins",
 ]
 
@@ -106,6 +107,7 @@ SHARED_DIRS: list[str] = [
 SHARED_GLOBS: list[str] = [
     "configs/release-v0.1-*.yaml",
     "configs/release-v0.2-*.yaml",
+    "configs/release-v0.3-*.yaml",
     "configs/template-*.yaml",
 ]
 
