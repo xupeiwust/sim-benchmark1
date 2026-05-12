@@ -50,7 +50,7 @@ launch routes. Tooling is implementation, not the thing being benchmarked.
 | Domain | Tasks | Backing solver |
 |---|---:|---|
 | Circuits / SPICE | 20 | LTspice (free, open-format) |
-| Fluids / CFD | 11 | OpenFOAM (open source) |
+| Fluids / CFD | 17 | OpenFOAM (open source) |
 
 Every task has a deterministic `solution/solve.sh` oracle that produces
 the verifier's upper-bound sanity check. Coverage will keep growing on the
