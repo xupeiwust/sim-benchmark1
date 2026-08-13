@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/h2-air-idt-phi0p57-1246k-5p4atm"
+name        = "hwe-bench/h2-air-idt-phi0p57-1246k-5p4atm"
 description = "hydrogen ignition delay at phi=0.57, 1246 K, 5.4 atm, scored from an evaluator-reproduced constant-volume reactor history."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["combustion", "cantera", "chemical-kinetics", "hydrogen", "ignition-delay"]

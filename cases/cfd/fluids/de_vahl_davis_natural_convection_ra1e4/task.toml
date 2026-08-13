@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/de-vahl-davis-natural-convection-ra1e4"
+name        = "hwe-bench/de-vahl-davis-natural-convection-ra1e4"
 description = "Buoyancy-driven natural convection in a 2D differentially-heated square cavity at Ra=1e4, Pr=0.71 (de Vahl Davis 1983, Int. J. Numer. Meth. Fluids 3:249, Table V; Boussinesq, hot left wall / cold right wall / adiabatic top-bottom). KPI: the average Nusselt number on the hot wall, scored against the published de Vahl Davis benchmark value (gt = the reference number 2.243, NOT the solver's own output)."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["cfd", "laminar", "natural-convection", "buoyancy", "boussinesq", "cavity", "de-vahl-davis", "nusselt", "benchmark", "2d", "openfoam", "vv"]

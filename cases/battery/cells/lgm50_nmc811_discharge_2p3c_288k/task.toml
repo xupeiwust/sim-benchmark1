@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/lgm50-nmc811-discharge-2p3c-288k"
+name        = "hwe-bench/lgm50-nmc811-discharge-2p3c-288k"
 description = "constant-current discharge of the Chen2020 cell, scored from an evaluator-reproduced discharge simulation."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["battery", "pybamm", "lithium-ion", "electrochemistry", "discharge"]

@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/c3h8-air-idt-phi0p59-1568k-8p1atm"
+name        = "hwe-bench/c3h8-air-idt-phi0p59-1568k-8p1atm"
 description = "propane ignition delay at phi=0.59, 1568 K, 8.1 atm, scored from an evaluator-reproduced constant-volume reactor history."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["combustion", "cantera", "chemical-kinetics", "propane", "ignition-delay"]

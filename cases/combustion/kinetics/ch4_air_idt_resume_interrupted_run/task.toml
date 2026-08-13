@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/ch4-air-idt-resume-interrupted-run"
+name        = "hwe-bench/ch4-air-idt-resume-interrupted-run"
 description = "A constant-volume methane/air ignition run that was cut off mid-induction. The operating point is nowhere in the prompt -- it exists only in the checkpoint the crashed run left on disk -- so the task is to establish what is on disk, continue from it without losing the rows already computed, and report the finished trace."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["combustion", "cantera", "chemical-kinetics", "methane", "ignition-delay", "resume", "crash-recovery"]

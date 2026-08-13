@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/ecker-graphite-mean-voltage-0p84c-292k"
+name        = "hwe-bench/ecker-graphite-mean-voltage-0p84c-292k"
 description = "rate capability of the Ecker2015 cell, scored from an evaluator-reproduced rate_capability simulation."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["battery", "pybamm", "lithium-ion", "electrochemistry", "rate_capability"]

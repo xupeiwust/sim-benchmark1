@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/ch4-air-flame-speed-meet-resolution-spec"
+name        = "hwe-bench/ch4-air-flame-speed-meet-resolution-spec"
 description = "A working methane/air flame-speed setup that does not meet the resolution requirement the task states. Bring it up to that requirement and report the burning velocity that comes out of the setup that does, with the resolution table the requirement is judged on."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["combustion", "cantera", "chemical-kinetics", "methane", "laminar-flame-speed", "grid-independence", "design-to-spec"]

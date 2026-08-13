@@ -6,7 +6,7 @@ artifacts = ["/tmp/agent/submission"]
 # trial and every Harbor registry entry is keyed on it. The case now scores the
 # spatial accuracy of the plane-channel solution rather than its friction
 # factor (#199), and re-keying the benchmark to spell that would orphan both.
-name        = "sim-benchmark/plane-poiseuille-friction-factor"
+name        = "hwe-bench/plane-poiseuille-friction-factor"
 description = "Spatial accuracy on fully-developed laminar plane-channel (2D Poiseuille) flow. A straight 2D channel of full gap D = 1 and length 30 (nu = 0.01) is driven by a fixed streamwise pressure difference and solved on 60x20, 120x40 and 240x80 grids. KPI: the observed order of accuracy -- the slope of log(L2 error in the bulk-normalised velocity profile at x = 20) against log(h). The order is a relation between runs, so it cannot be recalled from the closed-form parabola the prompt has to state, and it cannot be produced without solving every refinement level. f*Re = 96 is retained as a weight-0 diagnostic: it is what the stored trials before #199 were scored against."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["cfd", "laminar", "poiseuille", "plane-channel", "grid-convergence", "order-of-accuracy", "navier-stokes", "2d", "openfoam", "vv"]

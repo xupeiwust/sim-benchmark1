@@ -1,0 +1,285 @@
+# Dataset manifest for hwe-bench/cae
+# Add tasks using: harbor add <org>/<name>
+# Publish using: harbor publish
+
+[dataset]
+name = "hwe-bench/cae"
+description = "HWE-bench-CAE: engineering-simulation tasks graded on the number the agent reports, inside a defensible tolerance band."
+keywords = []
+[[dataset.authors]]
+name = "SVD AI Lab"
+email = "contact@svdailab.com"
+
+
+[[tasks]]
+name = "hwe-bench/backstep-laminar-armaly-re389"
+digest = "sha256:88800b36fb2585230b9bf6e9a140e69bc63787958fa523a6d645a7fa018cb29b"
+
+[[tasks]]
+name = "hwe-bench/bump-in-channel-2d"
+digest = "sha256:56e2259fd9600ff0249080f74ab4b3318141cdedb31028a3458854e189958614"
+
+[[tasks]]
+name = "hwe-bench/channel-developing-entry"
+digest = "sha256:01809b18d8d79603902ad20cbb195d9020fa29705d1b44e8bbc8f9743d20f8ad"
+
+[[tasks]]
+name = "hwe-bench/channel-retau395-repair-closure"
+digest = "sha256:7eff17c4c7183dc435c2235db87afba49de866b2dda191f47912b28d8a984517"
+
+[[tasks]]
+name = "hwe-bench/cylinder-schafer-turek-2d1-cd"
+digest = "sha256:ad20c910689574d99cf015833a3ebc3892d8ce5e91ba54dc08869f23cecda3d8"
+
+[[tasks]]
+name = "hwe-bench/de-vahl-davis-natural-convection-ra1e4"
+digest = "sha256:4882b46fd845302b2f45596e29020f04adf155845b62fcfec6d447f94b0276d7"
+
+[[tasks]]
+name = "hwe-bench/flatplate-zpg-subsonic"
+digest = "sha256:cd898a12409047212464b33f053c0e24b8201857249b7b9d752501a4e032ed54"
+
+[[tasks]]
+name = "hwe-bench/kovasznay-flow-re40"
+digest = "sha256:c18bed2058dd59ac33d5dd946a114b1df0cd8a89caeeae64957d2274af7511f7"
+
+[[tasks]]
+name = "hwe-bench/lid-driven-cavity-ghia-re1000"
+digest = "sha256:227e6f67d8d3de3c6707931beec2600c92f6706012e3be232d4ec70fba7bb6df"
+
+[[tasks]]
+name = "hwe-bench/naca0012-subsonic"
+digest = "sha256:5eb3d5fcd66a6f2c09299e15d7ff0adcd8d0db995ee1f5cbabb701798315fed8"
+
+[[tasks]]
+name = "hwe-bench/plane-poiseuille-friction-factor"
+digest = "sha256:50cf090a0ce92d050950ab8b68969324f1b5398c8e535674648e533e0440a834"
+
+[[tasks]]
+name = "hwe-bench/taylor-green-vortex-2d-re100"
+digest = "sha256:cd8f5dccd4fae77029d33918ce30f1b03071810a31a8386aaddbbe5dcc823ef2"
+
+[[tasks]]
+name = "hwe-bench/turbulent-channel-flow-retau590"
+digest = "sha256:8ef63dfb2006ab72df806ed88b0cdfef5a6837c587865d1cf955250195067876"
+
+[[tasks]]
+name = "hwe-bench/a123-lfp-discharge-1p15c-298k"
+digest = "sha256:4da1b04f8f933866798acdbfdf7e2b886fec3c0abc86190b387af1c7f55a0843"
+
+[[tasks]]
+name = "hwe-bench/a123-lfp-energy-0p88c-300k"
+digest = "sha256:3589fcdd0c8cae0b7393bfdf196fe103a3d9f8e693ef50ab2262b26928a44947"
+
+[[tasks]]
+name = "hwe-bench/a123-lfp-mean-voltage-1p52c-297k"
+digest = "sha256:2cd2f0eec2a2b79a1dc59ed39cdfd47154f0cb2dc7e9f4d49ba00a48bd90922d"
+
+[[tasks]]
+name = "hwe-bench/ecker-graphite-discharge-0p62c-293k"
+digest = "sha256:46cd1f3e90b245149af382eea6b63334d3899c18a17c5e392beaad77cf4bdb86"
+
+[[tasks]]
+name = "hwe-bench/ecker-graphite-energy-1p12c-298k"
+digest = "sha256:1739128389bb0d565482f6e2d00a85baf1c647db708a22ffee35078352eda052"
+
+[[tasks]]
+name = "hwe-bench/ecker-graphite-mean-voltage-0p84c-292k"
+digest = "sha256:a8594bb6b980ede4ef0e5f0ef12a50bb2a2992323a3cba08c731e1d45e2ca9cc"
+
+[[tasks]]
+name = "hwe-bench/kokam-lco-discharge-0p71c-302k"
+digest = "sha256:124c797d0ba514ce2b44caeffa246604e71f056850ddd8552659896eb9ce6b6f"
+
+[[tasks]]
+name = "hwe-bench/lco-graphite-discharge-1p27c-295k"
+digest = "sha256:f9b8b0ba4ef4eecb60e7f7003a0d3300c217757c1a62427a76e156fb4e2312a8"
+
+[[tasks]]
+name = "hwe-bench/lco-graphite-energy-1p73c-296k"
+digest = "sha256:1a97099d0c4c369ccdca843f2ec5ed4871759f279097a57d92a2aa89cc057de8"
+
+[[tasks]]
+name = "hwe-bench/lgm50-fast-charge-current-limit-45c"
+digest = "sha256:c161e4169ddbcf0f14451558ad50540101fa8c993a9a11cf716b2627cbc1fe50"
+
+[[tasks]]
+name = "hwe-bench/lgm50-nmc811-discharge-2p3c-288k"
+digest = "sha256:dfca4ee84368a186e6697b29244023e7c3dad1db85419fa35ccb27b171fdf157"
+
+[[tasks]]
+name = "hwe-bench/lgm50-nmc811-energy-1p6c-301k"
+digest = "sha256:3637a9df9437a95ccfc2a6bdf36281118ea8d7fe75c5a17765ee9ea3aad81c5a"
+
+[[tasks]]
+name = "hwe-bench/lgm50-nmc811-mean-voltage-0p78c-294k"
+digest = "sha256:78a3d9efefc902dc7f8a61ec0dfcdb98ee4bea7549d7a1fca979b589730ff4c1"
+
+[[tasks]]
+name = "hwe-bench/nca-graphite-discharge-0p93c-299k"
+digest = "sha256:b0341361c88eaf6bbdedb8e80ed8798cc3a4331b78fd5c6f876c0ffd063241a8"
+
+[[tasks]]
+name = "hwe-bench/nmc-pouch-discharge-1p8c-303k"
+digest = "sha256:42f394449eaa6089b03ff9e3155b34081a46aea5a3d6a7f56876b9b395307cf7"
+
+[[tasks]]
+name = "hwe-bench/nmc-pouch-energy-2p4c-299k"
+digest = "sha256:5ad1667e0feafb21a13dd1dd1ad46ed1f7dbbf4d4445717af0f24a9a250bf689"
+
+[[tasks]]
+name = "hwe-bench/a123-cccv-charge-1p1c-from-soc0p26"
+digest = "sha256:44c15f7977d4b4ca6de352197ba82dc859cf521500c1502640b3d2bf626bca48"
+
+[[tasks]]
+name = "hwe-bench/a123-pulse-resistance-1p8a-soc0p51"
+digest = "sha256:c03d446aa85828f3a61989aaaefa5e4448ce9a1f8cfbbe4a94b98de898b3acb8"
+
+[[tasks]]
+name = "hwe-bench/kokam-cccv-charge-0p64c-from-soc0p31"
+digest = "sha256:b86fb52ab06c031a0e5ecebd35572827299f727f760208d3cb8cf287520f82de"
+
+[[tasks]]
+name = "hwe-bench/kokam-pulse-resistance-1p2a-soc0p47"
+digest = "sha256:d618ab40f83556178f42555d64609063cb5bf58ea128c8a24f700b838ba556f6"
+
+[[tasks]]
+name = "hwe-bench/lco-graphite-pulse-resistance-0p9a-soc0p66"
+digest = "sha256:7970b1ec699c7e9dbe201efd7b771b4c9daf4ee6ea1ea618e63a18ac52588452"
+
+[[tasks]]
+name = "hwe-bench/lgm50-cccv-charge-1p52c-from-soc0p12"
+digest = "sha256:0384e2ba4550c830cb2718e327f0f575f59c1851e6bbbf3cdc1c3f5f7c900588"
+
+[[tasks]]
+name = "hwe-bench/lgm50-pulse-resistance-5a-soc0p62"
+digest = "sha256:3b333b78aad3091759793bbadb995b39a0a6e957535775a08b2a8a867a1f8726"
+
+[[tasks]]
+name = "hwe-bench/nca-cccv-charge-0p79c-from-soc0p35"
+digest = "sha256:adb35a517cc92cac504a0f993eb40a7504791fce68fa7185fc2bceb2ea688ebe"
+
+[[tasks]]
+name = "hwe-bench/nca-pulse-resistance-0p6a-soc0p74"
+digest = "sha256:42e597202eca04142f4f629f4fadbbfe8475acbb49a8368536c1b0784aa2e558"
+
+[[tasks]]
+name = "hwe-bench/nmc-pouch-cccv-charge-1p3c-from-soc0p23"
+digest = "sha256:3f05f80e20c73a7342c2fa67702641b680e27f33809a619d13f5de1c35b9eba3"
+
+[[tasks]]
+name = "hwe-bench/nmc-pouch-pulse-resistance-4p1a-soc0p55"
+digest = "sha256:de8b0b99981082722a902a6209515c697ee7fffc56dc1eb41d1c48edacadb5e7"
+
+[[tasks]]
+name = "hwe-bench/lgm50-plating-fade-9-cycles-1p3c"
+digest = "sha256:ea96bb3271cb2480a0783a34dcfff78f38739505c3c2346f94c37dddce8d32da"
+
+[[tasks]]
+name = "hwe-bench/lgm50-sei-fade-12-cycles-1c"
+digest = "sha256:a55479b07ea3a6e3d0a27e93971f543ae6b8d6664b85eb549479a98697d154af"
+
+[[tasks]]
+name = "hwe-bench/lgm50-sei-plating-fade-10-cycles-1p5c"
+digest = "sha256:b0bae833a0f5c54d41e7872f4367f8ba4623da965bc79057914bab280042e09f"
+
+[[tasks]]
+name = "hwe-bench/lco-graphite-thermal-rise-2p35c-299k"
+digest = "sha256:da1ba5d941b3ab2a17ccdc8d4017e309d246676ae6f499b6d74afb5c2f878523"
+
+[[tasks]]
+name = "hwe-bench/lgm50-okane-thermal-rise-1p85c-292k"
+digest = "sha256:e4268dbb11ef7a3502b0a3acd15ce36e693b8de18a4077cb34c73443d7ccff70"
+
+[[tasks]]
+name = "hwe-bench/lgm50-thermal-rise-0p91c-303k"
+digest = "sha256:e68c3bc15259359fcf8905448f2574e524571b9bcc56211c9af60a2c22c0baae"
+
+[[tasks]]
+name = "hwe-bench/nmc-pouch-thermal-rise-2p7c-305k"
+digest = "sha256:dc24aea3dc313a869e1def9c316126e5ba5307f5d12a92a2c7b36aeee3b3b6dc"
+
+[[tasks]]
+name = "hwe-bench/c2h4-air-flame-speed-phi1p14-1p2atm-309k"
+digest = "sha256:018656eb5a031b25f2635fddb4ff3e8c85894652ccfe658fd5332121717a5176"
+
+[[tasks]]
+name = "hwe-bench/c2h6-air-flame-speed-phi1p09-1p3atm-316k"
+digest = "sha256:d8ea17b8fd07da7ee2264379d6a83616aa4ece879e11cf386624816be69787d5"
+
+[[tasks]]
+name = "hwe-bench/c3h8-air-flame-speed-phi1p11-1p3atm-313k"
+digest = "sha256:b7c1227e4d7db7b5b0c7217838fb9f8d773462aa27d347ffb0f72e118e385321"
+
+[[tasks]]
+name = "hwe-bench/ch3oh-air-flame-speed-phi1p16-1p3atm-337k"
+digest = "sha256:7db11cd8ad8738190c69e8e81b892a4383006fdc31a92f1a6b1a4b9304bdb8c6"
+
+[[tasks]]
+name = "hwe-bench/ch4-air-flame-speed-meet-resolution-spec"
+digest = "sha256:ef716b225f3b95a3c229473d533f949d7237308ff74b2f8f636712fa5651f52c"
+
+[[tasks]]
+name = "hwe-bench/ch4-air-flame-speed-phi1p24-1p6atm-306k"
+digest = "sha256:ff7ddd2db6dcfecde0155c72a81b4955b65bd4b4c29b880377ffeb7f3c456c1c"
+
+[[tasks]]
+name = "hwe-bench/h2-air-flame-speed-phi1p12-1p2atm-312k"
+digest = "sha256:7a4252cf992b0189a98da5302f75817c527a469d24065fe3d9b770e9d9741150"
+
+[[tasks]]
+name = "hwe-bench/nh3-air-flame-speed-phi1p12-1p4atm-319k"
+digest = "sha256:cb984ef9f81ccdb1904a57e96671f4208c4bfb9901c8cbe6779ba4eb1e0ce796"
+
+[[tasks]]
+name = "hwe-bench/nh3-flame-speed-repair-mechanism"
+digest = "sha256:fac39a9afebed6665ce4f052539f0068d98b3b82a4bd2bab4f33b3030024f786"
+
+[[tasks]]
+name = "hwe-bench/c2h2-air-idt-phi0p74-1462k-6p4atm"
+digest = "sha256:7a777649fd9553df5e9fa36dd21106b71e2734d043f8301ba61cb28a2de35524"
+
+[[tasks]]
+name = "hwe-bench/c2h4-air-idt-phi0p68-1641k-11p8atm"
+digest = "sha256:599610f07baa535a467ef060a39300197ba3f12f9ccb4c6ad43eeec6218971b0"
+
+[[tasks]]
+name = "hwe-bench/c2h6-air-idt-phi0p63-1547k-7p3atm"
+digest = "sha256:aec15689fd7689e6ce3d975b312320aaf18ee5e5dd13dc912bada7b621ed3cc1"
+
+[[tasks]]
+name = "hwe-bench/c3h8-air-idt-phi0p59-1568k-8p1atm"
+digest = "sha256:9c96cf3ef00328d41a4b4695cf2d40356aac958e8309783b1476f4f8e22a610e"
+
+[[tasks]]
+name = "hwe-bench/ch3oh-air-idt-phi0p66-1583k-6p8atm"
+digest = "sha256:c5912840c86f14f00a0c4e32aa5436e15279a52414f2c657d6cc0c00df9f7487"
+
+[[tasks]]
+name = "hwe-bench/ch4-air-idt-phi0p55-1633k-9p2atm"
+digest = "sha256:3c699b6a87efde04ceaabe2cd5b60aaf669252d53f6d0fcbdc3ed826f6c7e653"
+
+[[tasks]]
+name = "hwe-bench/ch4-air-idt-resume-interrupted-run"
+digest = "sha256:3f1f7b4c7b0ed9091094dd7f00262346377dbb742469f047d5f4dcc387637b6f"
+
+[[tasks]]
+name = "hwe-bench/ch4-air-idt-sensitivity-ch3ho2-phi0p87-1390k"
+digest = "sha256:024753ffe34969252fb1d86c7d0c07642bfe518b829fa61922e42318a6e1a58b"
+
+[[tasks]]
+name = "hwe-bench/h2-air-idt-phi0p57-1246k-5p4atm"
+digest = "sha256:e6ad49a810cce0bf20460d7d1e67b9f5c435e2ef191d2ccda2c4bd0a85a716aa"
+
+[[tasks]]
+name = "hwe-bench/ndodecane-air-idt-phi0p83-1319k-14p2atm"
+digest = "sha256:f8a8a78dbab9379923de40a6f75e879de015075f0690fd4863886f1eae102660"
+
+[[tasks]]
+name = "hwe-bench/nh3-air-idt-phi0p72-1521k-5p1atm"
+digest = "sha256:ac717f7a62b21ff872d1ef43bb98bf33f5f7cc7f2705133c54b612ca655fc1f2"
+
+[[tasks]]
+name = "hwe-bench/nhexane-air-idt-phi0p79-1442k-4p6atm"
+digest = "sha256:6c8d6d1c4a196db2f246ed5860d641f95f1fb2be0c30a38e8ee78052aeeb3770"
+

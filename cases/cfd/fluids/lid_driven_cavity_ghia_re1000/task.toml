@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/lid-driven-cavity-ghia-re1000"
+name        = "hwe-bench/lid-driven-cavity-ghia-re1000"
 description = "Classic 2D lid-driven square cavity at Re=1000, incompressible laminar steady flow (Ghia, Ghia & Shin 1982, J. Comput. Phys. 48:387, Table I). KPI: the minimum normalised x-velocity on the vertical centerline x=0.5, scored against the published Ghia benchmark value (gt = the reference number, NOT the solver's own output)."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["cfd", "laminar", "cavity", "lid-driven", "ghia", "benchmark", "2d", "openfoam", "vv"]

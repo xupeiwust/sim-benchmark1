@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/taylor-green-vortex-2d-re100"
+name        = "hwe-bench/taylor-green-vortex-2d-re100"
 description = "Taylor-Green decaying vortex at Re=100 - the exact unsteady 2D laminar incompressible Navier-Stokes solution on a doubly-periodic 2*pi x 2*pi box (Taylor & Green 1937). The exact field Ux = -cos(x) sin(y) exp(-2 nu t) decays uniformly as exp(-2 nu t); the t=0 vortex is imposed as the initial condition and the flow is integrated in time. KPI: the peak x-velocity magnitude max|Ux| at a fixed time t-star=5, scored against the Taylor-Green exact decayed value (gt = the published analytical reference number, NOT the solver's own output)."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["cfd", "laminar", "taylor-green", "navier-stokes", "exact-solution", "transient", "decaying-vortex", "benchmark", "2d", "openfoam", "vv"]

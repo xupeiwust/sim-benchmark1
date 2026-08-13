@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/nca-pulse-resistance-0p6a-soc0p74"
+name        = "hwe-bench/nca-pulse-resistance-0p6a-soc0p74"
 description = "pulse resistance measurement of the NCA_Kim2011 cell, scored from an evaluator-reproduced pulse simulation."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["battery", "pybamm", "lithium-ion", "electrochemistry", "pulse"]

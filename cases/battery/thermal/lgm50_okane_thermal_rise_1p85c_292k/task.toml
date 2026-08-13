@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/lgm50-okane-thermal-rise-1p85c-292k"
+name        = "hwe-bench/lgm50-okane-thermal-rise-1p85c-292k"
 description = "discharge with cell heating of the OKane2022 cell, scored from an evaluator-reproduced thermal simulation."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["battery", "pybamm", "lithium-ion", "electrochemistry", "thermal"]

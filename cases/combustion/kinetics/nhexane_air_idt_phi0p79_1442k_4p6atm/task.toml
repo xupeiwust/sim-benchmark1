@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/nhexane-air-idt-phi0p79-1442k-4p6atm"
+name        = "hwe-bench/nhexane-air-idt-phi0p79-1442k-4p6atm"
 description = "n-hexane ignition delay at phi=0.79, 1442 K, 4.6 atm, scored from an evaluator-reproduced constant-volume reactor history."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["combustion", "cantera", "chemical-kinetics", "n-hexane", "ignition-delay"]

@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/nh3-air-idt-phi0p72-1521k-5p1atm"
+name        = "hwe-bench/nh3-air-idt-phi0p72-1521k-5p1atm"
 description = "ammonia ignition delay at phi=0.72, 1521 K, 5.1 atm, scored from an evaluator-reproduced constant-volume reactor history."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["combustion", "cantera", "chemical-kinetics", "ammonia", "ignition-delay"]

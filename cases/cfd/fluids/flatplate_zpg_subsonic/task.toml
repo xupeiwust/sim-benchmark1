@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/flatplate-zpg-subsonic"
+name        = "hwe-bench/flatplate-zpg-subsonic"
 description = "OpenFOAM low-Mach incompressible SST verification of the TMR 2D zero-pressure-gradient flat plate, Re=5e6 per unit length."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["cfd", "rans", "turbulent", "boundary-layer", "2d", "vv", "openfoam"]

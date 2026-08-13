@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/lgm50-fast-charge-current-limit-45c"
+name        = "hwe-bench/lgm50-fast-charge-current-limit-45c"
 description = "largest constant charge current a CCCV protocol can use on the Chen2020 cell without the volume-averaged cell temperature crossing 318.15 K, scored from an evaluator-reproduced search."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["battery", "pybamm", "lithium-ion", "electrothermal", "limit-search"]

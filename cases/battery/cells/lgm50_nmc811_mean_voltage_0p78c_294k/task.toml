@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/lgm50-nmc811-mean-voltage-0p78c-294k"
+name        = "hwe-bench/lgm50-nmc811-mean-voltage-0p78c-294k"
 description = "rate capability of the Chen2020 cell, scored from an evaluator-reproduced rate_capability simulation."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["battery", "pybamm", "lithium-ion", "electrochemistry", "rate_capability"]

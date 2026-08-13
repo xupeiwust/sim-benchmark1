@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/channel-developing-entry"
+name        = "hwe-bench/channel-developing-entry"
 description = "TUTORIAL-VARIANT (CFD): centerline velocity ratio at a DEVELOPING station in laminar 2D plane-channel entrance flow (Re=100), where the fully-developed Poiseuille 1.5 closed form does not yet apply."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["cfd", "laminar", "channel", "entrance-flow", "poiseuille", "developing", "2d", "openfoam", "tutorial-variant"]

@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/turbulent-channel-flow-retau590"
+name        = "hwe-bench/turbulent-channel-flow-retau590"
 description = "Fully-developed turbulent plane-channel flow at friction Reynolds number Re_tau = 590, reproduced from an agent-authored OpenFOAM case and scored from evaluator-generated native fields."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["cfd", "rans", "turbulent", "channel-flow", "k-omega-sst", "re-tau-590", "dns-reference", "moser-kim-mansour", "vv", "openfoam"]

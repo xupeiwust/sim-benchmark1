@@ -118,6 +118,16 @@ _CATALOG_IGNORE_RE = re.compile(
     r"\n?# The case catalog is derived.*?\n/CASES\.md\n", flags=re.DOTALL)
 
 
+# Harbor routes a published task by the org prefix of `[task] name`, and the
+# Hub org that exists is `hwe-bench`. The private tree keeps `sim-benchmark/`:
+# that string is the key every stored trial and every `contract_hash` was
+# computed against, and CLAUDE.md ("The name") is explicit that re-keying it is
+# its own decision rather than a docs change. Rewriting it *on the way out*
+# needs neither — the mirror is already a transformed copy, and the two names
+# name two different artifacts that were never going to share a registry entry.
+_TASK_ORG_RE = re.compile(r'^(\s*name\s*=\s*")sim-benchmark/', re.MULTILINE)
+
+
 def mirror_text(src: Path) -> str | None:
     """The text this file should have in the mirror, or None if it is copied
     byte-for-byte."""
@@ -125,6 +135,8 @@ def mirror_text(src: Path) -> str | None:
         return strip_internal_blocks(src.read_text(encoding="utf-8"))
     if src.name == ".gitignore":
         return _CATALOG_IGNORE_RE.sub("\n", src.read_text(encoding="utf-8"))
+    if src.name == "task.toml":
+        return _TASK_ORG_RE.sub(r"\1hwe-bench/", src.read_text(encoding="utf-8"))
     return None
 
 # ---------------------------------------------------------------------------
@@ -367,11 +379,16 @@ def check_shop_window(private: Path, allowlist_path: Path) -> list[str]:
 # ---------------------------------------------------------------------------
 
 class Action:
-    __slots__ = ("kind", "src", "dst")
-    def __init__(self, kind: str, src: Path | None, dst: Path):
-        self.kind = kind  # "copy_new" | "copy_changed" | "skip_same" | "missing_src" | "warn_orphan"
+    __slots__ = ("kind", "src", "dst", "text")
+    def __init__(self, kind: str, src: Path | None, dst: Path,
+                 text: str | None = None):
+        self.kind = kind  # "copy_new" | "copy_changed" | "skip_same" | "missing_src"
+                          # | "warn_orphan" | "write_text"
         self.src = src
         self.dst = dst
+        # Only "write_text" uses this: content the mirror gets that has no file
+        # behind it on the private side.
+        self.text = text
 
 
 def _walk_files(root: Path) -> Iterable[Path]:
@@ -410,7 +427,8 @@ def plan_file_copy(src: Path, dst: Path) -> Action:
     return Action("copy_changed", src, dst)
 
 
-def plan_dir_sync(src_root: Path, dst_root: Path) -> list[Action]:
+def plan_dir_sync(src_root: Path, dst_root: Path,
+                  extra_rels: frozenset[str] = frozenset()) -> list[Action]:
     actions: list[Action] = []
     if not src_root.exists():
         actions.append(Action("missing_src", src_root, dst_root))
@@ -424,7 +442,7 @@ def plan_dir_sync(src_root: Path, dst_root: Path) -> list[Action]:
     if dst_root.exists():
         for dst in _walk_files(dst_root):
             rel = dst.relative_to(dst_root)
-            if rel not in src_rels:
+            if rel not in src_rels and rel.as_posix() not in extra_rels:
                 actions.append(Action("warn_orphan", None, dst))
     return actions
 
@@ -435,7 +453,11 @@ def execute(actions: list[Action], dry_run: bool) -> dict[str, int]:
         counts[a.kind] = counts.get(a.kind, 0) + 1
         if dry_run:
             continue
-        if a.kind in ("copy_new", "copy_changed"):
+        if a.kind == "write_text":
+            a.dst.parent.mkdir(parents=True, exist_ok=True)
+            if not a.dst.exists() or a.dst.read_text(encoding="utf-8") != a.text:
+                a.dst.write_text(a.text, encoding="utf-8")
+        elif a.kind in ("copy_new", "copy_changed"):
             a.dst.parent.mkdir(parents=True, exist_ok=True)
             rewritten = mirror_text(a.src)
             if rewritten is not None:
@@ -520,8 +542,33 @@ def main() -> int:
     #    entry with no case behind it, so the only `missing_src` that can reach
     #    the summary below now comes from SHARED_FILES / SHARED_DIRS.
     for case_path in cases_allowlist:
-        actions.extend(plan_dir_sync(private / "cases" / case_path,
-                                     oss / "cases" / case_path))
+        no_env = not (private / "cases" / case_path / "environment").is_dir()
+        actions.extend(plan_dir_sync(
+            private / "cases" / case_path, oss / "cases" / case_path,
+            extra_rels=frozenset({"environment/README.md"}) if no_env else frozenset()))
+        # Harbor's `Task.is_valid_dir` requires `environment/` even when the
+        # case runs on its domain image unmodified, so a case without one
+        # cannot be published at all -- 55 of these 68 are in that state.
+        # Stage a marker rather than an empty directory, and name the case in
+        # it: `environment_content_hash` falls back to hashing the
+        # `docker_image` string when the directory is empty, which collapses
+        # every fixture-less case in a track onto ONE container identity and
+        # has already graded one case against a sibling's contract.
+        #
+        # Mirror-side, like the org rewrite above. Adding it to the private
+        # tree would move every one of those cases' `task.digest` and
+        # `task_checksum`, which is a contract-identity change and its own
+        # decision; the marker is inert either way -- it is not copied into
+        # the image and it changes nothing the agent or the verifier reads.
+        if no_env:
+            actions.append(Action(
+                "write_text", None, oss / "cases" / case_path / "environment" / "README.md",
+                f"This case runs on its domain image unmodified and ships no "
+                f"fixtures.\n\nThis file exists so the directory is not empty: "
+                f"Harbor requires an\n`environment/` to recognise a task at all, "
+                f"and hashes an empty one as the\n`docker_image` string, which "
+                f"gives every fixture-less case in a track the\nsame container "
+                f"identity.\n\ncase: {case_path}\n"))
 
     # 5) Cases present in oss but not on allowlist — warn.
     # Layout is solver/physics/case-id, so walk three levels.

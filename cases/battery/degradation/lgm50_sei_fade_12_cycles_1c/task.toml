@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/lgm50-sei-fade-12-cycles-1c"
+name        = "hwe-bench/lgm50-sei-fade-12-cycles-1c"
 description = "cycle ageing of the OKane2022 cell, scored from an evaluator-reproduced cycling simulation."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["battery", "pybamm", "lithium-ion", "electrochemistry", "cycling"]

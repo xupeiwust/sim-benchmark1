@@ -2,7 +2,7 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "sim-benchmark/cylinder-schafer-turek-2d1-cd"
+name        = "hwe-bench/cylinder-schafer-turek-2d1-cd"
 description = "Schäfer & Turek (1996) DFG benchmark 2D-1: steady laminar incompressible flow around a circular cylinder in a 2.2 m x 0.41 m channel, cylinder D=0.1 m centred at (0.2, 0.2) (offset from the channel centreline), parabolic inlet, Umean=0.2, nu=1e-3 -> Re=20. Quantity of interest is the cylinder drag coefficient cD. gt is the published committee reference cD=5.57953523384 (FeatFlow DFG benchmark 2D-1), NOT the bundled solver output."
 authors     = [{name = "sim-benchmark"}]
 keywords    = ["cfd", "laminar", "cylinder", "drag-coefficient", "schafer-turek", "dfg-benchmark", "2d", "vv", "openfoam"]
