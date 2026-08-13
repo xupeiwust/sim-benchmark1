@@ -1,10 +1,10 @@
-# Dataset manifest for hwe-bench/cae
+# Dataset manifest for hwe-bench/hwe-bench
 # Add tasks using: harbor add <org>/<name>
 # Publish using: harbor publish
 
 [dataset]
-name = "hwe-bench/cae"
-description = "HWE-bench-CAE: engineering-simulation tasks graded on the number the agent reports, inside a defensible tolerance band."
+name = "hwe-bench/hwe-bench"
+description = "HWE-bench measures how well an LLM does hardware engineering: real work in design/CAD, modeling/CAE and production/PLM software, graded on the number the run reports inside a defensible tolerance band. This release covers CAE."
 keywords = []
 [[dataset.authors]]
 name = "SVD AI Lab"
