@@ -1,0 +1,17 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Incompressible plane-channel flow at friction Reynolds number Re_tau = 395.
+// With the wall-shear chosen so u_tau = 1 and channel half-height delta = 1,
+//   nu = u_tau * delta / Re_tau = 1 * 1 / 395 = 2.5316e-3.
+// The momentum source then sets the friction velocity, fixing Re_tau = 395.
+
+transportModel  Newtonian;
+
+nu              2.5316455696e-03;

@@ -1,0 +1,60 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     simpleFoam;
+
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+endTime         3000;
+
+deltaT          1;
+
+writeControl    timeStep;
+writeInterval   1000;
+
+purgeWrite      2;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
+
+functions
+{
+    // Drag/lift coefficients on the cylinder patch. Incompressible: rhoInf=1
+    // (so forces are kinematic * rho=1). DFG 2D-1 normalisation:
+    //   cD = 2 F_D / (rho Umean^2 D h), Umean=0.2, D=0.1, span h=0.01.
+    //   magUInf = Umean = 0.2;  lRef = D = 0.1;  Aref = D * h = 0.1 * 0.01 = 1e-3.
+    forceCoeffs1
+    {
+        type            forceCoeffs;
+        libs            (forces);
+        writeControl    timeStep;
+        writeInterval   1;
+
+        patches         (cylinder);
+        rho             rhoInf;
+        rhoInf          1.0;
+
+        magUInf         0.2;
+        lRef            0.1;
+        Aref            1e-3;
+
+        liftDir         (0 1 0);
+        dragDir         (1 0 0);
+        CofR            (0.2 0.2 0.005);
+        pitchAxis       (0 0 1);
+    }
+}

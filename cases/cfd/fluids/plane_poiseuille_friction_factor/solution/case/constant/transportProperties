@@ -1,0 +1,16 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Fully-developed laminar plane-channel (2D Poiseuille) flow.
+// nu = 0.01 with the pressure drop chosen so u_mean ~ 1 and
+// Re_Dh = u_mean * D_h / nu = 1 * 1 / 0.01 = 100 (well within laminar).
+
+transportModel  Newtonian;
+
+nu              0.01;

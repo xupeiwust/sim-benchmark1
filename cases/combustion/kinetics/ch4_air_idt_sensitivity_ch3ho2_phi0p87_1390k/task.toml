@@ -1,0 +1,64 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/ch4-air-idt-sensitivity-ch3ho2-phi0p87-1390k"
+description = "converged logarithmic sensitivity of methane/air ignition delay to one named reaction's rate constant, scored from an evaluator-reproduced perturbation study."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["combustion", "cantera", "kinetics", "sensitivity", "gri-mech"]
+
+[environment]
+docker_image    = "sim-benchmark-combustion-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 4096
+gpus            = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode    = "public"
+
+[agent]
+timeout_sec = 1800
+user        = "agent"
+
+[verifier]
+timeout_sec      = 1020
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 4096
+gpus         = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "ch4-air-idt-sensitivity-ch3ho2-phi0p87-1390k"
+solver            = "cantera"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core. Eleven integrations rather than the
+# track's usual one -- the unperturbed run plus five perturbation pairs -- which
+# is what a derivative costs and is the reason this case is twenty times the
+# price of its report-a-number siblings while still being cheap.
+oracle_wall_sec   = 30
+source_type       = "novel_variant"
+source_channel    = "constructed"
+difficulty_tier   = "L"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_tolerance_study"
+score_template    = "numerical"
+leakage_risk      = 1
+capability_target = "solve"
+demand_record     = "docs/demand_sources/records/constructed/combustion/demand-combustion-idt-rate-sensitivity-001.yaml"
+source_citation   = "GRI-Mech 3.0 (Smith, Golden, Frenklach et al.), the mechanism distributed with Cantera as gri30.yaml. The mechanism is published; the sensitivity asked for here is not tabulated in it or anywhere else."
+source_url        = "http://combustion.berkeley.edu/gri-mech/version30/text30.html"
+tags              = ["combustion", "cantera", "numeric-kpi", "native-reproduction", "sensitivity", "multi-run-kpi"]

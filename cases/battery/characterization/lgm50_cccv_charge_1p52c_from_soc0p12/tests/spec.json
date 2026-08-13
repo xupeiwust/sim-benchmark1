@@ -1,0 +1,9 @@
+{
+  "case_id": "lgm50_cccv_charge_1p52c_from_soc0p12",
+  "kind": "cccv",
+  "parameter_set": "Chen2020",
+  "initial_soc": 0.12,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.5907,
+  "reproduction_timeout_s": 600
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "lgm50_plating_fade_9_cycles_1p3c",
+  "kind": "cycling",
+  "parameter_set": "OKane2022",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.9375,
+  "reproduction_timeout_s": 900
+}

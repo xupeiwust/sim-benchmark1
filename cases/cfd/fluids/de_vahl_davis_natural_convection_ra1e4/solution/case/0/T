@@ -1,0 +1,36 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      T;
+}
+
+// Non-dimensional de Vahl Davis setup: hot left wall T=1, cold right wall T=0,
+// adiabatic top and bottom. TRef (transportProperties) = 0.5 = mean(T_hot,T_cold).
+dimensions [0 0 0 1 0 0 0];
+
+internalField uniform 0.5;
+
+boundaryField
+{
+    hotWall
+    {
+        type            fixedValue;
+        value           uniform 1;
+    }
+    coldWall
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+    adiabaticWalls
+    {
+        type            zeroGradient;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

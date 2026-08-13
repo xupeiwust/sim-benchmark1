@@ -1,0 +1,17 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Fully-developed turbulent plane channel at Re_tau = u_tau*delta/nu = 590.
+// With half-height delta = 1 and the body force chosen so that u_tau = 1
+// (see constant/fvOptions, gradP = u_tau^2/delta = 1), the kinematic viscosity
+// is fixed by the target friction Reynolds number:
+//     nu = u_tau * delta / Re_tau = 1 * 1 / 590 = 0.0016949...
+transportModel  Newtonian;
+
+nu              0.00169492;

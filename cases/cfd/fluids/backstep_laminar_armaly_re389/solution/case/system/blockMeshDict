@@ -1,0 +1,117 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// Armaly et al. 1983 laminar backward-facing step, Re = 389, expansion ratio 1.94.
+// Step height S = 0.0049 m. Length unit = S (scale below).
+// Inlet (upstream) channel height = S/(ER-1) = S/0.94 = 1.0638 S.
+// Downstream channel height = inlet + step = 1.0638 S + 1 S = 2.0638 S.
+//   Expansion ratio = 2.0638 / 1.0638 = 1.94.  (matches Armaly ER = 1.94)
+// Origin at the step lip. Upstream channel y in [0, 1.0638 S], x in [-20 S, 0].
+// Downstream channel y in [-1 S, 1.0638 S], x in [0, 35 S]. Step face is the
+// wall from (0, -1) to (0, 0). Downstream is ~35 step heights long (well past
+// the laminar reattachment, which sits around x/S ~ 8 at Re = 389).
+//
+// Three blocks: upstream / downstream-upper / downstream-lower.
+
+scale   0.0049;     // length unit = step height S
+
+vertices
+(
+    ( -20    0       0)   //  0  upstream-bottom-front-left
+    (   0    0       0)   //  1  step lip front
+    (  35    0       0)   //  2  downstream-internal-top-front (x=35S, y=0)
+    (   0   -1       0)   //  3  step base front
+    (  35   -1       0)   //  4  ds bottom front right
+    ( -20    1.0638  0)   //  5  upstream top front left
+    (   0    1.0638  0)   //  6  upstream top front right / ds-upper top front left
+    (  35    1.0638  0)   //  7  ds top front right
+
+    ( -20    0       1)   //  8
+    (   0    0       1)   //  9
+    (  35    0       1)   // 10
+    (   0   -1       1)   // 11
+    (  35   -1       1)   // 12
+    ( -20    1.0638  1)   // 13
+    (   0    1.0638  1)   // 14
+    (  35    1.0638  1)   // 15
+);
+
+blocks
+(
+    // upstream: vertices  0,1,6,5  (front)  8,9,14,13 (back)
+    // 120 x 40 cells; gentle grading toward the inlet wall + downstream end.
+    hex (0 1 6 5  8 9 14 13)  (120 40 1) simpleGrading (3 1 1)
+
+    // downstream upper (above lip line y=0): vertices 1,2,7,6 / 9,10,15,14
+    hex (1 2 7 6  9 10 15 14) (200 40 1) simpleGrading (6 1 1)
+
+    // downstream lower (below lip line, the step recess): 3,4,2,1 / 11,12,10,9
+    hex (3 4 2 1  11 12 10 9) (200 40 1) simpleGrading (6 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ((0 8 13 5));
+    }
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (2 7 15 10)
+            (4 2 10 12)
+        );
+    }
+    upper_wall
+    {
+        type wall;
+        faces
+        (
+            (5 13 14 6)
+            (6 14 15 7)
+        );
+    }
+    lower_wall_upstream
+    {
+        type wall;
+        faces ((0 1 9 8));
+    }
+    step_face
+    {
+        type wall;
+        faces ((1 3 11 9));
+    }
+    lower_wall_downstream
+    {
+        type wall;
+        faces ((3 4 12 11));
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 5 6 1)
+            (1 6 7 2)
+            (3 1 2 4)
+            (8 9 14 13)
+            (9 10 15 14)
+            (11 9 10 12)
+        );
+    }
+);
+
+mergePatchPairs ();

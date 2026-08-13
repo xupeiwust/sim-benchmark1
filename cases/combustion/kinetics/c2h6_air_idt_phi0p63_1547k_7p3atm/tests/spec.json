@@ -1,0 +1,11 @@
+{
+  "case_id": "c2h6_air_idt_phi0p63_1547k_7p3atm",
+  "kind": "idt",
+  "mechanism": "gri30.yaml",
+  "fuel": "C2H6",
+  "phi": 0.63,
+  "T0_K": 1547.0,
+  "P0_atm": 7.3,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

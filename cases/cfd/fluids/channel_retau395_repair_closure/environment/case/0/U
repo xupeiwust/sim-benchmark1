@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+dimensions [0 1 -1 0 0 0 0];
+
+// A deliberately neutral starting guess, well away from the converged bulk
+// velocity. The previous value sat inside the scored tolerance of this case's KPI
+// and a comment named it as the expected result, so an agent could have reported
+// the number straight out of the file it was handed. The instruction is explicit
+// that the bulk velocity is an *output* of the solve; see the case's
+// tests/kpis.json for what is actually scored.
+internalField uniform (10 0 0);
+
+boundaryField
+{
+    // Streamwise periodicity: the channel is statistically homogeneous in x.
+    inlet
+    {
+        type            cyclic;
+    }
+    outlet
+    {
+        type            cyclic;
+    }
+    // Wall-normal no-slip walls (bottom and top of the channel).
+    bottomWall
+    {
+        type            noSlip;
+    }
+    topWall
+    {
+        type            noSlip;
+    }
+    // Spanwise direction treated 2D.
+    frontAndBack
+    {
+        type            empty;
+    }
+}

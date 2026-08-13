@@ -1,0 +1,77 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "ch4_air_flame_speed_meet_resolution_spec",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "freely-propagating adiabatic premixed flame, mixture-averaged transport, inlet velocity taken as the unstretched laminar flame speed, carried up a four-level refinement ladder and reported from the finest level. gt_value, pass_tol and gross_error_tol are inherited verbatim from ch4_air_flame_speed_phi1p07_1p2atm_312k: it is the same mixture at the same operating point solved with the same mechanism and the same transport model, so deriving a second reference for it would produce a second number for one quantity and the two would drift. The three stored variant values were re-measured on the domain image before being inherited and reproduced to six significant figures. What is NOT inherited is the contract; see task.toml prototype_delta.",
+    "mechanism": "gri30.yaml",
+    "phase": null,
+    "cantera_version": "3.2.0",
+    "variants": {
+      "baseline": {
+        "value": 38.8149,
+        "settings": {
+          "ratio": 3,
+          "slope": 0.06,
+          "curve": 0.12
+        }
+      },
+      "fine": {
+        "value": 38.4336,
+        "settings": {
+          "ratio": 2,
+          "slope": 0.03,
+          "curve": 0.06
+        }
+      },
+      "coarse": {
+        "value": 39.0203,
+        "settings": {
+          "ratio": 4,
+          "slope": 0.1,
+          "curve": 0.2
+        }
+      }
+    },
+    "spread_abs": 0.3813000000000031,
+    "spread_rel": 0.009823547142978678,
+    "resolution_ladder_measured": {
+      "note": "Measured on the domain image at this operating point before the contract was written, so the four numbers in tests/spec.json resolution_spec are read off it rather than chosen. Each row is the refine-criteria triple (ratio, slope, curve) it was produced with, the grid the solver ended on, the burning velocity in cm/s, and the deviation from gt_value. auto=True, width 0.03 m, mixture-averaged, Cantera 3.2.0.",
+      "levels": [
+        {"settings": [10, 0.8, 0.8], "n_grid_points": 32, "value": 43.4615, "rel_to_gt": 0.1197, "in_band": false},
+        {"settings": [8, 0.5, 0.5], "n_grid_points": 47, "value": 40.4546, "rel_to_gt": 0.0422, "in_band": true},
+        {"settings": [6, 0.3, 0.6], "n_grid_points": 54, "value": 40.4852, "rel_to_gt": 0.0430, "in_band": true},
+        {"settings": [5, 0.2, 0.4], "n_grid_points": 74, "value": 39.5390, "rel_to_gt": 0.0187, "in_band": true},
+        {"settings": [4, 0.1, 0.2], "n_grid_points": 128, "value": 39.0203, "rel_to_gt": 0.0053, "in_band": true},
+        {"settings": [3, 0.06, 0.12], "n_grid_points": 195, "value": 38.8149, "rel_to_gt": 0.0, "in_band": true},
+        {"settings": [2, 0.03, 0.06], "n_grid_points": 371, "value": 38.4336, "rel_to_gt": -0.0098, "in_band": true},
+        {"settings": [2.1, 0.015, 0.03], "n_grid_points": 694, "value": 38.2034, "rel_to_gt": -0.0158, "in_band": true}
+      ],
+      "what_it_settles": "(1) The library-default refinement -- 10 / 0.8 / 0.8, which is what Cantera 3.2.0 itself uses when nothing is set and what the handed-over script arrives at -- lands +11.97%, 2.4x outside the band, so the reported answer cannot be reached without refining. (2) Every converged level from 47 points to 694 is INSIDE the band, so refining harder than the reference never costs a submission the KPI, which is what acceptance criterion (e) needs. (3) The answer PLATEAUS between 47 and 54 points, a step of 0.07%, while still 4.2% high -- which is why the contract asks for two consecutive small steps and not one. (4) The DOMAIN width is inert here: at converged refinement, 0.005 / 0.01 / 0.03 / 0.06 m give 38.7612 / 38.7276 / 38.8149 / 38.8149, a spread of 0.23%. So this contract asks for resolution independence and NOT domain independence -- the demand record that prompted it expects both, and its domain half needs a near-autoignitive inlet temperature, which is a different operating point and therefore a different case. (5) Refinement has a ceiling: ratio 2.05 with slope 0.008, and again with 0.004, both returned 'Could not find a solution for the 1D problem' after 242 s and 293 s. Cranking the setting without looking is measured to fail rather than assumed to work.",
+      "beyond_the_ladder": "The value is still drifting slowly at the finest level measured -- successive steps 195 to 371 to 694 move -0.98% and -0.60% -- so this is a resolution SPEC, not a claim of an asymptote. The whole measured range stays inside the 5% band, which is what makes the spec and the band independent checks rather than two versions of one."
+    },
+    "pass_tol_basis": "flat 5% of the reference value, inherited unchanged from ch4_air_flame_speed_phi1p07_1p2atm_312k. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates. The resolution contract adds a gate and moves no band. Its own threshold is not a band and was not chosen to hit a score: 2% is twice this case's own recorded refinement spread of 0.98%, so a ladder resolved to the level the reference itself was calibrated at cannot fail it -- the same floor argument docs/acceptance.md makes for a band, applied to a process gate.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "gt_type_note": "Mechanism-specific solver reference, not an experimental measurement: the task asks for what this mechanism predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "flame_speed_cm_s": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Unstretched laminar flame speed of methane/air at phi=1.07, 312 K unburned, 1.2 atm, mixture-averaged transport, read off the finest level of the submitted resolution ladder.",
+      "unit": "cm/s",
+      "gt_value": 38.8149,
+      "physics_min": 5.0,
+      "physics_max": 120.0,
+      "pass_tol": 1.940745,
+      "gross_error_tol": 7.762980000000001,
+      "weight": 1.0,
+      "kpi_quality_note": "WHAT THE CONTRACT ADDS OVER THE SIBLING, and what it does not. The sibling case at this operating point already tells the agent to resolve the flame well enough that the reported speed is grid-converged, and then scores only the number -- so that sentence enforces nothing. Here the demonstration is a second file on the same output interface and it is a GATE: at least 3 levels, finest at least 2x the coarsest, each of the last two steps within 2%, and the reported answer within 2% of the finest level. ADMISSIBLE, measured rather than argued -- the ladder 32 / 47 / 54 / 74 grid points reads 43.4615 / 40.4546 / 40.4852 / 39.5390 cm/s, whose finest value is +1.87% from gt_value and scores 1.0 on the band, while its last step is 2.39% and the gate zeroes it. So the gate can fail a submission the band passes, which is the test CLAUDE.md applies to any check. It reads the OUTPUT INTERFACE only: the level column is the grid the solver ended on, an outcome of whatever the submission chose to do, so no refine criterion, domain width or transport setting is ever read and the free choice stays free. ANTI-SHORTCUT: the burning velocity has no closed form, and where a solution of THIS mixture stops moving under refinement has neither -- it is a property measured by solving several times, so a recalled value cannot supply the table. NOT CLOSED, and this is the track's standing hole rather than this case's: the entry point is arbitrary Python, so a driver that prints four invented pairs and one invented profile passes every check. The strip-and-re-run stops the rows being SHIPPED, not being PRINTED; what keeps it inert is that the invented pairs have to bracket an answer the driver does not have. UNMEASURED, stated so nobody reads it as measured: whether frontier models find this harder than the sibling, which #257 measured saturated at 1.00 / 0.99. Changing a task's shape does not by itself produce difficulty -- both existing repair-shaped cases in this repo are saturated -- and the pair exists precisely so that question can be answered by running it."
+    }
+  }
+}

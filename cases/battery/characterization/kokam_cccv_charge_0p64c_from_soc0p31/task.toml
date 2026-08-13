@@ -1,0 +1,64 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/kokam-cccv-charge-0p64c-from-soc0p31"
+description = "constant-current / constant-voltage charge of the Marquis2019 cell, scored from an evaluator-reproduced cccv simulation."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["battery", "pybamm", "lithium-ion", "electrochemistry", "cccv"]
+
+[environment]
+docker_image    = "sim-benchmark-battery-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 4096
+gpus            = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode    = "public"
+
+[agent]
+timeout_sec = 1800
+user        = "agent"
+
+[verifier]
+timeout_sec      = 780
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 4096
+gpus         = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "kokam-cccv-charge-0p64c-from-soc0p31"
+solver            = "pybamm"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 10
+source_type       = "tutorial"
+source_channel    = "tutorial-variant"
+difficulty_tier   = "L"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_tolerance_study"
+score_template    = "numerical"
+leakage_risk      = 2
+capability_target = "physics"
+source_citation   = "Marquis, Sulzer, Timms, Please and Chapman, J. Electrochem. Soc. 166 (2019) A3693 — Kokam SLPB78205130H pouch cell (LCO/graphite), distributed with PyBaMM as the Marquis2019 parameter set"
+source_url        = "https://github.com/pybamm-team/PyBaMM/blob/main/examples/scripts/experimental_protocols/cccv.py"
+tags              = ["battery", "pybamm", "numeric-kpi", "native-reproduction", "ocv-gated"]
+prototype_origin  = "pybamm:examples/scripts/experimental_protocols/cccv.py"
+prototype_delta   = "The example is not in the image -- the installed PyBaMM package ships no example tree at all, only the parameter sets -- so the collision is with the upstream repository and the rendered documentation page, not with a file the container holds. Moved: the example charges its own bundled cell at a fixed current to a round voltage limit and holds to a round termination current, from wherever a preceding discharge left it, while this case starts from a stated state of charge that is not a round number, charges at a rate that is not a round number, and takes its voltage limit and termination current from what the named parameter set actually supports rather than from the limits the example made familiar. Redefined: the reported quantity is the elapsed time from the start of the constant-current phase to the end of the hold; the example reports no number and saves a trace. Dropped: the example's repeated discharge-and-rest wrapper cycles, its interphase-growth option, and its save-to-matlab and save-to-csv calls. Replaced: the deliverable is the results.csv output interface this benchmark grades. Kept, deliberately: the pair of experiment steps that is the protocol -- constant current to the voltage limit, then a hold at that voltage to a termination current. Kept as well: the numerics of PyBaMM's own O'Regan parameter-set notebook -- its var_pts dict, its exponential particle submesh refined toward the particle surface, and its IDAKLU solver -- so the perturbation is in the operating point, not in the numerics."

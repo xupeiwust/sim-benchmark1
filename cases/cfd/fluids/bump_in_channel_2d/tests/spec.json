@@ -1,0 +1,20 @@
+{
+  "case_id": "bump_in_channel_2d",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "cd_total"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "cd_total": {
+      "derive": "single_row",
+      "value": "cd_total"
+    }
+  },
+  "reproduction_timeout_s": 2400,
+  "preserve": [
+    "constant/polyMesh"
+  ]
+}

@@ -1,0 +1,57 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/taylor-green-vortex-2d-re100"
+description = "Taylor-Green decaying vortex at Re=100 - the exact unsteady 2D laminar incompressible Navier-Stokes solution on a doubly-periodic 2*pi x 2*pi box (Taylor & Green 1937). The exact field Ux = -cos(x) sin(y) exp(-2 nu t) decays uniformly as exp(-2 nu t); the t=0 vortex is imposed as the initial condition and the flow is integrated in time. KPI: the peak x-velocity magnitude max|Ux| at a fixed time t-star=5, scored against the Taylor-Green exact decayed value (gt = the published analytical reference number, NOT the solver's own output)."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "laminar", "taylor-green", "navier-stokes", "exact-solution", "transient", "decaying-vortex", "benchmark", "2d", "openfoam", "vv"]
+
+[environment]
+docker_image    = "sim-benchmark-cfd-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 10240
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 3600
+user        = "agent"
+
+[verifier]
+timeout_sec      = 900
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 10240
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "taylor-green-vortex-2d-re100"
+solver            = "openfoam"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 17
+source_type       = "paper"
+source_channel    = "paper"
+difficulty_tier   = "M"
+gt_type           = "analytical"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_v2_reproduction"
+score_template    = "numerical"
+leakage_risk      = 2
+capability_target = "physics"
+source_citation   = "Taylor, G. I. and Green, A. E., 'Mechanism of the production of small eddies from large ones,' Proceedings of the Royal Society of London A, Vol. 158, No. 895, 1937, pp. 499-521. DOI:10.1098/rspa.1937.0036. Exact unsteady 2D incompressible Navier-Stokes solution (nondimensional): Ux = -cos(x) sin(y) exp(-2 nu t), Uy = sin(x) cos(y) exp(-2 nu t); the vortex amplitude decays as exp(-2 nu t). At Re=100 (nu=0.01) the peak |Ux| at t-star=5 is exp(-0.1) = 0.904837."
+source_url        = "https://doi.org/10.1098/rspa.1937.0036"
+demand_record     = "docs/demand_sources/records/paper/cfd/demand-cfd-taylor-green-vortex-2d-re100-paper-001.yaml"
+tags              = ["native-openfoam", "field-derived-kpi", "laminar", "taylor-green", "transient", "benchmark"]

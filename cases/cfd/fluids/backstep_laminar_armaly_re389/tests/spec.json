@@ -1,0 +1,17 @@
+{
+  "case_id": "backstep_laminar_armaly_re389",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "reattachment_length_xr_over_h"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "reattachment_length_xr_over_h": {
+      "derive": "single_row",
+      "value": "reattachment_length_xr_over_h"
+    }
+  },
+  "reproduction_timeout_s": 2400
+}

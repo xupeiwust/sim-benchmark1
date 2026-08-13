@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      omega;
+}
+
+dimensions [0 0 -1 0 0 0 0];
+
+// Specific dissipation rate. Interior guess omega ~ sqrt(k)/(Cmu^0.25 * l) with
+// l ~ 0.1*delta gives O(10); the omegaWallFunction sets the correct near-wall
+// asymptote omega -> 6*nu/(beta1*y^2) for the wall-resolved (y+<1) cells.
+internalField uniform 10;
+
+boundaryField
+{
+    inlet
+    {
+        type            cyclic;
+    }
+    outlet
+    {
+        type            cyclic;
+    }
+    bottomWall
+    {
+        type            omegaWallFunction;
+        value           uniform 10;
+    }
+    topWall
+    {
+        type            omegaWallFunction;
+        value           uniform 10;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

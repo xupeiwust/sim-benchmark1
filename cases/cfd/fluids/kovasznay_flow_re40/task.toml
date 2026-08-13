@@ -1,0 +1,60 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/kovasznay-flow-re40"
+description = "Spatial accuracy on the Kovasznay (1948) exact 2D steady Navier-Stokes solution at Re=40. The exact u,v are imposed on all four sides of [0,1]x[-0.5,0.5] and the same problem is solved on 20x20, 40x40 and 80x80 grids. KPIs: the observed order of accuracy — the slope of log(L2 velocity error) against log(h) — and the error on the finest grid. The order is a relation between runs, so it cannot be recalled from the closed form the prompt has to state."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "laminar", "kovasznay", "navier-stokes", "grid-convergence", "order-of-accuracy", "2d", "openfoam", "vv"]
+
+[environment]
+docker_image    = "sim-benchmark-cfd-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 10240
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 3600
+user        = "agent"
+
+[verifier]
+# Must exceed spec.json's reproduction_timeout_s (2400), or the container is
+# killed before the evaluator can write reward.json and the trial is stored as
+# unmeasured rather than as a score.
+timeout_sec      = 2700
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 10240
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "kovasznay-flow-re40"
+solver            = "openfoam"
+# Measured: solution/solve.sh on the domain image, which is three meshes and
+# three steady solves. Recorded so the case's price is legible before anyone
+# schedules a sweep -- a refinement study costs more than one solve by
+# construction, and this is what that actually came to.
+oracle_wall_sec   = 31
+source_type       = "paper"
+source_channel    = "paper"
+difficulty_tier   = "M"
+gt_type           = "analytical"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_interface_reproduction"
+score_template    = "numerical"
+leakage_risk      = 1
+capability_target = "numerical"
+source_citation   = "Kovasznay, L. I. G., 'Laminar flow behind a two-dimensional grid,' Mathematical Proceedings of the Cambridge Philosophical Society, Vol. 44, No. 1, 1948, pp. 58-62. DOI:10.1017/S0305004100023999. Exact 2D steady Navier-Stokes solution: u = 1 - exp(lambda*x)*cos(2*pi*y), v = (lambda/2/pi)*exp(lambda*x)*sin(2*pi*y), with lambda = Re/2 - sqrt(Re^2/4 + 4*pi^2). At Re=40, lambda = -0.9637405; the exact u at (0.5, 0.0) is 0.382373."
+source_url        = "https://doi.org/10.1017/S0305004100023999"
+demand_record     = "docs/demand_sources/records/paper/cfd/demand-cfd-kovasznay-flow-re40-paper-001.yaml"
+tags              = ["native-openfoam", "laminar", "kovasznay", "output-interface", "relation-kpi", "grid-convergence"]

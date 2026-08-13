@@ -35,7 +35,7 @@ import math
 import re
 import struct
 from pathlib import Path
-from typing import Iterable
+from collections.abc import Iterable
 
 STANDARD_FIELDS = {
     "U", "p", "T", "k", "omega", "epsilon", "nut", "nuTilda",
@@ -52,7 +52,7 @@ def find_case(roots: Iterable[Path] | None = None) -> Path | None:
         if not root.exists():
             continue
         candidates = [root]
-        for depth in range(3):
+        for _depth in range(3):
             new = []
             for c in candidates:
                 if c in seen:

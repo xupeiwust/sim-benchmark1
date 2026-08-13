@@ -1,0 +1,21 @@
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class dictionary;
+    object WallSurface;
+}
+type surfaces;
+libs (sampling);
+interpolationScheme cellPoint;
+surfaceFormat raw;
+fields (wallShearStress);
+surfaces
+{
+    wallSurface
+    {
+        type patch;
+        patches (lower_wall_downstream lower_wall_upstream step_face upper_wall);
+        interpolate false;
+    }
+}

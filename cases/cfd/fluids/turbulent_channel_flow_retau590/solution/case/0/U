@@ -1,0 +1,43 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+// Fully-developed turbulent plane channel, Re_tau = 590, half-height delta = 1.
+// Streamwise (x) is periodic (cyclic inlet/outlet); the flow is driven by a
+// uniform streamwise body force (see constant/fvOptions) of magnitude
+// u_tau^2/delta = 1, so the wall friction velocity is u_tau = 1 by the global
+// momentum balance. Walls are no-slip; a single span cell is empty.
+// Initial guess: a flat profile near the expected bulk velocity (~18.6).
+
+dimensions [0 1 -1 0 0 0 0];
+
+internalField uniform (18 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        type            cyclic;
+    }
+    outlet
+    {
+        type            cyclic;
+    }
+    bottomWall
+    {
+        type            noSlip;
+    }
+    topWall
+    {
+        type            noSlip;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

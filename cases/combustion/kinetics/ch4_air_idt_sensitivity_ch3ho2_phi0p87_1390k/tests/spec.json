@@ -1,0 +1,17 @@
+{
+  "case_id": "ch4_air_idt_sensitivity_ch3ho2_phi0p87_1390k",
+  "kind": "idt",
+  "mechanism": "gri30.yaml",
+  "fuel": "CH4",
+  "phi": 0.87,
+  "T0_K": 1390.0,
+  "P0_atm": 2.4,
+  "phase": null,
+  "reproduction_timeout_s": 900,
+  "derivations": {
+    "s_ch3_ho2": {
+      "derive": "single_row",
+      "value": "s_ch3_ho2"
+    }
+  }
+}

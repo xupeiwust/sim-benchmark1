@@ -7,7 +7,7 @@ Provides the 6 stages every solver shares:
   L_solver_complete   not yet emitted (Phase 3b will use this for "ran
                       to end normally but didn't reach scoring criteria")
   L5_physics          value outside [physics_min, physics_max]
-  L5_quantitative     in physics range, |pred − gt| > T_bad
+  L5_quantitative     in physics range, but outside the tolerance band
   L6_pass             nothing wrong on this axis
 
 Doesn't read any artifacts; doesn't know about specific solvers.
@@ -43,6 +43,10 @@ class UniversalDetector:
                 return "L6_pass"
             if kpi_result.get("physics_pass") == 0.0:
                 return "L5_physics"
+            # In the physics window but outside the tolerance band: the
+            # agent computed a wrong number. How wrong is carried beside
+            # this as `gross_error` (|err| > gross_error_tol) rather than
+            # as a second stage — one axis, one question.
             return "L5_quantitative"
 
         # Provenance failed → try sim_records for L2_solver_crash.

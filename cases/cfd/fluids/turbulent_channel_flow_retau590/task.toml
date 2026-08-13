@@ -1,0 +1,57 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/turbulent-channel-flow-retau590"
+description = "Fully-developed turbulent plane-channel flow at friction Reynolds number Re_tau = 590, reproduced from an agent-authored OpenFOAM case and scored from evaluator-generated native fields."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "turbulent", "channel-flow", "k-omega-sst", "re-tau-590", "dns-reference", "moser-kim-mansour", "vv", "openfoam"]
+
+[environment]
+docker_image    = "sim-benchmark-cfd-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 10240
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 3600
+user        = "agent"
+
+[verifier]
+timeout_sec      = 900
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 10240
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "turbulent-channel-flow-retau590"
+solver            = "openfoam"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 116
+source_type       = "vv_standard"
+source_channel    = "workshop-vv"
+difficulty_tier   = "M"
+gt_type           = "high-fidelity"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_three_grid_v2_reproduction"
+score_template    = "numerical"
+leakage_risk      = 2
+capability_target = "physics"
+source_citation   = "R. D. Moser, J. Kim and N. N. Mansour, 'Direct numerical simulation of turbulent channel flow up to Re_tau=590,' Physics of Fluids 11(4):943-945 (1999), with the official Oden Institute chan590 mean-profile dataset."
+source_url        = "https://pubs.aip.org/aip/pof/article/11/4/943/253866/Direct-numerical-simulation-of-turbulent-channel"
+demand_record     = "docs/demand_sources/records/workshop-vv/cfd/demand-cfd-turbulent-channel-flow-retau590-vv-001.yaml"
+tags              = ["cfd", "openfoam", "rans", "turbulent", "channel-flow", "k-omega-sst", "dns-reference", "native-reproduction"]

@@ -1,0 +1,16 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Incompressible laminar lid-driven cavity.
+// Re = U_lid * L / nu, with L = 1 (cavity side), U_lid = 1 (lid velocity).
+// For Re = 1000:  nu = U_lid * L / Re = 1 * 1 / 1000 = 0.001.
+
+transportModel  Newtonian;
+
+nu              0.001;

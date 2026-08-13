@@ -1,0 +1,58 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/nmc-pouch-thermal-rise-2p7c-305k"
+description = "discharge with cell heating of the Mohtat2020 cell, scored from an evaluator-reproduced thermal simulation."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["battery", "pybamm", "lithium-ion", "electrochemistry", "thermal"]
+
+[environment]
+docker_image    = "sim-benchmark-battery-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 4096
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 1800
+user        = "agent"
+
+[verifier]
+timeout_sec      = 780
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 4096
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "nmc-pouch-thermal-rise-2p7c-305k"
+solver            = "pybamm"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 21
+source_type       = "tutorial"
+source_channel    = "tutorial-variant"
+difficulty_tier   = "L"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_tolerance_study"
+score_template    = "numerical"
+leakage_risk      = 2
+capability_target = "physics"
+source_citation   = "Mohtat, Lee, Siegel and Stefanopoulou, J. Electrochem. Soc. 167 (2020) 110561 — NMC/graphite pouch cell parameterisation, distributed with PyBaMM as the Mohtat2020 parameter set"
+source_url        = "https://docs.pybamm.org/en/latest/source/examples/notebooks/models/simulating-ORegan-2022-parameter-set.html"
+tags              = ["battery", "pybamm", "numeric-kpi", "native-reproduction", "ocv-gated"]
+prototype_origin  = "pybamm:docs/source/examples/notebooks/models/simulating-ORegan-2022-parameter-set.ipynb"
+prototype_delta   = "The example is not in the image -- the installed PyBaMM package ships no example tree at all, only the parameter sets -- so the collision is with the upstream repository and the rendered documentation page, not with a file the container holds. Moved: the notebook discharges its own parameter set at a round C-rate for a fixed span of clock time, while this case's rate and ambient temperature are not round numbers, the run ends at the cell's voltage cut-off rather than on a clock, and the same template is instantiated on parameter sets other than the notebook's. Redefined: the reported quantity is the peak rise of the volume-averaged cell temperature above its starting value; the notebook reports no number at all, it plots. Dropped: the notebook's second, unmeshed re-solve and its interactive plot. Replaced: the deliverable is the results.csv output interface this benchmark grades. Kept, deliberately: the notebook's lumped-thermal option pair -- an arbitrary cell geometry with a lumped thermal model, the same pair PyBaMM's own thermal_lithium_ion.py example publishes -- stated to the agent as physics rather than as an option string; and the notebook's own numerics, its var_pts dict, its exponential particle submesh refined toward the particle surface and its IDAKLU solver, so the perturbation is in the operating point, not in the numerics."

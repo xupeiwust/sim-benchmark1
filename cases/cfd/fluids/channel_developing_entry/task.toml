@@ -1,0 +1,63 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/channel-developing-entry"
+description = "TUTORIAL-VARIANT (CFD): centerline velocity ratio at a DEVELOPING station in laminar 2D plane-channel entrance flow (Re=100), where the fully-developed Poiseuille 1.5 closed form does not yet apply."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "laminar", "channel", "entrance-flow", "poiseuille", "developing", "2d", "openfoam", "tutorial-variant"]
+
+[environment]
+docker_image    = "sim-benchmark-cfd-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 10240
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 1800
+user        = "agent"
+
+[verifier]
+timeout_sec      = 900
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 10240
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "channel-developing-entry"
+solver            = "openfoam"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 70
+source_type       = "tutorial"
+source_channel    = "tutorial-variant"
+difficulty_tier   = "M"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_v2_reproduction"
+score_template    = "numerical"
+leakage_risk      = 1
+capability_target = "physics"
+source_citation   = "OpenFOAM Spoken-Tutorial 'OpenFOAM/C2/2D-Laminar-Flow-in-a-channel' (FOSSEE / spoken-tutorial.org): laminar 2D plane channel via simpleFoam, uniform inlet 1 m/s at Re=100, computing the flow-development length and the centerline velocity developing toward u_max=1.5*U_avg (tutorial obtains 1.48). Made a tutorial-variant by asking the centerline velocity ratio at a DEVELOPING station x = 0.01*Re*(2H), where the fully-developed plane-Poiseuille 1.5*u_mean closed form does not yet apply — only a real Navier-Stokes entrance-region solve hits it."
+source_url        = "https://script.spoken-tutorial.org/index.php/OpenFOAM/C2/2D-Laminar-Flow-in-a-channel/English"
+# The prototype is third-party, so the origin is the tutorial's own page rather
+# than a path in a toolchain example set (SCHEMA.md §7). Both halves were
+# already written into source_citation; they are split out here because a
+# citation is prose and this pair is what an audit reads.
+prototype_origin  = "https://script.spoken-tutorial.org/index.php/OpenFOAM/C2/2D-Laminar-Flow-in-a-channel/English"
+prototype_delta   = "Geometry, Re=100 and the uniform 1 m/s inlet are the tutorial's; what moved is the reported quantity and where it is read. The tutorial asks for the FULLY-DEVELOPED centerline maximum and checks it against the plane-Poiseuille closed form u_max = 1.5*U_avg (it obtains 1.48). This case asks for the centerline velocity ratio at a DEVELOPING station x = 0.01*Re*(2H), short of the entry length, where neither the uniform-inlet 1.0 nor the fully-developed 1.5 holds and no closed form exists — so the tutorial's own answer, and the formula behind it, both land outside the band and only an entrance-region Navier-Stokes solve scores."
+demand_record     = "docs/demand_sources/records/tutorial-variant/cfd/demand-cfd-channel-developing-entry-tutvar-001.yaml"
+tags              = ["native-openfoam", "field-derived-kpi", "laminar", "developing-flow"]

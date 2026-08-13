@@ -1,0 +1,37 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      sampleDict;
+}
+
+// Sample the velocity field along the VERTICAL centerline (x = 0.5) of the
+// cavity, at mid-span (z = 0.05), from the bottom wall (y=0) to the lid (y=1).
+// The KPI is the MINIMUM streamwise component U_x over this line, which for
+// the Ghia Re=1000 benchmark occurs at y ~ 0.172 with u ~ -0.383.
+// 400 points span 0.00125 <= y <= 0.99875 so the minimum is well resolved.
+
+type            sets;
+libs            ("libsampling.so");
+
+interpolationScheme cellPoint;
+setFormat       raw;
+
+fields
+(
+    U
+);
+
+sets
+(
+    verticalCenterline
+    {
+        type    uniform;
+        axis    y;
+        start   (0.5 0.00125 0.05);
+        end     (0.5 0.99875 0.05);
+        nPoints 400;
+    }
+);

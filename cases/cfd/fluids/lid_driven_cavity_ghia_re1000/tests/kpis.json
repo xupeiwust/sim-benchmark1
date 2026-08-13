@@ -1,0 +1,48 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "lid_driven_cavity_ghia_re1000",
+  "oracle_status": "cfd_opensource_fullstack_openfoam_v1_hand",
+  "oracle_provenance": {
+    "host": "rserver (sim-benchmark-cfd-fullstack:latest, OpenFOAM ESI v2412)",
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "calibration_date": "auto",
+    "extract_method": "simpleFoam laminar steady solve of a 2D lid-driven SQUARE cavity (unit side L=1, lid Ux=1, nu=0.001 -> Re=1000); U sampled on the vertical centerline x=0.5 via sampleDict; u_min_vertical_centerline = min(Ux)/U_lid over the centerline (solution/solve_inner.py).",
+    "evals": "gt_value is the PUBLISHED Ghia/Ghia/Shin (1982) Table I reference (-0.38289 at y=0.1719), NOT the oracle's own output; the oracle reproduces it inside pass_tol (spelled T_good before #188), 0.4% away.",
+    "auto_batch": false,
+    "stopping": {
+      "criterion": "residualControl p 1e-6 / U 1e-6 in solution/case/system/fvSolution",
+      "stops_on": "criterion",
+      "converged_iterations": 3216,
+      "iteration_cap": 7000,
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU, #273",
+      "note": "This case does stop on its criterion, unlike the Re=100 sibling, which spent its whole life stopping on its iteration cap with nothing saying so (#266, #273). Its previous endTime 5000 already cleared the measured 3216 iterations by 1.55x; the cap is now twice the measured cost across the whole family, so the margin is a stated rule rather than four incidental numbers -- which is the state in which one of them went negative unnoticed. Raising the cap changes nothing the oracle reports: the criterion fires first either way."
+    },
+    "kpi_quality_note": "PAPER-CHANNEL (Tier 5) reference case. gt = the published benchmark number from Ghia, Ghia & Shin (1982), Table I (u_min on the vertical centerline at Re=1000 = -0.38289). ANTI-SHORTCUT: WEAK — see the kpi_quality_note on u_min_vertical_centerline. This case is the measured instance: #203 used it as the positive control for the shortcut screen and a cheap model, given only instruction.md and no way to execute anything, landed 1.7% from gt on one of two samples. Band: pass_tol 5% of |gt|, gross_error_tol 15% and diagnostic only (#188 renamed T_good/T_bad and took the second out of the score). The gate is openfoam_interface's strip-and-rerun plus has_mesh_and_solution against the evaluator's own copy, which costs the shortcut one solver run and not a correct one."
+  },
+  "source": {
+    "primary_url": "https://doi.org/10.1016/0021-9991(82)90058-4",
+    "data_source": "Ghia, U., Ghia, K. N. and Shin, C. T. (1982), 'High-Re Solutions for Incompressible Flow Using the Navier-Stokes Equations and a Multigrid Method,' Journal of Computational Physics 48(3):387-411, Table I (u along the vertical centerline x=0.5). The Re=1000 minimum is u = -0.38289 at y = 0.1719.",
+    "reference_value": "-0.38289 (Ghia et al. 1982, Table I; u-velocity minimum on the vertical centerline x=0.5 at Re=1000, occurring at y=0.1719)",
+    "physics_note": "Re = U_lid*L/nu = 1*1/0.001 = 1000, unit square cavity, lid moving at Ux=1, three stationary no-slip walls. The vertical-centerline u-profile crosses from +1 at the lid down through a deep negative trough (the back-flow under the primary vortex) before returning to 0 at the bottom wall; the trough minimum is the scored quantity."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "u_min_vertical_centerline": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Minimum of the normalised streamwise velocity Ux/U_lid over the vertical centerline (x=0.5) of the lid-driven square cavity at Re=1000. The published Ghia et al. (1982) benchmark value is -0.38289 (at y=0.1719). Negative because of the back-flow beneath the primary vortex.",
+      "gt_value": -0.38289,
+      "physics_min": -0.55,
+      "physics_max": -0.2,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Unchanged in value — this case already carried 5%. gt is the published Ghia, Ghia & Shin (1982) Table I value, u_min = -0.38289 for Re = 1000; the oracle lands 0.4% away. The naive zero answer and the lid value (+1) both fall far outside.",
+      "kpi_quality_note": "ANTI-SHORTCUT: WEAK, and this replaces a note that claimed STRONG. The old wording said there is nothing to hardcode 'short of quoting the Ghia table itself' -- which is literally true and was the wrong conclusion, because gt_value IS the Ghia et al. (1982) Table I entry for Re = 1000 and quoting it is exactly the available shortcut. Measured: #203 ran this case as the positive control for tools/screen_case_shortcut.py, handed a cheap model only instruction.md with no way to execute anything, and one of two samples came back at -0.37641 -- 1.7% from gt, inside pass_tol, scored 1.0. Moving Re off the tabulated points does not repair it: the table is a curve, so leaving one row out and log-interpolating it from its two neighbours lands 3.9% away at both Re = 400 and Re = 1000, and this repo's own oracle at the off-table Re = 250 and Re = 700 sits 0.58% and 0.53% from the same interpolation -- all inside a 5% band (#266). What the case does still enforce is that a number must come out of a solve: openfoam_interface copies the submission to a clean directory, deletes every generated artefact INCLUDING results.csv, re-runs `bash ./Allrun`, and requires has_mesh_and_solution in its own copy. That closes a printf-only submission (#196 measured 1.0 on the Re=100 sibling, #211 closed it); it does not close an Allrun that meshes, solves, and then writes a recalled number. Measured on the Re=100 sibling through this same evaluator (#266): real blockMesh + simpleFoam followed by a printf of the Ghia value scored 1.0 with mesh_and_solution=true. Residual cost of the shortcut: one solver run, not a correct one. Disposition is #266.",
+      "pass_tol": 0.0191445,
+      "gross_error_tol": 0.0574335,
+      "gt_value_source": "Published reference (Ghia et al. 1982, Table I). Band: pass_tol = 5% of |gt|, gross_error_tol = 15% of |gt|. Both numbers are the current ones (pass_tol 0.0191445, gross_error_tol 0.0574335), but this line used to spell them T_good and T_bad, and that spelling stated a scoring rule that no longer exists: #188 renamed the fields to pass_tol / gross_error_tol, made the band binary, and removed gross_error_tol from the score, leaving it as a diagnostic. So the sentence below is history, kept because it records what the author checked: the naive shortcuts (uniform 0, lid value +1) were confirmed to fall outside the 15% figure. Under the current rule what decides the score is pass_tol alone, and both shortcuts are outside it too -- as are they outside physics_min/physics_max, which is where they are actually caught."
+    }
+  }
+}

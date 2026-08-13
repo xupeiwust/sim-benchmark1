@@ -1,0 +1,58 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "ch4_air_idt_phi0p55_1633k_9p2atm",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "constant-volume adiabatic IdealGasReactor integrated to the dT/dt maximum",
+    "mechanism": "gri30.yaml",
+    "phase": null,
+    "cantera_version": "3.2.0",
+    "variants": {
+      "baseline": {
+        "value": 0.0492807,
+        "settings": {
+          "rtol": 1e-09,
+          "atol": 1e-18
+        }
+      },
+      "tight": {
+        "value": 0.0492814,
+        "settings": {
+          "rtol": 1e-11,
+          "atol": 1e-20
+        }
+      },
+      "loose": {
+        "value": 0.0492807,
+        "settings": {
+          "rtol": 1e-07,
+          "atol": 1e-16
+        }
+      }
+    },
+    "spread_abs": 7.000000000062512e-07,
+    "spread_rel": 1.420434368842673e-05,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "gt_type_note": "Mechanism-specific solver reference, not an experimental measurement: the task asks for what this mechanism predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "ignition_delay_ms": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Ignition delay time (dT/dt maximum) of methane/air at phi=0.55, 1633 K, 9.2 atm, constant volume, adiabatic.",
+      "unit": "ms",
+      "gt_value": 0.0492807,
+      "physics_min": 0.005,
+      "physics_max": 50.0,
+      "pass_tol": 0.002464035,
+      "gross_error_tol": 0.00985614,
+      "weight": 1.0
+    }
+  }
+}

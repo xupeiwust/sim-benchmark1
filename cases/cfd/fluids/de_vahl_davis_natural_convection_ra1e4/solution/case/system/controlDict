@@ -1,0 +1,65 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     buoyantBoussinesqSimpleFoam;
+
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+// A CAP, and until #286 it was also the stopping rule -- which is the defect,
+// not the setting. `residualControl` in fvSolution declares p_rgh/U/T 1e-6 and
+// this run never met it: it stopped at 3000 for its whole life, reporting a
+// value that was a property of the cap. buoyantBoussinesqSimpleFoam exits 0
+// either way and leaves the same fields behind, so nothing said so.
+//
+// The criterion is reachable on this case's own shipped mesh -- measured, not
+// assumed: it fires at iteration 6520, 39 s on the domain image, well inside
+// this case's own 600 s reproduction budget. So the repair is the cap, not the
+// criterion (loosening a criterion until the cap satisfies it makes the
+// criterion follow the cap, which is the same defect with tidier paperwork;
+// that is only right where the criterion is structurally unreachable, as in
+// #199's plane_poiseuille). Cap set above twice the measured cost.
+//
+// Converging it MOVES this oracle towards the published reference rather than
+// away: 2.342 capped against de Vahl Davis's 2.243, and 2.249 converged. That
+// direction is luck too -- `lid_driven_cavity_ghia_re100` went the other way
+// (#273) -- which is exactly why closeness to gt is not evidence of
+// convergence, and why this needed a check rather than an eyeball.
+endTime         14000;
+
+deltaT          1;
+
+writeControl    timeStep;
+writeInterval   1000;
+
+purgeWrite      2;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
+
+// No in-solve functionObjects. The OpenFOAM wallHeatFlux FO requires a
+// COMPRESSIBLE turbulence model in the object registry, which the
+// incompressible buoyantBoussinesqSimpleFoam solver does not provide (it
+// fatal-errors "Unable to find compressible turbulence model in the
+// database"). The hot-wall Nusselt number is instead computed from the wall
+// temperature gradient as a post-processing step in solve_inner.py:
+//   grad(T)  ->  surfaceFieldValue areaIntegrate over hotWall  ->
+//   Nu_avg = -L/(dT*A) * integral( dT/dx ) on the hot wall (x=0).
+// alpha cancels exactly, so Nu reduces to a pure temperature-gradient
+// quantity and needs no alphaEff.
+functions
+{
+}

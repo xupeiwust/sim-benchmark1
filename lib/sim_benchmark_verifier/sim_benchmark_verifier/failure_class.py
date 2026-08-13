@@ -55,7 +55,7 @@ SOLVER_STAGES = (
     "L3_convergence",         # solver ran but did not converge
     "L4_conservation",        # converged but conservation broken (where applicable)
     "L5_physics",             # value outside [physics_min, physics_max]
-    "L5_quantitative",        # value matches physics range but |pred − gt| > T_bad
+    "L5_quantitative",        # in the physics range but outside the tolerance band
     "L6_pass",                # nothing wrong on this axis
 )
 

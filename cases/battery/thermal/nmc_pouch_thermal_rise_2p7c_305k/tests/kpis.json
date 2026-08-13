@@ -1,0 +1,72 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "nmc_pouch_thermal_rise_2p7c_305k",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "constant-current discharge with a lumped thermal model, peak cell-averaged temperature rise read off the reproduced trace",
+    "parameter_set": "Mohtat2020",
+    "model": "SPMe",
+    "model_options": {
+      "cell geometry": "arbitrary",
+      "thermal": "lumped"
+    },
+    "initial_soc": 1.0,
+    "ambient_temperature_K": 305.15,
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 8.44825,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 8.44013,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 8.4628,
+        "settings": {
+          "rtol": 1e-05,
+          "atol": 1e-05
+        }
+      }
+    },
+    "spread_abs": 0.01454999999999984,
+    "spread_rel": 0.0017222501701535634,
+    "pass_tol_basis": "flat 5% of the reference value. The band was written to catch a wrong configuration rather than to grade numerical precision, and on this track a wrong configuration lands ~68% away. #468 measured that the claim did not hold here: with the particle mesh left unstated, PyBaMM's default r_n = r_p = 20 lands +10.47% and the band was separating two resolutions rather than two configurations. Ruled on #488 (2026-08-11, option A): the requirement is stated in instruction.md -- 'Resolve the discretisation well enough that the reported number is grid-converged', the sentence 25 sibling contracts already carry -- and no band, gt_value or tolerance moved.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "ocv_envelope": {
+      "n_samples_checked": 135,
+      "max_abs_overpotential_V": 0.3448924706864087,
+      "max_dissipation_violation_V": -0.10629553316590545,
+      "initial_voltage_error_V": 0.12417529678934791,
+      "Q_span_Ah": 4.969133212165701
+    },
+    "ocv_max_deviation_basis": "1.4x the reference run's own worst departure from the evaluator's open-circuit-voltage curve, plus 50 mV",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks for what this parameterisation predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "max_temperature_rise_K": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Peak cell-averaged temperature rise of the Mohtat2020 cell over a constant-current discharge at 2.7C from a full charge, stopped when the terminal voltage first reaches 2.8 V, with the cell free to heat up.",
+      "unit": "K",
+      "gt_value": 8.44825,
+      "physics_min": 0.5,
+      "physics_max": 150.0,
+      "pass_tol": 0.4224125,
+      "gross_error_tol": 1.68965,
+      "weight": 1.0
+    }
+  }
+}

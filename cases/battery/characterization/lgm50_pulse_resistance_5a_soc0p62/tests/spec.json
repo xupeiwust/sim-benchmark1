@@ -1,0 +1,9 @@
+{
+  "case_id": "lgm50_pulse_resistance_5a_soc0p62",
+  "kind": "pulse",
+  "parameter_set": "Chen2020",
+  "initial_soc": 0.62,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.2509,
+  "reproduction_timeout_s": 600
+}

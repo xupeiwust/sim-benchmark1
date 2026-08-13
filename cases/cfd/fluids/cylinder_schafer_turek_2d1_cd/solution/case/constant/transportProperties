@@ -1,0 +1,18 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// DFG benchmark 2D-1 (Schäfer & Turek 1996): laminar incompressible.
+// Re = Umean * D / nu = 0.2 * 0.1 / 1e-3 = 20.
+//   rho  = 1.0 kg/m^3  (incompressible: enters cD only via rhoInf=1 in forceCoeffs)
+//   nu   = 1.0e-3 m^2/s
+//   Umean = 0.2 m/s, D = 0.1 m.
+
+transportModel  Newtonian;
+
+nu              1.0e-03;

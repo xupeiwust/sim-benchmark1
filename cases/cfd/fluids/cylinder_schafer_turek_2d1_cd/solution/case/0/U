@@ -1,0 +1,57 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+dimensions [0 1 -1 0 0 0 0];
+
+internalField uniform (0.2 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        // DFG 2D-1 parabolic inlet: u(y) = 4 Umax y (H - y) / H^2, Umax = 0.3,
+        // H = 0.41 -> Umean = (2/3) Umax = 0.2. codedFixedValue evaluates the
+        // profile per face-centre y.
+        type            codedFixedValue;
+        value           uniform (0.2 0 0);
+        name            parabolicInlet;
+        code
+        #{
+            const fvPatch& p = this->patch();
+            const vectorField& Cf = p.Cf();
+            vectorField& fld = *this;
+            const scalar Umax = 0.3;
+            const scalar H = 0.41;
+            forAll(Cf, i)
+            {
+                const scalar y = Cf[i].y();
+                const scalar u = 4.0*Umax*y*(H - y)/(H*H);
+                fld[i] = vector(u, 0, 0);
+            }
+        #};
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform (0 0 0);
+        value           uniform (0.2 0 0);
+    }
+    walls
+    {
+        type            noSlip;
+    }
+    cylinder
+    {
+        type            noSlip;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

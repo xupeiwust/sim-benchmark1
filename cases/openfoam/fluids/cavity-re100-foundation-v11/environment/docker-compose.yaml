@@ -1,7 +1,0 @@
-services:
-  main:
-    build:
-      network: host
-      args:
-        BASE_REGISTRY: docker.1panel.live
-      # No sim-cli-src additional_context — see Dockerfile comment.

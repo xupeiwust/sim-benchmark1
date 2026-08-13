@@ -1,0 +1,11 @@
+{
+  "case_id": "h2_air_idt_phi0p57_1246k_5p4atm",
+  "kind": "idt",
+  "mechanism": "h2o2.yaml",
+  "fuel": "H2",
+  "phi": 0.57,
+  "T0_K": 1246.0,
+  "P0_atm": 5.4,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

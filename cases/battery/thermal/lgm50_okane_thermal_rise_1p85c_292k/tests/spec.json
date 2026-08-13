@@ -1,0 +1,9 @@
+{
+  "case_id": "lgm50_okane_thermal_rise_1p85c_292k",
+  "kind": "thermal",
+  "parameter_set": "OKane2022",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.5564,
+  "reproduction_timeout_s": 600
+}

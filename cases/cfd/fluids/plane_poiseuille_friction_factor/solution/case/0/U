@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+// Fully-developed laminar plane-channel (2D Poiseuille) flow.
+// Pressure-driven: inlet/outlet carry a fixed kinematic-pressure difference,
+// velocity is zeroGradient there; walls are no-slip. The converged interior
+// settles to the parabolic profile u(y) = u_max*(1 - (y/H)^2), u_max = 1.5*u_mean.
+// nu = 0.01 (see transportProperties); the pressure drop sets the flow rate.
+
+dimensions [0 1 -1 0 0 0 0];
+
+internalField uniform (0 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        type            zeroGradient;
+    }
+    outlet
+    {
+        type            zeroGradient;
+    }
+    bottomWall
+    {
+        type            noSlip;
+    }
+    topWall
+    {
+        type            noSlip;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

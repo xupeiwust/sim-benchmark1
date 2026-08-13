@@ -1,397 +1,226 @@
-# Leaderboard
-
-## v0.1 MVP Release Gate · 2026-05-03
-
-v0.1 is a benchmark release first, not a broad leaderboard release. The public
-repo should ship the task suite, deterministic verifier, case catalog, and
-reproduction commands. A single reference model row can be added after a full
-model run completes.
-
-### Published Scope
-
-| Scope | Count | Status |
-|---|---:|---|
-| Public runnable tasks | 23 | 20 LTspice + 3 OpenFOAM |
-| Oracle-available tasks | 23 | every public task ships an oracle |
-| MVP scored gate | 20 | LTspice oracle-verified |
-| OpenFOAM public tasks | 3 | v0.2 will expand once more oracles are written |
-
-### Current Results · v0.1 (2026-05-07)
-
-#### LTspice circuits (20 tasks)
-
-| Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Notes |
-|---|---|---:|---:|---:|---:|---:|---|
-| `release-v0.1-ltspice20-oracle-20260503` | oracle (deterministic) | 20 | 20 | 0 | **1.000** | **1.000** | reference upper bound |
-| `release-v0.1-ltspice20-claude-opus46-20260507` | claude-code · **Claude Opus 4.6** | 20 | 20 | 0 | **0.986** | **0.986** | 19/20 perfect; only `opamp_integrator` = 0.7182 |
-| `release-v0.1-ltspice20-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** (non-reasoning) | 20 | 20 | 1 | **0.936** | **0.936** | pre-final harness; all assigned tasks completed |
-| `release-v0.1-ltspice20-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** (reasoning) | 20 | 19 | 2 | **0.930** | **0.884** | final harness; `bridge_rectifier_ripple` hit the wall-time cap and is counted as zero in assigned mean |
-
-#### OpenFOAM fluids (3 oracle-available tasks)
-
-| Run | Agent / Model | Assigned | Completed | Harness exceptions | Completed Mean | Assigned Mean | Notes |
-|---|---|---:|---:|---:|---:|---:|---|
-| `release-v0.1-openfoam3-oracle-20260506` | oracle (deterministic) | 3 | 3 | 0 | **0.999** | **0.999** | reference upper bound; flatplate cf_x097 = 0.997 within numerical noise |
-| `release-v0.1-openfoam3-claude-opus46-20260507` | claude-code · **Claude Opus 4.6** | 3 | 3 | 0 | **1.000** | **1.000** | cavity_re100 / cavity_re1000 / flatplate all 1.000 |
-| `release-v0.1-openfoam3-minimax-m25hs-20260506` | claude-code · **MiniMax-M2.5-highspeed** | 3 | 3 | 1 | **0.408** | **0.408** | cavity_re100 1.0 / cavity_re1000 0.225 / flatplate 0.0 |
-| `release-v0.1-openfoam3-minimax-m27-20260506` | claude-code · **MiniMax-M2.7** | 3 | 3 | 0 | **0.284** | **0.284** | cavity_re100 0.0 from an extract-path paperwork failure / cavity_re1000 0.390 / flatplate 0.462 |
-
-Per-case scores in [`results/v0.1/README.md`](./results/v0.1/README.md). JSON artifacts in
-`results/v0.1/`.
-
-`Completed Mean` averages completed trials only. `Assigned Mean` counts
-assigned but incomplete tasks as zero. `Harness exceptions` are agent or
-runner exit-status events; they are not always zero-score tasks because the
-verifier may still have replayable artifacts.
-
-### Run economics
-
-Per [`results/v0.1/economics.md`](./results/v0.1/economics.md). Turns and
-wall-time are cross-model comparable. USD cost for MiniMax is computed
-from May-2026 published prices (`MiniMax-M2.5-highspeed` $0.30/$2.40/$0.06
-per 1M input/output/cache tokens; `MiniMax-M2.7` $0.30/$1.20/$0.059)
-applied to the openai_usage_proxy token sums; for Opus 4.6 it is
-claude-code's trial-cumulative `total_cost_usd`.
-
-| Suite | Model | Mean turns/case | Mean wall/case (s) | Total cost (USD) | $ / case |
-|---|---|---:|---:|---:|---:|
-| LTspice 20 | MiniMax-M2.5-highspeed | 29.7 | 238.0 | **1.87** | 0.09 |
-| LTspice 20 | MiniMax-M2.7              | 26.1 | 283.6 | **1.47** | 0.07 |
-| LTspice 20 | Claude Opus 4.6           | 27.6 | 280.9 | **131.47** | 6.57 |
-| OpenFOAM 3 | MiniMax-M2.5-highspeed | 175.7 | 1,512.9 | **3.66** | 1.22 |
-| OpenFOAM 3 | MiniMax-M2.7              | 157.0 | 2,341.3 | **2.02** | 0.67 |
-| OpenFOAM 3 | Claude Opus 4.6           | 110.3 | 1,315.1 | **127.86** | 42.62 |
-
-Cost-per-case ratio Opus 4.6 vs MiniMax-M2.7 is **~94×** on LTspice and
-**~64×** on OpenFOAM; on the OF subset Opus reaches the oracle ceiling
-(1.000) while M2.7 stays at 0.284, so the cost gap is buying score, not
-just latency. OpenFOAM costs 10–35× more turns per case than LTspice
-across all three agents. Token totals + per-case breakdown live in
-[`economics.md`](./results/v0.1/economics.md).
-
-### Superseded run note
-
-An earlier MiniMax-M2.7 LTspice run is superseded. It was invalidated by a
-claude-code-router reasoning-content translation bug plus a too-low turn cap,
-both fixed before the current M2.7 reference row. Git history preserves the
-full superseded artifact for audit; current release artifacts list only rows
-included in the public result set.
-
-### Current read
-
-The useful early signal is workflow-shaped. Claude Opus 4.6 essentially
-matches the oracle ceiling — 19/20 on LTspice and 3/3 on the
-oracle-available OpenFOAM subset — meaning a top-tier agent can author CFD
-cases, mesh them, solve them, and produce replayable KPI provenance from a
-natural-language prompt with no human handholds. Both MiniMax reference
-agents stay strong on LTspice circuits (≥ 0.88) but fall well below the
-oracle on OpenFOAM (< 0.5). Several MiniMax misses are workflow or
-provenance failures rather than pure physics failures — exactly the
-discriminator this benchmark is designed to expose.
-
-### Failure-class distribution
-
-`reward-v3.1` annotates each KPI with a `failure_class` enum (see
-[`SCHEMA.md`](SCHEMA.md) §6). Counts of non-`null` classes across the
-v0.1 reference runs (computed by `tools/classify_failures.py` against
-`results/v0.1/failure_classes.json`):
-
-| Run | KPIs | passed | physics | conv | prov_path | extr_run | extr_fmt | halluc |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| LTspice 20 · M2.5-hs | 64 | 60 | 0 | 0 | 0 | 0 | 4 | 0 |
-| LTspice 20 · M2.7    | 60 | 56 | 1 | 1 | 0 | 0 | 2 | 0 |
-| LTspice 20 · Opus 4.6 | 64 | 63 | 0 | 1 | 0 | 0 | 0 | 0 |
-| OpenFOAM 3 · M2.5-hs | 16 |  7 | 0 | 3 | 0 | 6 | 0 | 0 |
-| OpenFOAM 3 · M2.7    | 16 |  3 | 1 | 6 | 0 | 6 | 0 | 0 |
-| OpenFOAM 3 · Opus 4.6 | 16 | 16 | 0 | 0 | 0 | 0 | 0 | 0 |
-
-Reads:
-
-- **MiniMax LTspice misses are paperwork**, not physics — extract_format
-  dominates (4–2 of the few misses). The model got the simulation right
-  but its claimed source extraction was off.
-- **MiniMax OpenFOAM misses split convergence + extract_runnable** —
-  half the failures are bad numerical convergence, the other half are
-  agent-written extract pipelines that don't actually run. No single
-  bottleneck to fix.
-- **No `provenance_path` failures across any model** — the path-side
-  hygiene (absolute paths, file exists) is solid; the gap is *which*
-  extract command and *what* it produces.
-- **Opus 4.6's only LTspice miss is `convergence`** on `opamp_integrator`
-  — physics in range but T_decay = 0. Not a benchmark or paperwork
-  problem; a numerical-tolerance question.
-
-The historical tables below are development history (v3 / v4 / v5 / v7 / v9–v18 OpenFOAM
-work). They should not be presented as the v0.1 public result.
-
----
-
-Every row is one run of Harbor's `terminus-2` agent (multi-turn tmux
-session inside the task container) driving the named model over the
-OpenAI-compatible [Paratera](https://llmapi.paratera.com/) endpoint.
-
-**Pipeline.** Agent reads `instruction.md`, may consult the in-container
-OpenFOAM skill at `/opt/sim-skills/openfoam/`, builds the OpenFOAM case
-from physics first principles (no tutorial pointers given), runs the
-solver, writes `/tmp/agent/result.json`. The case's own `tests/verify.py`
-then produces a four-tier `reward.json` — `exec_ok` / `converged` /
-`physics_faithful` / `kpi_accurate`, weighted 0.2 / 0.2 / 0.3 / 0.3.
-No human-in-the-loop, no LLM-as-judge.
-
-See `configs/paratera/full-matrix.yaml` for the exact configuration.
-
-## v7 · 2026-04-23 · 6 models × 11 cases = 66 trials · `auth × 4-tier` schema
-
-First apples-to-apples 6-model leaderboard on the 11-case v7 library.
-**Kimi-K2.5 is the new leader at 0.9335.**
-
-| Model | re100 | re400 | re1000 | pitzdaily | hotroom | dns-box | dambreak | v11-fork | cyl-nN | bernard-3d | oblique-sh | **mean** |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **Kimi-K2.5**              | 0.9963 | 0.9037 | 0.9961 | 0.9636 | 0.9159 | 0.7000 | 0.9846 | 0.9988 | 0.8344 | 0.9878 | 0.9869 | **0.9335** |
-| **MiniMax-M2.7-highspeed** | 0.9885 | 0.9078 | 0.991  | 0.9815 | 0.9417 | 0.7000 | 0.9959 | 0.999  | 0.7928 | 0.8952 | 0.0000 | **0.8358** |
-| **DeepSeek-V3.2-Thinking** | 0.9997 | 0.9217 | 0.9803 | 0.9300 | 0.4000 | 0.7991 | 0.4000 | 0.9990 | 0.7548 | 0.8198 | 0.2816 | **0.7533** |
-| **DeepSeek-V3.2-Instruct** | 0.9989 | 0.8520 | 0.9757 | 0.9896 | 0.8111 | 0.4279 | 0.0000 | 0.9844 | 0.4001 | 0.8199 | 0.7373 | **0.7270** |
-| Qwen3-Coder-Plus           | 0.4000 | 0.9348 | 0.9777 | 0.0000 | 0.6879 | 0.7000 | 0.0000 | 0.9998 | 0.0000 | 0.2152 | 0.6831 | **0.5090** |
-| GLM-4.5-AirX               | 0.4000 | 0.9030 | 0.0000 | 0.8000 | 0.0000 | 0.7000 | 0.6701 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | **0.3157** |
-
-### Stratified by case tier
-
-**Tier S** = simple cavity family (re100, re400, v11-fork). **Tier M** = v6
-hard cases (re1000, pitzdaily, hotroom, dns-box, dambreak). **Tier
-FoamBench-novel** = the 3 new cases (cylinder-nN, bernard-3d, oblique-sh).
-
-| Model | tier S (3 cases) | tier M (5 cases) | tier FB-novel (3 cases) | overall |
-|---|---|---|---|---|
-| **Kimi-K2.5**              | 0.9663 | 0.9120 | **0.9364** | **0.9335** |
-| **MiniMax-M2.7-highspeed** | 0.9651 | 0.9220 | 0.5627      | 0.8358 |
-| **DeepSeek-V3.2-Thinking** | 0.9735 | 0.7019 | 0.6187      | 0.7533 |
-| **DeepSeek-V3.2-Instruct** | 0.9451 | 0.6409 | 0.6524      | 0.7270 |
-| Qwen3-Coder-Plus           | 0.7782 | 0.4731 | 0.2994      | 0.5090 |
-| GLM-4.5-AirX               | 0.4343 | 0.4340 | 0.0000      | 0.3157 |
-
-### What the numbers say
-
-- **Kimi-K2.5 took the v7 crown.** v5 mean 0.7276 → v7 mean 0.9335 — almost
-  +0.21. The big lift comes from (a) `max_turns 40 → 100` resurrecting
-  pitzdaily (0 → 0.96) and dns-box (0 → 0.70), and (b) genuinely strong
-  performance on all 3 new cases (0.83 / 0.99 / 0.99). Kimi is the **only
-  model** to score ≥ 0.7 on every case in the matrix.
-- **MiniMax-M2.7-highspeed dropped from #1 to #2.** Stays strong on tier S/M
-  (regime-identical to v6) but pulls down on tier FoamBench-novel —
-  catastrophically on `oblique-shock` (0.0; never wrote `result.json` even
-  with 100 turns) and notably on `cylinder-nonnewtonian` (0.79; agent
-  declined to use Cross-Power-Law viscosity, fell back to constant nu).
-- **DeepSeek-V3.2-Thinking is the tier-S champion** (0.9735, edges Kimi)
-  but bombs hotroom (0.4) and dambreak (0.4) — same v5 weak cases that
-  even 100 turns couldn't fix. Suggests a real physics gap, not a budget
-  one.
-- **DeepSeek-V3.2-Instruct stalls at 0.73.** Best on pitzdaily (0.99 — RANS
-  closure done right) but **0 on dambreak** (multiphase setup failure
-  despite 100 turns; this regressed from v5's 0.95).
-- **Qwen3-Coder-Plus 0.51.** Bipolar: aces v11-fork (0.9998) and re400
-  (0.9348), zeros on cavity-re100 / pitzdaily / dambreak / cylinder-nN.
-  Looks like training-set memorization rather than physics reasoning.
-- **GLM-4.5-AirX 0.32.** Catastrophically narrow — only re400 / pitzdaily
-  / dns-box / dambreak produce non-zero scores. The 3 GLM trials that
-  Harbor reported as exceptions (cavity-re1000, hotroom, v11-fork) all
-  failed to write reward.json — an infrastructure-level collapse, not
-  just bad physics.
-
-### Where the 3 new FoamBench cases discriminate
-
-The "tier FoamBench-novel" column is where models separate most:
-
-- **`cylinder-nonnewtonian`** — only Kimi (0.83) and MiniMax (0.79) cleared
-  0.5. The Cross-Power-Law viscosity model is the gate; agents that fall
-  back to constant nu lose KPI accuracy by ~50× on max p.
-- **`bernard-cells-3d`** — Kimi at 0.99 sets the ceiling; MiniMax 0.90;
-  the rest 0.82 / 0.82 / 0.22 / 0. Tests 3D buoyant-flow setup correctness.
-- **`oblique-shock`** — Kimi 0.99 vs MiniMax 0.0 vs Instruct 0.74 vs
-  Thinking 0.28. **rhoCentralFoam + shock capturing scheme + normalized
-  thermo** is the new "tier-L gate" — splits the field clearly.
-
-### Method note
-
-Run config: `configs/paratera/v7-11case.yaml` (paratera 5) +
-`configs/minimax/v7-3new.yaml` rerun (MiniMax 3 new cases) + retained
-v6 scores for MiniMax on 8 originals (schema-preserving). All trials at
-`max_turns=100`, tutorials stripped, sim-skills mounted, multi-KPI
-schema with authenticity gate. paratera matrix wall time: 2h 27m.
-
-3 GLM trials produced no `reward.json` (Harbor reports as exceptions);
-treated as 0 in aggregation.
-
-### What changed schema-wise from v6
-
-- `[[metadata.sim.kpis]]` array is now the authoritative KPI spec; each
-  case can declare 1..N KPIs with weights. `reward.json` accepts both
-  `{"kpis": {name: value, ...}}` and legacy `{"RESULT": value}` (the
-  latter only when there is exactly one declared KPI).
-- **Authenticity gate**: `verify.py` scans for a real OpenFOAM case dir
-  (`constant/polyMesh/` + a time-dir with at least one standard field
-  file). If absent, score is forced to 0 regardless of `RESULT` content —
-  closes the "hardcode the right number" loophole.
-- All 8 v6 cases were migrated; oracle re-verified bit-for-bit identical
-  to v6.
-
-### What changed library-wise
-
-3 new cases from
-[NLR-Theseus CFDLLMBench / FoamBench](https://github.com/NLR-Theseus/cfdllmbench):
-`cylinder-nonnewtonian` (pimpleFoam + Cross-Power-Law viscosity),
-`bernard-cells-3d` (buoyantFoam + 3D natural convection),
-`oblique-shock` (rhoCentralFoam + 2D compressible shock). All three on
-Foundation v10. Each ships 2 KPIs (primary weight 0.6 + secondary 0.4),
-oracle-self-calibrated. Coverage: 8 → 11 cases; 5 → 8 OpenFOAM solvers;
-+ compressible / + non-Newtonian / + 3D buoyancy.
-
-## v6 · 2026-04-22 · MiniMax-M2.7-highspeed · stricter regime
-
-Two methodology shifts relative to v5:
-
-1. **OpenFOAM tutorials stripped from the container image.** v5 left
-   `/usr/lib/openfoam/openfoam2412/tutorials/` intact; a subsequent smoke
-   test showed MiniMax-M2.7 discovering and reading tutorial `blockMeshDict`
-   / `controlDict` files on its own within the first 20 turns (v5 paratera
-   models didn't). Commit `d36d691` deletes both ESI and Foundation tutorial
-   trees at image build time and blanks `FOAM_TUTORIALS`. Oracle stays
-   functional via a bundled `solution/tutorial-ref/` — invisible to the
-   agent because Harbor only mounts `solution/` for `--agent oracle`.
-2. **`max_turns` raised from 40 to 100.** MiniMax-M2.7 is a thinking model;
-   the first smoke run burned 30 of its 40-turn budget on references before
-   starting real work. Bumping to 100 lets the model actually finish.
-
-**Tested in this regime**: `anthropic/MiniMax-M2.7-highspeed` via
-`api.minimaxi.com/anthropic`. The full thinking variant was also run but
-dropped after pitzdaily scored 0 even with 100 turns — thinking overhead
-outweighed reasoning gain for our turn-bounded harness.
-
-| Model | re100 | re400 | re1000 | pitzdaily | hotroom | dns-box | dambreak | v11-fork | **mean** |
-|---|---|---|---|---|---|---|---|---|---|
-| **MiniMax-M2.7-highspeed** | 0.9885 | 0.9078 | 0.991 | 0.9815 | 0.9417 | 0.7000 | 0.9959 | 0.9990 | **0.9382** |
-
-Tier breakdown: S (re100, re400, v11-fork) = **0.9651**; M (rest) = **0.9220**.
-Only miss is `dns-boxturb16` (0.70) — agent kept writing DNS-style setups
-the solver didn't like; even 100 turns didn't resolve it. Every other case
-lands ≥ 0.91.
-
-**Cross-regime note**: the two changes in v6 affect the two model groups
-differently.
-- **Deleting tutorials**: v5 forensic grep of the paratera trajectories
-  showed zero reads of `/usr/lib/openfoam/openfoam2412/tutorials/` across
-  all 40 trials — paratera models never relied on that path. So the
-  stripping affects only MiniMax-family behaviour, not paratera scores.
-- **`max_turns` 40 → 100**: this *could* move paratera scores on their
-  v5 zero-at-ceiling cases (Kimi pitzdaily / dns, Instruct pitzdaily,
-  Thinking hotroom). Those five runs ended with agents still trying,
-  so more turns might salvage them.
-
-A clean apples-to-apples re-run of the five paratera models at
-`max_turns=100` (image-identical otherwise) is what's actually missing
-from the table. Not in this commit.
-
-Configs: `configs/minimax/rerun-m27-highspeed.yaml` (rerun @ 100 turn for
-7 cases) + the retained `cavity-re1000` score from the original
-`configs/minimax/full-matrix.yaml` at 40 turn.
-
-## v5 · 2026-04-22 · 5 models × 8 cases = 40 trials
-
-| Model | re100 | re400 | re1000 | pitzdaily | hotroom | dns-box | dambreak | v11-fork | **mean** |
-|---|---|---|---|---|---|---|---|---|---|
-| **DeepSeek-V3.2-Thinking** | 0.9996 | 0.9027 | 0.9758 | 0.9769 | 0.5000 | 0.7991 | 0.9783 | 0.9997 | **0.8915** |
-| **DeepSeek-V3.2-Instruct** | 0.9992 | 0.9062 | 0.9745 | 0.4120 | 0.5000 | 0.7981 | 0.9476 | 0.9991 | **0.8171** |
-| **Kimi-K2.5**              | 0.9926 | 0.9266 | 0.9704 | 0.0000 | 0.9374 | 0.0000 | 0.9959 | 0.9982 | **0.7276** |
-| GLM-4.5-AirX               | —      | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 1.0000 | **0.1429** |
-| Qwen3-Coder-Plus           | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | **0.0000** |
-
-GLM `re100` cell shows `—` because that trial hit a paratera "prompt
-exceeds max length" infrastructure error and never produced a
-`reward.json` — treated as missing data, not a 0.
-
-_Short names:_ `re100 / re400 / re1000` = `lid-driven-cavity-re{100,400,1000}`;
-`pitzdaily` = `pitzdaily-bfs-rans`; `v11-fork` = `cavity-re100-foundation-v11`
-(same physics as re100, OpenFOAM Foundation v11 base image).
-
-## Stratified by difficulty tier
-
-`task.toml` declares each case's `difficulty_tier`. **Tier S** = cavity-family /
-simple incompressible laminar (cavity-re100, re400, v11-fork — three of eight
-cases). **Tier M** = turbulent, multiphase, buoyant, DNS, or transient with
-non-trivial integration time (the other five).
-
-| Model | tier S (3 cases) | tier M (5 cases) | overall |
-|---|---|---|---|
-| DeepSeek-V3.2-Thinking | **0.9673** | **0.8460** | **0.8915** |
-| DeepSeek-V3.2-Instruct | 0.9682 | 0.7264 | 0.8171 |
-| Kimi-K2.5              | 0.9725 | 0.5807 | 0.7276 |
-| GLM-4.5-AirX           | 0.5000 | 0.0000 | 0.1429 |
-| Qwen3-Coder-Plus       | 0.0000 | 0.0000 | 0.0000 |
-
-## What the numbers say
-
-- **DeepSeek-V3.2-Thinking is the clear leader.** Only model to score ≥ 0.9
-  on a majority of tier-M cases. The reasoning trace that hurt it on the
-  earlier tutorial-based leaderboard (where it over-thought simple `cp`
-  operations) pays off when the agent has to build turbulence closures,
-  multiphase initialisation, and buoyancy models from physics rather than
-  from disk.
-- **Kimi and Instruct are paired mid-tier.** Both ace tier S (≈ 0.96),
-  both struggle on tier M (≈ 0.55). Kimi edges Instruct thanks to
-  dambreak (0.98 vs 0.40) and pitzdaily (0.00 vs 0.42) — two KPIs where
-  one of them happened to wire the RANS closures right and the other
-  didn't.
-- **Qwen collapses without tutorial pointers.** Previous leaderboard
-  (with `$FOAM_TUTORIALS` hint in instruction.md) had Qwen at 0.37; on
-  this from-scratch run Qwen hits 0.12 — and of that, 0.9986 is one lucky
-  cavity-re100 hit. On tier M it scores 0.0 across the board. Strong
-  "training-data recall" vs "engineering capability" signal.
-- **GLM similarly shows it was a cp+sed operator.** Previous 0.65 → 0.05.
-- **`pitzdaily-bfs-rans` separates Thinking from the rest.** 0.998 vs
-  ≤ 0.42 — authoring a working k-ε RANS setup with the right wall-function
-  choice from natural language alone is the sharpest single-case signal
-  in the matrix.
-
-## Three-version evolution (what each step measured)
-
-| Run | Setup | What it tested | Outcome |
-|---|---|---|---|
-| **v3** (post-leak-fix) | `instruction.md` says sim-cli is "recommended"; no skill docs in container | Baseline — agent free to use raw shell, no domain doc help | Thinking 0.876 / Instruct 0.698 / Kimi 0.719 / Qwen 0.125 / GLM 0.050 |
-| **v4** (sim-cli forced) | `instruction.md` says sim-cli is REQUIRED | Does forcing the tool layer help or hurt? | All scores dropped; Thinking lost 0.58. Listening agents (Thinking 86% sim_cli use) got penalised hardest. **sim-cli OpenFOAM driver too thin to add value, mandate is friction.** |
-| **v5** (skill docs added, sim-cli back to recommended) | `/opt/sim-skills/openfoam/` mounted with 17 reference docs (case-setup, solver-selection, BCs, turbulence, mesh, numerics, multiphase, heat, parallel, post-proc, error-recovery, etc.); instruction relaxed | Does CAE domain documentation help, with no tool mandate? | Thinking 0.892 (+1.6% vs v3), Instruct 0.817 (+12%), Kimi 0.728 (~flat), GLM 0.143 (+9%), Qwen 0.000 (-12%). 4/5 models improved; Instruct biggest gainer. **Pure-doc skill is net positive; tool mandate is net negative.** |
-
-`sim_cli_used` rate in v5 = 0% across all models — when given the
-choice, every model invoked OpenFOAM binaries directly via shell
-(`blockMesh && icoFoam …`). The skill docs were consulted (every
-high-scoring trajectory shows `cat /opt/sim-skills/openfoam/SKILL.md`
-plus topical references) but the recommended `sim run` wrapper was
-ignored. The wrapper currently doesn't save the agent any work, so
-"recommended" reads as "skip it." Follow-on work tracked on [GitHub issues](https://github.com/svd-ai-lab/sim-benchmark/issues).
-
-## Caveats (still in progress — see [GitHub issues](https://github.com/svd-ai-lab/sim-benchmark/issues))
-
-- **Three cases use oracle-self-calibrated GT** (hotroom, dns-boxturb16,
-  dambreak). Replacing those with literature-anchored references is
-  Phase B2; coupled to A2 (novel variants) and deferred.
-- **Oracle uses sim-cli's `OpenFOAMDriver.parse_log` for
-  converged/residuals**, but agents are only encouraged — not required —
-  to use sim-cli when running the solver. Forensic checks (tmux
-  trajectory grep) on the top-scoring trials confirm agents built cases
-  from scratch (no `cp` of tutorials, no `$FOAM_TUTORIALS` access) but
-  ran `blockMesh` / `icoFoam` / `simpleFoam` directly rather than through
-  `sim run`. Making sim-cli mandatory (e.g. by scrubbing solver binaries
-  from PATH) is future work.
-- **A2 novel variants (trapezoidal cavity, inclined BFS) still not in
-  the set.** All 8 cases map 1-to-1 to standard tutorial geometries, so
-  agents with tutorial geometries memorised in training weights can
-  succeed without true from-scratch geometric reasoning. That signal is
-  measurable only once A2 lands.
-
-## Regenerating this table
-
-Full four-tier breakdowns per trial are under `jobs/paratera-matrix*/`:
+# Leaderboard — how a model is scored and ranked
+
+This file documents the **ranking method**. It deliberately holds no scores:
+a leaderboard row is a measurement of one model, on one commit, in one
+environment, and re-deriving it from the stored artifacts is cheap. Numbers
+pasted into markdown are not.
+
+Where results actually live:
+
+- **`results-local/`** (gitignored) — the file-backed store written by
+  `tools/bench_store.py`. Everything a review needs per trial: `reward.json`,
+  `reward_detail.json`, both containers' logs, figures, indexed by
+  `(run, case, label)`. Browse it with the review page (`results-local/review.html`).
+- **Releases** — if a result set is worth preserving, attach it to a Release.
+  Not to the source tree.
+
+## The scoring chain
+
+Per trial, per case, the verifier produces one number (`/logs/verifier/reward.json`,
+single key per Harbor's contract) and a full breakdown alongside it
+(`reward_detail.json`, schema `reward-v3`). The chain, defined normatively in
+[`SCHEMA.md`](SCHEMA.md):
+
+```
+final_score = W_KPI · kpi_score · numerics_ok      # W_META = 0 — the meta layer is diagnostic only
+kpi_score   = Σ group.weight · group_score         # group weights sum to 1.0
+group_score = mean(member kpi scores)
+per-KPI     = source_verified · physics_pass · band_pass    # band_pass is BINARY
+numerics_ok = 0 if a gated process KPI (residual, mesh count) is reported
+              outside its declared limit, else 1
+```
+
+with a per-solver **artifact detector** hard-zeroing the whole case if the run
+left no evidence a solver actually ran.
+
+Two properties of this chain matter when comparing models:
+
+- **Which tools the agent used is not scored.** The meta layer that once gated
+  on driving the solver through a blessed wrapper was removed from the score in
+  a while ago and now only annotates. The reason is empirical: mandating the
+  wrapper measurably *lowered* scores across every model tested, hitting hardest
+  the models that obeyed the instruction, while supplying domain documentation
+  with no mandate raised them. Mandates measure compliance; artifacts measure work.
+- **A case's ceiling is its oracle, not 1.0.** Compare a model against the
+  case's own oracle run, not against a nominal perfect score.
+
+## Aggregation and accounting rules
+
+### The row, in one sentence
+
+**A leaderboard row is the equal-weighted mean of the per-track mean scores, over
+one task per physics family, at one trial each.** Everything else in this section
+is the accounting that sentence depends on.
+
+Three of its clauses are load-bearing, and each is a decision that was measured
+rather than assumed:
+
+| clause | why it is that way |
+|---|---|
+| **one task per physics family** | within-family correlation on this store is ≈ 0, so 50 operating points of one reaction carry the resolution of a handful. `tools/frozen_set.py` selects the representatives — the one with existing model coverage, then the cheapest, since inside a family the choice is statistically free. Counting directories overstates the board. |
+| **per-track mean, then equal weight** | weighting by task count would let whichever physics we generated most variants of set the headline: holding every per-track mean fixed while two tracks grew from 20→50 and 11→50 moves a pooled mean by **+0.10 to +0.16** with no change in any model. Equal weight is the composition-invariant choice, and it is why the frozen set may stay uneven. |
+| **at one trial each** | repeats buy ranking power, not headline precision, and the gap that matters here (0.25–0.33) is already well above the MDE at r=1. Derivation and the N×r table: [`docs/scoreboard_sizing.zh.md`](docs/scoreboard_sizing.zh.md), re-derivable with `python tools/power_analysis.py`. |
+
+Two rules about what may be *said* about a row:
+
+- **Ranking is a paired comparison**, because every model runs the same tasks.
+  Comparing two marginal intervals instead is not conservative, it is wrong in
+  both directions — on this store it called a 0.30 gap a tie.
+- **A single composite is only quotable with its interval, and only across a
+  named frozen set.** A number from one frozen set and a number from a later one
+  never go on the same axis; that is what versioning the set is for.
 
 ```bash
-python3 tools/aggregate_leaderboard.py \
-    jobs/paratera-matrix/<ts> \
-    jobs/paratera-matrix-v11/<ts>
+python tools/frozen_set.py                                       # the set, and what it costs
+python tools/frozen_set.py --min-models 4                        # the comparable subset
+python tools/plot_scoreboard.py --unified --runs ... --models ... # the row + its interval
+python tools/aggregate_leaderboard.py jobs/<name>/<timestamp>/   # --details for per-case breakdown
+python tools/aggregate_economics.py  jobs/<name>/<timestamp>/    # turns, wall, tokens, USD
 ```
+
+Rules a published comparison must state, because they change the number:
+
+| Term | Definition |
+|---|---|
+| **Completed mean** | mean over trials that finished. Flatters models that time out. |
+| **Assigned mean** | mean over every assigned task, incomplete counted as 0. The honest default. |
+| **Harness exception** | an agent- or runner-level exit event (wall-time cap, router fault, missing `reward.json`). **Not** automatically a zero — the verifier may still have replayable artifacts. Count them, report them, never silently drop them. |
+| **Turn cap / wall-clock** | the agent used its whole budget. **The flag is a marker, not a verdict: if the verifier scored what the trial handed back, that score stands.** Six rows on this store are exactly that — a complete, correct submission from a run that then ran out of turns, one of them at 985 s, nowhere near a time limit. Zeroing those would count work that was done as work that was not. What the flag records is *cost*, and cost is published beside the bar (the budget-flagged count per model) and in `aggregate_economics.py`, not subtracted from the score. The asymmetry that justifies this is the one the **Retry storm** row already states: a budget limit is a monotone handicap — it can cost an answer, never improve one — so a score earned under it is a floor on capability. A budget-exhausted trial that produced **nothing** scores zero, because there is nothing to score; that is the case the old wording ("without finishing") meant and the implementation over-applied. |
+| **Retry storm** | a trial that completed but logged ≥ 200 HTTP 429s. Its **zero** is dropped, its **non-zero score is kept.** The asymmetry is the point: throttling is a monotone handicap — it costs turns and wall-clock and can never improve an answer — so a score earned under back-pressure is a floor on capability, while a zero cannot be told apart from never reaching the endpoint. The threshold comes off the measured distribution, not a guess: at 51–200 retries the screen model still returned 24 full scores against 6 zeros; above 200, 7 of 9 were zeros. Ceiling classification is unaffected, since it requires every trial at 1.0. |
+| **Which trial represents a case** | one row per (model, case). A re-score supersedes the row it was derived from; otherwise a scored trial beats an unscored one, and among scored trials the one measured under the *looser* conditions wins — an uncapped re-run beats the capped original **even when it scored worse**. That is deliberate and it is not cherry-picking: taking the higher of two real measurements would let repeats be mined for the best draw. It costs one model 0.026 on this store, in the direction of the lower number. |
+| **Oracle ceiling** | the same case's deterministic `solve.sh` score, on the same image and commit. |
+| **Withheld case** | a case held off the board for **every** model because a defect makes some of its rows wrong and those rows genuinely cannot be re-derived. Listed with its reason in `results-local/scoreboard_withheld.txt`, which `frozen_keys()` reads; `tools/frozen_set.py` prints what is being withheld and why. The file is normally empty — withholding is what you do when re-measuring is impossible, not when it is inconvenient. |
+
+**"The submission is gone" is a claim to verify, not assume.** The store on any
+one machine holds the rows a sweep produced, not the artifacts behind them: a
+trial's submission lives on the host that ran it, and cfd trials are spread
+across execution hosts by which credentials each one has. Three cases were once
+withheld on the reasoning that five rows could not be re-scored — every one of
+those submissions was sitting in a job directory on the execution host, and
+re-scoring them there cleared all five. So before concluding a row is
+unauditable, go look on the machines that ran it; `no-artifact` in
+`scan_store_readiness.py` means *not in this store*, which is a much weaker
+statement than it sounds.
+
+An evaluator fix does not repair a row — re-scoring the stored submission does.
+So a defect splits a case into rows that can be re-derived and rows whose
+submission is not on this host, and **repairing only the first kind moves the
+bias instead of removing it**: the fix can raise a score and never lower one, so
+the model whose artifacts survived gets its zeros cleared while the model whose
+artifacts did not keeps them. Withholding the whole case restores symmetry at
+the cost of resolution, and that is the right trade — a case measured correctly
+for three models and wrongly for two carries less than no case at all, because
+it carries it in a direction nobody can quantify. A withheld case comes back by
+being re-measured, not by being argued about.
+
+A model comparison is only meaningful within one commit: `environment/` and
+`cases/` move together, and the reproducibility coordinate is the git commit
+(see [`environment/domains/VERSIONS.md`](environment/domains/VERSIONS.md)).
+Rows from different commits are not the same benchmark.
+
+## How many trials a row needs
+
+The headline claim is a **per-model mean over the whole case set**, not a
+per-case verdict, and that changes the sampling design. With near-bimodal
+per-case scores (σ ≈ 0.45), 100 cases at one trial each give SE ≈ 4.5 pp on a
+model's mean; the difference of two means carries SE ≈ 6.4 pp, so models more
+than ~13 pp apart are already separated without repeats. **A large case set
+substitutes for repeats on the ranking claim.**
+
+So: run the full set once per model, then add one further full pass only for
+models whose gap falls inside the noise. Per-case repeats are required only where
+a *per-case* claim is made (see `docs/acceptance.md` L3) — buying them everywhere
+triples the bill for a claim the leaderboard does not make.
+
+Two things this design depends on:
+
+- **Infra loss must be small.** Lost trials shrink the effective N that the SE
+  above assumes. Losses over a few percent invalidate the substitution.
+- **Cases are pre-screened.** Cases the cheapest available model passes easily
+  are dropped from the leaderboard N before frontier tokens are spent — see the
+  screening cascade in `docs/acceptance.md`. They carry no ranking signal.
+
+## Cost accounting
+
+`tools/cost_meter.py` reads per-trial transcripts; `aggregate_economics.py`
+rolls them up. Turns and wall-clock are cross-model comparable as-is. USD is
+not — it depends on the vendor's price table at the time of the run, so a cost
+figure has to carry its price basis or it means nothing. Cost per case buys
+score only when read next to the oracle ceiling.
+
+## Known limits on interpretation
+
+- **Rows record which evaluator scored them only from 2026-08-05 onward.**
+  A tag does not identify content: the same image name held two different
+  graders on two hosts, one of them missing the only evaluator a whole track
+  scores through. Since that date each ingested row carries the fingerprint of
+  the evaluator package inside the image that produced its number, and
+  `tools/store_drift.py` reports the census plus any cell whose rows came from
+  more than one grader. **Rows scored before that date carry a blank, and a
+  blank means not recorded — never "unchanged".** They are deliberately not
+  backfilled: the boundary would have to be inferred rather than read, which
+  buys a label no more reliable than the guess it replaces. The board prints
+  how many of the trials behind it are in that state, and the sentence
+  disappears on its own once none are.
+
+- **The one-commit rule is stated above and nothing enforces it.** The recorded
+  run set is clean today — every row on it postdates its case's last band or
+  runtime change — but that is a property of *which runs are on the board*, not
+  of the store. Widening `--runs` reaches back into pre-change trials and looks
+  strictly better while doing it: more data, each model's best row kept. On this
+  store a hand-built superset moved one model +0.025 and flipped the top two.
+  So the population lives in `results-local/scoreboard_runs.txt`, which the tool
+  reads, and `tools/scan_store_readiness.py` carries `cross-commit` as a
+  signature (issue #13).
+
+  Not every such edit means the same thing. Raising a **reproduction budget** is
+  one-directional — it can let a correct run finish, never change what a correct
+  answer is — and applies per case, so every model is flagged equally. A band or
+  KPI change has neither property, and is what the rule was written for.
+
+- **Not every stored row is scorable, and the unscorable ones are invisible.**
+  Run `tools/scan_store_readiness.py` before quoting a board; each of its
+  signatures is a defect this store actually carried. Two are worth knowing by
+  hand, because both look exactly like a model that could not do the physics:
+
+  **A zero the instrument caused.** A run that reproduced, meshed, converged —
+  and then could not have its number read out of it, or was measured against
+  something the task never asked for. The loudest form is a case scoring 0.0 for
+  *every* model while its own oracle scores 1.0; that is almost never a
+  difficulty finding. Nine of nineteen cfd cases carried one, and the fix was
+  the same each time: see the authoring rule in
+  [`.claude/skills/benchmark-case-authoring`](.claude/skills/benchmark-case-authoring/SKILL.md).
+
+  **A pass that never solved anything.** `clean_generated_artifacts` deletes
+  time directories above zero so the rerun must solve again, but `0/` is an
+  *input* directory and survives. A submission shipping its converged field as
+  `0/U`, with a `residualControl` loose enough that one iteration declares
+  convergence, turns the rerun into an echo of its own answer — measured once at
+  1.0 in **0.65 s at t=1** against a 49 s oracle, with the artifact detector
+  satisfied because a non-zero time directory does exist.
+
+  **Nothing was built to stop it, on purpose.** Seeding only pays when the KPI
+  can be produced without solving, and this one — `Ub/uτ` at a tabulated `Re_τ`
+  — has a log-law closed form, which CLAUDE.md's analytical-shortcut section
+  already calls the mark of a case chosen wrongly rather than one needing a new
+  defence. Neutralising `0/` in the evaluator would take a steady-vs-transient
+  flag per case and a rule for which fields to overwrite: the same per-case
+  verifier surface that produced nine of this branch's eleven defects. Fix the
+  KPI or drop the case.
+
+  A scan signature was tried and removed. Thresholding rerun cost against the
+  oracle's flagged two legitimate passes — a laminar channel is simply cheaper
+  than its own wastefully-long reference — and caught none of the real one,
+  which sits in a withheld case and so is outside the frozen set the scanner
+  reads. A detector tuned to a single observation is the defect it is chasing.
+
+- **Cases whose ground truth came from our own oracle** prove reproducibility,
+  not correctness. `gt_type` in `task.toml` says which claim a case makes;
+  don't aggregate the two kinds into one headline.
+- **Cases that map 1:1 onto a standard tutorial geometry** can be answered
+  partly from training-set memory. Operating points moved off the canonical
+  grid (the combustion family) exist to defeat exactly this; the rest of the
+  catalog has not all been swept.
+- **Harness capability differs from model capability.** Read the trial log and
+  `reward_detail.json`'s two failure axes (`provenance_stage` × `solver_stage`)
+  before attributing a zero to the model.

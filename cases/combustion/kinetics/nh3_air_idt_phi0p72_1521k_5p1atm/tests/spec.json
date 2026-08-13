@@ -1,0 +1,11 @@
+{
+  "case_id": "nh3_air_idt_phi0p72_1521k_5p1atm",
+  "kind": "idt",
+  "mechanism": "example_data/ammonia-CO-H2-Alzueta-2023.yaml",
+  "fuel": "NH3",
+  "phi": 0.72,
+  "T0_K": 1521.0,
+  "P0_atm": 5.1,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

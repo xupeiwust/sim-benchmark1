@@ -1,0 +1,11 @@
+{
+  "case_id": "nhexane_air_idt_phi0p79_1442k_4p6atm",
+  "kind": "idt",
+  "mechanism": "example_data/n-hexane-NUIG-2015.yaml",
+  "fuel": "NC6H14",
+  "phi": 0.79,
+  "T0_K": 1442.0,
+  "P0_atm": 4.6,
+  "phase": null,
+  "reproduction_timeout_s": 1800
+}

@@ -1,0 +1,11 @@
+{
+  "case_id": "ch4_air_idt_phi0p55_1633k_9p2atm",
+  "kind": "idt",
+  "mechanism": "gri30.yaml",
+  "fuel": "CH4",
+  "phi": 0.55,
+  "T0_K": 1633.0,
+  "P0_atm": 9.2,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

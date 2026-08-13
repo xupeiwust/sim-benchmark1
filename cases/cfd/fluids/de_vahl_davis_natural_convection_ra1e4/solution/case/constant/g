@@ -1,0 +1,16 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       uniformDimensionedVectorField;
+    object      g;
+}
+
+// Non-dimensional gravity magnitude = 1, acting in -y. Combined with beta = 1
+// (transportProperties) this gives the buoyancy group g*beta = 1, so that
+// Ra = g*beta*dT*L^3/(nu*alpha) reduces to 1/(nu*alpha) = 1e4 for the chosen
+// nu, alpha. Vertical (gravity) axis is y; hot/cold walls are the x = 0 and
+// x = 1 vertical walls.
+dimensions      [0 1 -2 0 0 0 0];
+value           (0 -1 0);

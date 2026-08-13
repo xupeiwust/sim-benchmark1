@@ -1,0 +1,72 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "lgm50_sei_plating_fade_10_cycles_1p5c",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "per-cycle discharge capacity segmented from the reproduced trace, first cycle against last",
+    "parameter_set": "OKane2022",
+    "model": "SPMe",
+    "model_options": {
+      "SEI": "solvent-diffusion limited",
+      "lithium plating": "partially reversible"
+    },
+    "initial_soc": 1.0,
+    "ambient_temperature_K": 288.15,
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 0.529036,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 0.528994,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 0.528638,
+        "settings": {
+          "rtol": 1e-05,
+          "atol": 1e-05
+        }
+      }
+    },
+    "spread_abs": 0.00039799999999989844,
+    "spread_rel": 0.0007523117519410748,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "ocv_envelope": {
+      "n_samples_checked": 482,
+      "max_abs_overpotential_V": 0.694112069373849,
+      "max_dissipation_violation_V": 0.11639269716807199,
+      "initial_voltage_error_V": 0.2302541412603505,
+      "Q_span_Ah": 5.1099478137619565
+    },
+    "ocv_max_deviation_basis": "1.4x the reference run's own worst departure from the evaluator's open-circuit-voltage curve, plus 50 mV",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks for what this parameterisation predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "capacity_fade_pct": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Capacity fade of the OKane2022 cell over ten consecutive cycles at 288.15 K, each a 1.5C discharge to 2.5 V followed by a 1.5C charge to 4.2 V and a constant-voltage hold at 4.2 V until the current falls to 50 mA, with both solid-electrolyte-interphase growth and partially reversible lithium plating active so the cell ages as it cycles.",
+      "unit": "%",
+      "gt_value": 0.529036,
+      "physics_min": 0.0,
+      "physics_max": 60.0,
+      "pass_tol": 0.0264518,
+      "gross_error_tol": 0.10580719999999999,
+      "weight": 1.0
+    }
+  }
+}

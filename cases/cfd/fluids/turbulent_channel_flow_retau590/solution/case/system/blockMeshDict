@@ -1,0 +1,104 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Oracle mesh for turbulent_channel_flow_retau590.
+| Fully-developed turbulent plane-channel flow at friction Reynolds number
+| Re_tau = u_tau * delta / nu = 590, half-channel height delta = 1.
+| Streamwise x is periodic (cyclic), so the flow is statistically homogeneous
+| in x: a short box (L = 4) is sufficient. The wall-normal direction y runs
+| -1 <= y <= 1 (full channel height 2*delta), no-slip walls at y = +/-1.
+| A single span cell (empty) makes the problem 1D in the mean. The y-mesh is
+| symmetrically graded toward BOTH walls so the first cell sits at y+ < 1
+| (low-Re k-omega SST integration to the wall), giving a wall-resolved RANS
+| solve suitable for a new mesh-convergence calibration against the official
+| Moser-Kim-Mansour (1999) DNS mean profile.
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+scale   1;
+
+// Channel: 0 <= x <= 4 (streamwise, periodic), -1 <= y <= 1 (full height 2*delta),
+// unit-ish z (single span cell, empty).
+vertices
+(
+    ( 0  -1   0)     // 0
+    ( 4  -1   0)     // 1
+    ( 4   0   0)     // 2
+    ( 0   0   0)     // 3
+    ( 0  -1   1)     // 4
+    ( 4  -1   1)     // 5
+    ( 4   0   1)     // 6
+    ( 0   0   1)     // 7
+    ( 0   1   0)     // 8
+    ( 4   1   0)     // 9
+    ( 0   1   1)     // 10
+    ( 4   1   1)     // 11
+);
+
+// Two stacked blocks meeting at the centerline y = 0 so the grading can be
+// symmetric about the centre (fine at each wall, coarse at the centre).
+// blockMesh expansion ratio = last-cell width / first-cell width along the
+// local y direction. Lower local y runs wall -> centre, so ratio 10 makes the
+// first cell smallest. Upper local y runs centre -> wall, so ratio 1/10 makes
+// the last cell smallest. With 100 cells per half-height this places the first
+// cell centre at y+ about 0.75. Twenty streamwise cells keep the maximum 2D
+// aspect ratio below checkMesh's warning threshold without changing the
+// fully-developed solution.
+blocks
+(
+    hex (0 1 2 3 4 5 6 7)  (20 100 1) simpleGrading (1 10  1)
+    hex (3 2 9 8 7 6 11 10)(20 100 1) simpleGrading (1 0.1 1)
+);
+
+edges ();
+
+boundary
+(
+    inlet
+    {
+        type cyclic;
+        neighbourPatch outlet;
+        faces
+        (
+            (0 4 7 3)     // lower block, x = 0
+            (3 7 10 8)    // upper block, x = 0
+        );
+    }
+    outlet
+    {
+        type cyclic;
+        neighbourPatch inlet;
+        faces
+        (
+            (1 2 6 5)     // lower block, x = 4
+            (2 9 11 6)    // upper block, x = 4
+        );
+    }
+    bottomWall
+    {
+        type wall;
+        faces ((0 1 5 4));   // y = -1
+    }
+    topWall
+    {
+        type wall;
+        faces ((8 9 11 10)); // y = +1 (top of upper block)
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (3 8 9 2)
+            (4 5 6 7)
+            (7 6 11 10)
+        );
+    }
+);
+
+mergePatchPairs ();

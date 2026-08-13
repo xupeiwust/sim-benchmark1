@@ -1,0 +1,69 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "ecker_graphite_energy_1p12c_298k",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "constant-current discharge to the voltage cut-off, integrated from the reproduced current and voltage trace",
+    "parameter_set": "Ecker2015",
+    "model": "DFN",
+    "model_options": {},
+    "initial_soc": 1.0,
+    "ambient_temperature_K": 298.15,
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 0.627227,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 0.627229,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 0.627222,
+        "settings": {
+          "rtol": 1e-05,
+          "atol": 1e-05
+        }
+      }
+    },
+    "spread_abs": 5.000000000032756e-06,
+    "spread_rel": 7.971595610572817e-06,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "ocv_envelope": {
+      "n_samples_checked": 339,
+      "max_abs_overpotential_V": 0.11730686031204618,
+      "max_dissipation_violation_V": -0.0588485854526688,
+      "initial_voltage_error_V": 0.04933953533810076,
+      "Q_span_Ah": 0.17100085695783251
+    },
+    "ocv_max_deviation_basis": "1.4x the reference run's own worst departure from the evaluator's open-circuit-voltage curve, plus 50 mV",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks for what this parameterisation predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "discharge_energy_Wh": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Energy delivered by the Ecker2015 cell over a constant-current discharge at 1.12C from a full charge, stopped when the terminal voltage first reaches 2.5 V.",
+      "unit": "W.h",
+      "gt_value": 0.627227,
+      "physics_min": 0.05,
+      "physics_max": 3.0,
+      "pass_tol": 0.03136135,
+      "gross_error_tol": 0.1254454,
+      "weight": 1.0
+    }
+  }
+}

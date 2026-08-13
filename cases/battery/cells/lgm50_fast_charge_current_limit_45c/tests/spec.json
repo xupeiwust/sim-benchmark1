@@ -1,0 +1,20 @@
+{
+  "case_id": "lgm50_fast_charge_current_limit_45c",
+  "kind": "declared",
+  "parameter_set": "Chen2020",
+  "initial_soc": 0.2,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.5,
+  "reproduction_timeout_s": 900,
+  "derivations": {
+    "i_charge_max_a": {
+      "derive": "single_row",
+      "value": "i_charge_max_a"
+    },
+    "charge_time_at_limit_s": {
+      "derive": "value_at_max",
+      "value": "time_s",
+      "key": "time_s"
+    }
+  }
+}

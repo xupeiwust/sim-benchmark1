@@ -1,0 +1,61 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "ch4_air_flame_speed_phi1p24_1p6atm_306k",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "freely-propagating adiabatic premixed flame, mixture-averaged transport, inlet velocity taken as the unstretched laminar flame speed",
+    "mechanism": "gri30.yaml",
+    "phase": null,
+    "cantera_version": "3.2.0",
+    "variants": {
+      "baseline": {
+        "value": 24.935,
+        "settings": {
+          "ratio": 3,
+          "slope": 0.06,
+          "curve": 0.12
+        }
+      },
+      "fine": {
+        "value": 24.6845,
+        "settings": {
+          "ratio": 2,
+          "slope": 0.03,
+          "curve": 0.06
+        }
+      },
+      "coarse": {
+        "value": 25.031,
+        "settings": {
+          "ratio": 4,
+          "slope": 0.1,
+          "curve": 0.2
+        }
+      }
+    },
+    "spread_abs": 0.25049999999999883,
+    "spread_rel": 0.010046119911770558,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "gt_type_note": "Mechanism-specific solver reference, not an experimental measurement: the task asks for what this mechanism predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "flame_speed_cm_s": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Unstretched laminar flame speed of methane/air at phi=1.24, 306 K unburned, 1.6 atm, mixture-averaged transport.",
+      "unit": "cm/s",
+      "gt_value": 24.935,
+      "physics_min": 3.0,
+      "physics_max": 100.0,
+      "pass_tol": 1.24675,
+      "gross_error_tol": 4.987,
+      "weight": 1.0
+    }
+  }
+}

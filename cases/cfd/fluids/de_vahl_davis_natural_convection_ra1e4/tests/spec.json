@@ -1,0 +1,17 @@
+{
+  "case_id": "de_vahl_davis_natural_convection_ra1e4",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "nu_avg_hot_wall"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "nu_avg_hot_wall": {
+      "derive": "single_row",
+      "value": "nu_avg_hot_wall"
+    }
+  },
+  "reproduction_timeout_s": 600
+}

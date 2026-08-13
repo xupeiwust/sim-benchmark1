@@ -1,0 +1,65 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "ch4_air_idt_resume_interrupted_run",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "constant-volume adiabatic IdealGasReactor integrated to the dT/dt maximum, reached by RESUMING from the checkpoint the interrupted run left on disk rather than from the initial state. gt_value, pass_tol and gross_error_tol are inherited verbatim from ch4_air_idt_phi1p02_1418k_1p3atm: it is the same solve at the same operating point, so deriving a second reference for it would only drift from the first. Measured on the domain image -- the resumed oracle reports 2.18631 ms, equal to the sibling's value at the precision the band is written to, so the restart is exact to the resolution the band cares about. What is NOT inherited is the contract; see task.toml prototype_delta.",
+    "mechanism": "gri30.yaml",
+    "phase": null,
+    "cantera_version": "3.2.0",
+    "resumed_from": {
+      "checkpoint_time_s": 0.001392273597737905,
+      "completed_rows_handed_over": 505,
+      "ignition_at_ms": 2.18631,
+      "note": "The handover sits at 64% of the ignition delay, inside the induction period. Nothing in the rows handed over is within reach of the answer: the trace stops 0.79 ms before the dT/dt maximum and 1491 K below the peak, so the event being scored is absent from the starting state rather than merely coarse in it. That is the property lid_driven_cavity_ghia_re100 could not supply -- a steady solve's answer is its tail, so a handover late enough to be worth resuming already contains it, measured at #266."
+    },
+    "variants": {
+      "baseline": {
+        "value": 2.18631,
+        "settings": {
+          "rtol": 1e-09,
+          "atol": 1e-18
+        }
+      },
+      "tight": {
+        "value": 2.18631,
+        "settings": {
+          "rtol": 1e-11,
+          "atol": 1e-20
+        }
+      },
+      "loose": {
+        "value": 2.18631,
+        "settings": {
+          "rtol": 1e-07,
+          "atol": 1e-16
+        }
+      }
+    },
+    "spread_abs": 0.0,
+    "spread_rel": 0.0,
+    "pass_tol_basis": "flat 5% of the reference value, inherited unchanged from ch4_air_idt_phi1p02_1418k_1p3atm. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates. The resume contract adds a gate and moves no band -- widening one because a resumed run might miss, or narrowing one because the answer is inherited, are the two errors CLAUDE.md names, and neither is taken here.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "gt_type_note": "Mechanism-specific solver reference, not an experimental measurement: the task asks for what this mechanism predicts, continued from the state the interrupted run reached."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "ignition_delay_ms": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Ignition delay time (dT/dt maximum) of the interrupted constant-volume adiabatic run, read off the completed trace. Same solve, same operating point and same reference as ch4_air_idt_phi1p02_1418k_1p3atm.",
+      "unit": "ms",
+      "gt_value": 2.18631,
+      "physics_min": 0.05,
+      "physics_max": 200.0,
+      "pass_tol": 0.1093155,
+      "gross_error_tol": 0.43726200000000004,
+      "weight": 1.0,
+      "kpi_quality_note": "ANTI-SHORTCUT: the operating point is nowhere STATED. instruction.md names the mechanism and the reactor model and stops there; phi, T0 and P0 are recoverable only by reading the files the crashed run left -- the first row of the partial trace gives T0 and P0, and the checkpoint's element mass fractions give phi. That is deliberate and it is the task rather than an obstacle: establishing what the run was doing is the capability being measured. What it costs a shortcut is that there is no stated problem to recall an answer for; a model has to derive the operating point from the data before recall is even addressable. The family's own measured property still backs this up independently -- #203 gave a cheap model only the instruction of two sibling IDT cases and no way to execute anything, and the four estimates came back 158%, 287%, -60% and -75% off, none within ten band-widths. The second scored requirement, that the completed rows come back unaltered, is a fact about this run rather than a number in a book, and the evaluator checks it against its OWN pristine copy of the handover: a submission cannot pre-seed it, because the copy the submission shipped is stripped before the re-run and the evaluator's is planted in its place. WHAT IT DOES NOT CLOSE, measured rather than argued: a driver that copies the handover through and then draws a temperature step at a time it already knows scores 1.0 without running any chemistry. That is this repo's standing hole -- the entry point is arbitrary code, and no artifact check survives it -- and the only thing that makes it inert here is that the time to draw the step is not available: the prompt states no operating point, and #203's measurement is that the family's delays are not recallable even when it does."
+    }
+  }
+}

@@ -16,7 +16,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 from sim_benchmark_verifier import score as score_mod
 from sim_benchmark_verifier.score import main

@@ -8,35 +8,70 @@ import pytest
 
 from sim_benchmark_verifier.score import (
     W_META, W_KPI,
+    _band_pass,
     _physics_pass,
-    _t_decay,
-    _tgood_tbad_decay,
     _validate_groups,
+    band_score,
+    gross_error_tol,
+    pass_tol,
     main,
     meta_check,
+    numerics_gate,
 )
-from sim_benchmark_verifier.provenance import VerifyResult, verify_source
+from sim_benchmark_verifier.provenance import verify_source
 
 
-# ── decay helpers ──────────────────────────────────────────────────────
+# ── the tolerance band ─────────────────────────────────────────────────
 
-def test_decay_perfect():
-    assert _tgood_tbad_decay(0.0, 0.1, 1.0) == 1.0
+def test_band_exact_hit():
+    assert band_score(0.0, 0.1) == 1.0
 
-def test_decay_good_boundary():
-    assert _tgood_tbad_decay(0.1, 0.1, 1.0) == 1.0
+def test_band_boundary_is_inclusive():
+    assert band_score(0.1, 0.1) == 1.0
 
-def test_decay_bad_boundary():
-    assert _tgood_tbad_decay(1.0, 0.1, 1.0) == 0.0
+def test_band_just_outside_scores_zero():
+    assert band_score(0.1 + 1e-12, 0.1) == 0.0
 
-def test_decay_linear_midpoint():
-    s = _tgood_tbad_decay(0.55, 0.1, 1.0)
-    assert abs(s - 0.5) < 0.01
+def test_band_has_no_partial_credit():
+    """The whole point of #188: half a band out is not half a score.
 
-def test_t_decay_uses_gt_value():
+    Under the old linear decay an error at the midpoint between the two
+    thresholds scored ~0.5. A computed number that is wrong is wrong.
+    """
+    assert band_score(0.11, 0.1) == 0.0
+    assert band_score(0.55, 0.1) == 0.0
+    assert band_score(0.99, 0.1) == 0.0
+
+def test_band_pass_uses_gt_value():
+    spec = {"gt_value": -0.06, "pass_tol": 0.015}
+    assert _band_pass(spec, -0.06) == 1.0
+    assert _band_pass(spec, -0.07) == 1.0   # err = 0.01 fits
+    assert _band_pass(spec, -0.21) == 0.0
+
+def test_band_pass_tolerates_sign():
+    spec = {"gt_value": -0.06, "pass_tol": 0.015}
+    assert _band_pass(spec, -0.05) == 1.0   # err = 0.01 <= 0.015
+    assert _band_pass(spec, -0.04) == 0.0   # err = 0.02 >  0.015
+
+
+# ── the historical spelling still reads ────────────────────────────────
+# A stored trial and an unmigrated case both carry `T_good`/`T_bad`. The
+# fallback is what stops this rename from orphaning them, and it goes away
+# one release after the migration.
+
+def test_pass_tol_falls_back_to_T_good():
+    assert pass_tol({"T_good": 0.25}) == 0.25
+    assert pass_tol({"pass_tol": 0.1, "T_good": 0.25}) == 0.1
+
+def test_gross_error_tol_falls_back_to_T_bad():
+    assert gross_error_tol({"T_bad": 0.75}) == 0.75
+    assert gross_error_tol({"gross_error_tol": 0.5, "T_bad": 0.75}) == 0.5
+    assert gross_error_tol({}) is None
+
+def test_band_pass_reads_the_old_spelling():
     spec = {"gt_value": -0.06, "T_good": 0.015, "T_bad": 0.05}
-    assert _t_decay(spec, -0.06) == 1.0
-    assert _t_decay(spec, -0.21) == 0.0  # err = 0.15, well past T_bad
+    assert _band_pass(spec, -0.06) == 1.0
+    assert _band_pass(spec, -0.21) == 0.0
 
 def test_physics_pass_in_range():
     assert _physics_pass({"physics_min": 0, "physics_max": 1}, 0.5)[0] == 1.0
@@ -162,7 +197,7 @@ def test_provenance_rejects_off_by_factor(tmp_path: Path):
 
 def test_provenance_accepts_3_digit_truncation(tmp_path: Path):
     """1% provenance tolerance: agent rounding -0.0608 → -0.061 still
-    passes (T_good/T_bad downstream catches if accuracy is bad)."""
+    passes (the tolerance band downstream catches a bad value)."""
     f = tmp_path / "data.txt"
     f.write_text("-0.0608\n")
     claim = {"value": -0.061, "source": {"kind": "file_extract",
@@ -548,3 +583,79 @@ def test_main_empty_positive_weight_group_hard_fails(tmp_path, monkeypatch):
 
 def test_weights_sum_to_one():
     assert W_META + W_KPI == pytest.approx(1.0)
+
+
+# ── numerics gate ──────────────────────────────────────────────────────
+#
+# The gate exists so a run that reports a plausible number from an
+# unconverged or under-resolved solve does not score. Its most important
+# property is the negative one: a process signal the submission did not
+# report must NOT zero the case.
+
+_GATED_SPEC = {
+    "final_residual_U": {"group": "diagnostic", "gate": {"max": 0.001}},
+    "mesh_cell_count":  {"group": "diagnostic", "gate": {"min": 14000}},
+    "CL":               {"group": "outputs"},          # no gate declared
+}
+
+def _verified(value):
+    return {"value": value, "source_verified": 1.0}
+
+
+def test_numerics_gate_passes_within_limits():
+    ok, detail = numerics_gate(_GATED_SPEC, {
+        "final_residual_U": _verified(1.3e-10),
+        "mesh_cell_count":  _verified(14336),
+    })
+    assert ok == 1.0
+    assert {c["status"] for c in detail["checks"]} == {"pass"}
+
+def test_numerics_gate_fails_an_unconverged_run():
+    ok, detail = numerics_gate(_GATED_SPEC, {
+        "final_residual_U": _verified(0.02),
+        "mesh_cell_count":  _verified(14336),
+    })
+    assert ok == 0.0
+    assert "final_residual_U" in detail["why"]
+
+def test_numerics_gate_fails_an_under_resolved_mesh():
+    ok, detail = numerics_gate(_GATED_SPEC, {
+        "final_residual_U": _verified(1e-9),
+        "mesh_cell_count":  _verified(400),
+    })
+    assert ok == 0.0
+    assert "mesh_cell_count" in detail["why"]
+
+def test_numerics_gate_accepts_a_finer_mesh_than_the_reference():
+    """More cells than the floor is refinement, not a defect."""
+    ok, _ = numerics_gate(_GATED_SPEC, {
+        "final_residual_U": _verified(1e-9),
+        "mesh_cell_count":  _verified(250_000),
+    })
+    assert ok == 1.0
+
+def test_numerics_gate_does_not_fail_on_an_absent_signal():
+    """The L1-safety property: never zero a case for a signal not reported."""
+    ok, detail = numerics_gate(_GATED_SPEC, {"CL": _verified(1.07)})
+    assert ok == 1.0
+    assert {c["status"] for c in detail["checks"]} == {"absent"}
+    assert "why" not in detail or "absent" not in detail.get("why", "")
+
+def test_numerics_gate_treats_unverified_provenance_as_absent():
+    ok, detail = numerics_gate(_GATED_SPEC, {
+        "final_residual_U": {"value": 0.02, "source_verified": 0.0},
+    })
+    assert ok == 1.0
+    statuses = {c["kpi"]: c["status"] for c in detail["checks"]}
+    assert statuses["final_residual_U"] == "absent"
+
+def test_numerics_gate_is_a_noop_when_no_kpi_declares_one():
+    ok, detail = numerics_gate({"CL": {"group": "outputs"}}, {"CL": _verified(1.07)})
+    assert ok == 1.0
+    assert detail["checks"] == []
+    assert detail["why"] == "no KPI declares a numerics gate"
+
+def test_numerics_gate_ignores_a_malformed_declaration():
+    ok, _ = numerics_gate({"x": {"gate": {}}, "y": {"gate": "yes"}},
+                          {"x": _verified(1.0), "y": _verified(1.0)})
+    assert ok == 1.0

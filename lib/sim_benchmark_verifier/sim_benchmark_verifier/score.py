@@ -20,13 +20,13 @@ Layer 1 — meta (DIAGNOSTIC ONLY, weight = 0):
 
 Layer 2 — kpi (group-weighted accuracy, weight = 1.0):
     Each KPI in kpis.json belongs to a `group`; group weights sum to 1.
-    Per-KPI score = source_verified · physics_pass · T_decay
+    Per-KPI score = source_verified · physics_pass · band_pass
         source_verified — agent's claim survives a re-extract from the
                           declared source (file / sim run stdout / sim
                           run parsed_output)
         physics_pass    — predicted value lies in [physics_min, physics_max]
-        T_decay         — linear decay between T_good and T_bad relative to
-                          gt_value (0 outside T_bad, 1 inside T_good)
+        band_pass       — BINARY: |pred − gt_value| ≤ pass_tol → 1, else 0.
+                          No partial credit; see `band_score`.
     Group score = mean of member KPI scores. Missing KPI in result.json
     contributes 0 (not "exclude").
     kpi_score = sum(group.weight · group.score) over groups.
@@ -37,7 +37,7 @@ Reward layout:
     reward_detail.json (everything):
         schema_version, meta_score + breakdown, kpi_score + per-group +
         per-KPI breakdown (value, kpi_score, source_verified, physics_pass,
-        T_decay, why), final_score, runtime_detail.
+        band_pass, absolute_error, why), final_score, runtime_detail.
 
 KPI groups + provenance both live in `tests/kpis.json` (same Harbor mount).
 result.json is agent-written at /tmp/agent/result.json.
@@ -47,7 +47,6 @@ from __future__ import annotations
 import argparse
 import json
 import math
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -69,7 +68,8 @@ def _query_sim_history() -> list[dict]:
     try:
         result = subprocess.run(
             ["sim", "--json", "logs"],
-            capture_output=True, text=True, timeout=10, check=False,
+            capture_output=True, encoding="utf-8", errors="replace",
+            timeout=10, check=False,
         )
     except FileNotFoundError as e:
         raise RuntimeError(f"sim CLI not on PATH: {e}") from e
@@ -138,13 +138,48 @@ def meta_check(_query=None) -> tuple[float, dict]:
 # Layer 2 — KPI scoring
 # ──────────────────────────────────────────────────────────────────────
 
-def _tgood_tbad_decay(err: float, t_good: float, t_bad: float) -> float:
-    """Linear decay: err ≤ T_good → 1; err ≥ T_bad → 0; linear between."""
-    if err <= t_good:
-        return 1.0
-    if err >= t_bad:
-        return 0.0
-    return (t_bad - err) / (t_bad - t_good)
+# ── the tolerance band ────────────────────────────────────────────────
+# `pass_tol` is an ABSOLUTE tolerance in the KPI's own unit: the value
+# passes when |pred − gt_value| ≤ pass_tol. `gross_error_tol` is the
+# same shape but is NOT part of the score — it only separates "wrong"
+# from "wildly wrong" for failure attribution.
+#
+# `T_good` / `T_bad` are the historical spellings of the same two
+# fields. They are still read so that a stored trial and a case that
+# has not been migrated keep scoring; new cases may not use them
+# (tools/lint_case.py rejects them) and the fallback goes away one
+# release after the rename.
+
+def pass_tol(spec: dict) -> float:
+    """The absolute tolerance a value must land inside to score."""
+    if spec.get("pass_tol") is not None:
+        return float(spec["pass_tol"])
+    return float(spec["T_good"])
+
+
+def gross_error_tol(spec: dict) -> float | None:
+    """Diagnostic-only threshold separating "wrong" from "wildly wrong"."""
+    for key in ("gross_error_tol", "T_bad"):
+        if spec.get(key) is not None:
+            return float(spec[key])
+    return None
+
+
+def band_score(err: float, tol: float) -> float:
+    """Binary: inside the tolerance band scores 1, outside scores 0.
+
+    There is deliberately no partial credit. This scores whether a
+    computed result is right, and a number that is wrong does not become
+    less wrong by being wrong by less — an ignition delay 10% off means
+    the mechanism, the reactor form or the peak extraction was wrong,
+    which is a wrong answer and not a near miss.
+
+    Density for anyone doing reward shaping comes from the continuous
+    `absolute_error` that every evaluator still writes into
+    reward_detail.json, and from the multi-KPI / process-gate structure
+    around this function — never from decay inside one KPI.
+    """
+    return 1.0 if err <= tol else 0.0
 
 
 def _physics_pass(spec: dict, pred: float) -> tuple[float, str]:
@@ -159,14 +194,12 @@ def _physics_pass(spec: dict, pred: float) -> tuple[float, str]:
     return 1.0, "ok"
 
 
-def _t_decay(spec: dict, pred: float) -> float:
-    gt = float(spec["gt_value"])
-    err = abs(pred - gt)
-    return _tgood_tbad_decay(err, float(spec["T_good"]), float(spec["T_bad"]))
+def _band_pass(spec: dict, pred: float) -> float:
+    return band_score(abs(pred - float(spec["gt_value"])), pass_tol(spec))
 
 
 def _score_one_kpi(name: str, spec: dict, claim, sim_records: list[dict]) -> dict:
-    """Per-KPI score = source_verified · physics_pass · T_decay (each 0–1)."""
+    """Per-KPI score = source_verified · physics_pass · band_pass (each 0–1)."""
     from .provenance import verify_source
 
     if claim is None:
@@ -174,7 +207,7 @@ def _score_one_kpi(name: str, spec: dict, claim, sim_records: list[dict]) -> dic
             "kpi_score":       0.0,
             "source_verified": 0.0,
             "physics_pass":    0.0,
-            "t_decay":         0.0,
+            "band_pass":       0.0,
             "why":             "KPI absent from result.json",
         }
     pv = verify_source(claim, sim_records)
@@ -183,23 +216,86 @@ def _score_one_kpi(name: str, spec: dict, claim, sim_records: list[dict]) -> dic
             "kpi_score":       0.0,
             "source_verified": 0.0,
             "physics_pass":    0.0,
-            "t_decay":         0.0,
+            "band_pass":       0.0,
             "value":           claim.get("value") if isinstance(claim, dict) else None,
             "why":             f"source verification failed: {pv.why}",
         }
     value = float(claim["value"])
     phys, phys_why = _physics_pass(spec, value)
-    decay = _t_decay(spec, value)
-    score = phys * decay  # source already verified (=1)
+    err = abs(value - float(spec["gt_value"]))
+    band = band_score(err, pass_tol(spec))
+    score = phys * band  # source already verified (=1)
+    gross = gross_error_tol(spec)
     return {
         "value":           value,
+        "gt_value":        float(spec["gt_value"]),
+        # The continuous error is kept whatever the score is: it is what a
+        # buyer shapes a reward on, and it is what makes an offline rescore
+        # under a different band possible without re-running anything.
+        "absolute_error":  err,
+        "pass_tol":        pass_tol(spec),
         "kpi_score":       round(score, 4),
         "source_verified": 1.0,
         "physics_pass":    round(phys, 4),
         "physics_why":     phys_why,
-        "t_decay":         round(decay, 4),
+        "band_pass":       round(band, 4),
+        # Diagnostic only — never multiplied into the score. It is what
+        # separates "computed the wrong number" from "not in the right
+        # postcode" when a failure is attributed.
+        "gross_error_tol": gross,
+        "gross_error":     None if gross is None else bool(err > gross),
         "extracted":       pv.extracted,
     }
+
+
+def numerics_gate(kpis_spec: dict, per_kpi: dict) -> tuple[float, dict]:
+    """Binary gate on the run's own numerical quality. 1.0 = pass, 0.0 = fail.
+
+    A KPI opts in by declaring a one-sided limit, e.g.
+
+        "final_residual_U": { ..., "gate": {"max": 0.005} }
+        "mesh_cell_count":  { ..., "gate": {"min": 4096} }
+
+    One-sided and declared per case on purpose. The right test differs by
+    quantity and cannot be inferred from the name: exceeding a residual ceiling
+    means the run has not converged, while exceeding a cell count means the mesh
+    is *finer* than the reference, which is not a defect. Nothing here reads
+    `physics_min`/`gross_error_tol` implicitly — the case states the limit.
+
+    **Absence never fails the gate.** A process signal the agent did not report,
+    or one whose provenance did not verify, is recorded as `absent` and skipped.
+    Zeroing a case for a signal the task did not extract is the L1 failure mode
+    this benchmark spent three real defects learning to avoid (docs/acceptance.md);
+    an omitted signal is visible in this detail block instead.
+    """
+    checks: list[dict] = []
+    failures: list[str] = []
+    for name, spec in kpis_spec.items():
+        gate = spec.get("gate")
+        if not isinstance(gate, dict) or not gate:
+            continue
+        res = per_kpi.get(name) or {}
+        value = res.get("value")
+        if res.get("source_verified") != 1.0 or not isinstance(value, (int, float)):
+            checks.append({"kpi": name, "status": "absent", "gate": gate})
+            continue
+        value = float(value)
+        low, high = gate.get("min"), gate.get("max")
+        if low is not None and value < float(low):
+            failures.append(f"{name}={value:g} below the required minimum {float(low):g}")
+            checks.append({"kpi": name, "status": "fail", "value": value, "gate": gate})
+        elif high is not None and value > float(high):
+            failures.append(f"{name}={value:g} above the allowed maximum {float(high):g}")
+            checks.append({"kpi": name, "status": "fail", "value": value, "gate": gate})
+        else:
+            checks.append({"kpi": name, "status": "pass", "value": value, "gate": gate})
+    ok = 0.0 if failures else 1.0
+    detail = {"numerics_ok": ok, "checks": checks}
+    if failures:
+        detail["why"] = "; ".join(failures)
+    elif not checks:
+        detail["why"] = "no KPI declares a numerics gate"
+    return ok, detail
 
 
 def _score_groups(
@@ -312,6 +408,9 @@ def main(argv: list[str] | None = None) -> int:
     # alongside the kpis.json (cases/<x>/tests/kpis.json sits next to
     # cases/<x>/task.toml).
     solver_label: str | None = None
+    task_type: str | None = None
+    n_evals_min: int = 0
+    design_table: str | None = None
     task_toml = args.kpis.parent.parent / "task.toml"
     if task_toml.is_file():
         try:
@@ -324,11 +423,36 @@ def main(argv: list[str] | None = None) -> int:
         if tomllib is not None:
             try:
                 tdata = tomllib.loads(task_toml.read_text(encoding="utf-8"))
-                solver_label = (
-                    ((tdata.get("metadata") or {}).get("sim") or {}).get("solver")
-                )
+                sim_meta = ((tdata.get("metadata") or {}).get("sim") or {})
+                solver_label = sim_meta.get("solver")
+                # Study task types (optimization / sensitivity) run the solver
+                # many times; n_evals_min sets the study-evidence threshold.
+                task_type = sim_meta.get("task_type")
+                study_cfg = sim_meta.get("study") or {}
+                n_evals_min = int(study_cfg.get("n_evals_min", 0) or 0)
+                design_table = study_cfg.get("design_table")
             except Exception:
                 pass
+
+    # Fall back to the evaluator's own spec when task.toml is not reachable.
+    #
+    # It often is not. Under a separate verifier container the evaluator package
+    # is mounted on its own — `tests/` becomes `/tests`, so the lookup above
+    # resolves to `/task.toml` and finds nothing. The failure is silent and
+    # one-directional: `solver_label` stays None, and a None label means the
+    # artifact gate is *skipped*, so a case that should hard-zero a run with no
+    # solver evidence quietly stops checking. Nothing in the score says so.
+    #
+    # `tests/kpis.json` is the evaluator's own package and travels with it, so it
+    # is the right place for a fact the evaluator needs. task.toml stays
+    # authoritative when present — it is the catalog field — and lint_case.py
+    # holds the two in agreement.
+    if solver_label is None:
+        try:
+            solver_label = (json.loads(args.kpis.read_text(encoding="utf-8"))
+                            .get("solver"))
+        except Exception:  # noqa: BLE001
+            pass
 
     spec_err = _validate_groups(groups_spec, kpis_spec)
     if spec_err:
@@ -370,6 +494,67 @@ def main(argv: list[str] | None = None) -> int:
             case_dir=case_dir, solver_label=solver_label,
         )
 
+    # ── Anti-cheat: hard-zero analytical shortcuts ─────────────────────
+    # The agent who hand-calculates a value and writes it to a text file
+    # will pass per-KPI provenance (source file exists, extract pipeline
+    # runs) but fails the solver-evidence check below: no .mph /
+    # log.<of_solver> / LTspice .log on disk = no real solve = hard zero.
+    #
+    # **No live case reaches this code** (#196): all 127 under `cases/[!_]*/`
+    # call `native_cantera`, `native_pybamm`, `openfoam_interface` or
+    # `calculix_interface` directly. This path serves `cases/_phase2/`, so a
+    # change here moves no phase-1 number -- and equally, hardening it buys
+    # phase 1 nothing.
+    #
+    # Cross-solver: works for any solver with a registered detector that
+    # exposes ``has_solver_evidence``. Unknown solver / no solver_label =
+    # gate skipped (preserves legacy behaviour). See sim-proj #125 RFC.
+    from .detectors import TrialContext, has_solver_evidence, has_study_evidence
+    ctx = TrialContext(
+        sim_records=sim_records, case_dir=case_dir, solver_label=solver_label,
+    )
+    solver_evidence = has_solver_evidence(ctx)
+    anti_cheat_detail: dict = {
+        "solver_label":    solver_label,
+        "solver_evidence": solver_evidence,
+    }
+    # Study task types additionally require evidence of a multi-run study
+    # (>= n_evals_min solver evaluations over a parameter space): a design
+    # table or that many sim-cli runs. Stops "run once + guess the optimum".
+    is_study = task_type in ("optimization", "sensitivity") and n_evals_min > 1
+    study_evidence = (
+        has_study_evidence(ctx, n_evals_min, design_table) if is_study else True
+    )
+    if is_study:
+        anti_cheat_detail["task_type"] = task_type
+        anti_cheat_detail["n_evals_min"] = n_evals_min
+        anti_cheat_detail["study_evidence"] = study_evidence
+
+    gate_failed = (solver_label is not None and not solver_evidence) or \
+                  (is_study and not study_evidence)
+    if gate_failed:
+        if solver_label is not None and not solver_evidence:
+            reason = (f"no {solver_label!r} solver evidence in {case_dir} - "
+                      "analytical-shortcut rejected; final_score set to 0")
+        else:
+            reason = (f"no study evidence (need a design table with >= "
+                      f"{n_evals_min} runs or that many sim runs) in {case_dir}"
+                      f" - {task_type} shortcut rejected; final_score set to 0")
+        anti_cheat_detail["why"] = reason
+        # Preserve the original per-KPI scoring detail for forensics, but
+        # hard-zero the aggregate.
+        kpi_detail["pre_anti_cheat_kpi_score"] = kpi_score
+        kpi_score = 0.0
+
+    # Numerics gate — convergence / mesh adequacy, declared per KPI. Applied
+    # after the anti-cheat zeroing so a gated run keeps its forensic breakdown.
+    numerics_ok, numerics_detail = numerics_gate(
+        spec.get("kpis", {}), kpi_detail.get("per_kpi", {})
+    )
+    if numerics_ok < 1.0:
+        kpi_detail["pre_numerics_gate_kpi_score"] = kpi_score
+        kpi_score = round(kpi_score * numerics_ok, 4)
+
     final = round(W_META * meta_score + W_KPI * kpi_score, 4)
 
     # Harbor contract: reward.json has exactly one key.
@@ -377,11 +562,13 @@ def main(argv: list[str] | None = None) -> int:
     args.reward_out.write_text(json.dumps({"score": final}, indent=2))
 
     detail = {
-        "schema_version": "reward-v3.2",
+        "schema_version": "reward-v3.3",
         "case_id":        spec.get("case_id", args.kpis.parent.name),
         "weights":        {"meta": W_META, "kpi": W_KPI},
         "meta_score":     round(meta_score, 4),
         "meta_detail":    meta_detail,
+        "anti_cheat":     anti_cheat_detail,
+        "numerics_gate":  numerics_detail,
         "kpi_score":      kpi_score,
         "kpi_detail":     kpi_detail,
         "final_score":    final,

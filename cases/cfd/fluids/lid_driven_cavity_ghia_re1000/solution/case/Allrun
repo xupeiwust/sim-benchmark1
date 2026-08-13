@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -eo pipefail
+cd "$(dirname "$0")"
+
+if ! command -v blockMesh >/dev/null 2>&1; then
+    set +u
+    # shellcheck disable=SC1091
+    source /usr/lib/openfoam/openfoam2412/etc/bashrc
+    set -u
+fi
+
+blockMesh
+checkMesh
+simpleFoam
+postProcess -func centerline -latestTime
+python3 extract_umin.py

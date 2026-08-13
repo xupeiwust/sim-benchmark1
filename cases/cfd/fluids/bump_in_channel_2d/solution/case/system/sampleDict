@@ -1,0 +1,37 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      sampleDict;
+}
+
+// Probe the wall patch at three streamwise stations (x=0.63, 0.75, 0.87)
+// to extract local wallShearStress for C_f reporting.
+
+type            sets;
+libs            ("libsampling.so");
+
+interpolationScheme cellPoint;
+setFormat       raw;
+
+fields
+(
+    wallShearStress
+);
+
+// Sample wallShearStress along a streamwise line just above the wall.
+// Cover x in [0.6, 0.9] with 200 points so the post-processor can
+// linearly interpolate to the three target stations.
+sets
+(
+    bump_line
+    {
+        type    uniform;
+        axis    x;
+        start   (0.60 -0.5 0.002);
+        end     (0.90 -0.5 0.002);
+        nPoints 200;
+    }
+);

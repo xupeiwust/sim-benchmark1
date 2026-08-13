@@ -1,0 +1,78 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Oracle mesh for taylor_green_vortex_2d_re100.
+| Taylor-Green (1937) decaying vortex, exact unsteady 2D Navier-Stokes solution.
+| Doubly-periodic box 0 <= x <= 2*pi, 0 <= y <= 2*pi, unit-cell z-thickness.
+| Uniform 64 x 64 mesh resolves the single cos/sin vortex wavelength so the
+| transient decay exp(-2*nu*t) is captured and the peak |Ux| at t=5 reproduces
+| the Taylor-Green exact value (exp(-0.1) ~ 0.904837 at Re=100). Left/right and
+| bottom/top patches are cyclic (doubly-periodic); the initial Taylor-Green
+| field is imposed with setExprFields and the interior is evolved by pisoFoam.
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+scale   1;
+
+// L = 2*pi ~ 6.283185307179586
+vertices
+(
+    (0           0           0)     // 0
+    (6.283185307 0           0)     // 1
+    (6.283185307 6.283185307 0)     // 2
+    (0           6.283185307 0)     // 3
+    (0           0           0.1)   // 4
+    (6.283185307 0           0.1)   // 5
+    (6.283185307 6.283185307 0.1)   // 6
+    (0           6.283185307 0.1)   // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (64 64 1) simpleGrading (1 1 1)
+);
+
+edges ();
+
+boundary
+(
+    left
+    {
+        type cyclic;
+        neighbourPatch right;
+        faces ((0 4 7 3));   // x = 0
+    }
+    right
+    {
+        type cyclic;
+        neighbourPatch left;
+        faces ((1 2 6 5));   // x = 2*pi
+    }
+    bottom
+    {
+        type cyclic;
+        neighbourPatch top;
+        faces ((0 1 5 4));   // y = 0
+    }
+    top
+    {
+        type cyclic;
+        neighbourPatch bottom;
+        faces ((3 7 6 2));   // y = 2*pi
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+
+mergePatchPairs ();

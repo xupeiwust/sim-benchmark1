@@ -1,0 +1,39 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     simpleFoam;
+
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+// A CAP, not the stopping rule. `residualControl` in fvSolution is what stops
+// this run: it is first met at iteration 3216 on the domain image (measured,
+// #273), and the cap is set at roughly twice that. At the previous 5000 it
+// converged with 1.55x headroom; the family now carries one rule so that the
+// margin is visible rather than incidental -- the Re=100 sibling's was
+// negative and nothing said so (#266). solve_inner.py now fails the run rather
+// than reporting a value the cap produced.
+endTime         7000;
+
+deltaT          1;
+
+writeControl    timeStep;
+writeInterval   1000;
+
+purgeWrite      2;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;

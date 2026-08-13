@@ -1,0 +1,84 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Oracle mesh for turbulent_channel_flow_retau395.
+| Plane channel: 0 <= x <= 4 (streamwise, cyclic), 0 <= y <= 2 (wall-normal,
+| walls at y=0 and y=2; channel half-height delta = 1), thin z slab (2D).
+| The y direction is graded toward BOTH walls so y+ ~ 1 on the first cell.
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+scale   1;
+
+vertices
+(
+    (0   0    0)     // 0
+    (4   0    0)     // 1
+    (4   2    0)     // 2
+    (0   2    0)     // 3
+    (0   0    0.1)   // 4
+    (4   0    0.1)   // 5
+    (4   2    0.1)   // 6
+    (0   2    0.1)   // 7
+);
+
+blocks
+(
+    // 1 cell in x is enough for a streamwise-periodic, x-homogeneous RANS
+    // channel, but a few cells help GAMG; use 8 in x.  120 cells in y split
+    // symmetrically about the centreline (two 60-cell halves), each half
+    // clustered toward its wall.  1 cell in z (2D slab).
+    hex (0 1 2 3 4 5 6 7) (8 120 1)
+    simpleGrading
+    (
+        1                          // x: uniform
+        (
+            (0.5 0.5 50)           // lower half: y in [0,1], expand from wall
+            (0.5 0.5 0.02)         // upper half: y in [1,2], contract to wall
+        )
+        1                          // z: uniform
+    )
+);
+
+edges ();
+
+boundary
+(
+    inlet
+    {
+        type cyclic;
+        neighbourPatch outlet;
+        faces ((0 4 7 3));
+    }
+    outlet
+    {
+        type cyclic;
+        neighbourPatch inlet;
+        faces ((1 2 6 5));
+    }
+    bottomWall
+    {
+        type wall;
+        faces ((0 1 5 4));
+    }
+    topWall
+    {
+        type wall;
+        faces ((3 7 6 2));
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+
+mergePatchPairs ();

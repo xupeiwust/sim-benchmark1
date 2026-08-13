@@ -1,0 +1,218 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// Schäfer & Turek (1996) DFG benchmark 2D-1: steady laminar flow around a
+// circular cylinder in a 2.2 m x 0.41 m channel. Cylinder D = 0.1 m (radius
+// 0.05) centred at (0.2, 0.2). Re = Umean D / nu = 20 (Umean = 0.2, nu = 1e-3).
+// Reference drag coefficient cD = 5.57953523384 (FeatFlow DFG 2D-1 table).
+//
+// Fully face-conformal structured mesh. The domain is partitioned by three
+// vertical bands x = {0, 0.1, 0.3, 2.2} and three horizontal bands
+// y = {0, 0.1, 0.3, 0.41}. This yields a 3x3 region grid; the central region
+// [0.1,0.3] x [0.1,0.3] is replaced by a 4-block O-grid that wraps the cylinder
+// with radial clustering toward the wall. The 8 surrounding regions are plain
+// hexes. Shared edges carry identical cell counts so every internal face matches.
+//
+// circle points at radius 0.05 from (0.2,0.2) at +/-45 deg:
+//   cos45 * 0.05 = 0.0353553
+//   xL = 0.1646447  xR = 0.2353553   yB = 0.1646447  yT = 0.2353553
+
+scale   1;
+
+vertices
+(
+    // ---- z = 0 plane: 4x4 = 16 band-grid corners --------------------------
+    // row y=0
+    (0.0  0.0  0.0)   //  0
+    (0.1  0.0  0.0)   //  1
+    (0.3  0.0  0.0)   //  2
+    (2.2  0.0  0.0)   //  3
+    // row y=0.1
+    (0.0  0.1  0.0)   //  4
+    (0.1  0.1  0.0)   //  5
+    (0.3  0.1  0.0)   //  6
+    (2.2  0.1  0.0)   //  7
+    // row y=0.3
+    (0.0  0.3  0.0)   //  8
+    (0.1  0.3  0.0)   //  9
+    (0.3  0.3  0.0)   // 10
+    (2.2  0.3  0.0)   // 11
+    // row y=0.41
+    (0.0  0.41 0.0)   // 12
+    (0.1  0.41 0.0)   // 13
+    (0.3  0.41 0.0)   // 14
+    (2.2  0.41 0.0)   // 15
+    // ---- cylinder surface points at +/-45 deg (z = 0) ---------------------
+    (0.1646447 0.1646447 0.0)  // 16  bottom-left  on circle
+    (0.2353553 0.1646447 0.0)  // 17  bottom-right on circle
+    (0.2353553 0.2353553 0.0)  // 18  top-right    on circle
+    (0.1646447 0.2353553 0.0)  // 19  top-left     on circle
+
+    // ===== z = 0.01 plane (duplicate, +0.01 in z) ==========================
+    (0.0  0.0  0.01)  // 20
+    (0.1  0.0  0.01)  // 21
+    (0.3  0.0  0.01)  // 22
+    (2.2  0.0  0.01)  // 23
+    (0.0  0.1  0.01)  // 24
+    (0.1  0.1  0.01)  // 25
+    (0.3  0.1  0.01)  // 26
+    (2.2  0.1  0.01)  // 27
+    (0.0  0.3  0.01)  // 28
+    (0.1  0.3  0.01)  // 29
+    (0.3  0.3  0.01)  // 30
+    (2.2  0.3  0.01)  // 31
+    (0.0  0.41 0.01)  // 32
+    (0.1  0.41 0.01)  // 33
+    (0.3  0.41 0.01)  // 34
+    (2.2  0.41 0.01)  // 35
+    (0.1646447 0.1646447 0.01)  // 36
+    (0.2353553 0.1646447 0.01)  // 37
+    (0.2353553 0.2353553 0.01)  // 38
+    (0.1646447 0.2353553 0.01)  // 39
+);
+
+// cell counts per band (shared edges must agree):
+//   x-bands: nx0=24 (x 0->0.1), nx1=40 (0.1->0.3), nx2=180 (0.3->2.2)
+//   y-bands: ny0=24 (y 0->0.1), ny1=40 (0.1->0.3), ny2=11 (0.3->0.41)
+//   O-grid radial nr=24, circumferential matches nx1/ny1=40 per side.
+blocks
+(
+    // ===== bottom row (y 0->0.1, ny0=24) ===================================
+    // BL: x[0,0.1] y[0,0.1]
+    hex ( 0  1  5  4  20 21 25 24) (24 24 1) simpleGrading (1 1 1)
+    // BC: x[0.1,0.3] y[0,0.1]
+    hex ( 1  2  6  5  21 22 26 25) (40 24 1) simpleGrading (1 1 1)
+    // BR: x[0.3,2.2] y[0,0.1]
+    hex ( 2  3  7  6  22 23 27 26) (180 24 1) simpleGrading (1 1 1)
+
+    // ===== middle row (y 0.1->0.3, ny1=40) — left & right only =============
+    // ML: x[0,0.1] y[0.1,0.3]
+    hex ( 4  5  9  8  24 25 29 28) (24 40 1) simpleGrading (1 1 1)
+    // (centre = O-grid, see below)
+    // MR: x[0.3,2.2] y[0.1,0.3]
+    hex ( 6  7 11 10  26 27 31 30) (180 40 1) simpleGrading (1 1 1)
+
+    // ===== top row (y 0.3->0.41, ny2=11) ===================================
+    // TL: x[0,0.1] y[0.3,0.41]
+    hex ( 8  9 13 12  28 29 33 32) (24 11 1) simpleGrading (1 1 1)
+    // TC: x[0.1,0.3] y[0.3,0.41]
+    hex ( 9 10 14 13  29 30 34 33) (40 11 1) simpleGrading (1 1 1)
+    // TR: x[0.3,2.2] y[0.3,0.41]
+    hex (10 11 15 14  30 31 35 34) (180 11 1) simpleGrading (1 1 1)
+
+    // ===== O-grid: 4 blocks around the cylinder (box corners 5,6,10,9) =====
+    // radial grading 0.25 -> cells cluster toward the cylinder wall.
+    // bottom: box edge (5,6) -> circle (16,17)
+    hex ( 5  6 17 16  25 26 37 36) (40 24 1) simpleGrading (1 1 0.25)
+    // right:  box edge (6,10) -> circle (17,18)
+    hex ( 6 10 18 17  26 30 38 37) (40 24 1) simpleGrading (1 1 0.25)
+    // top:    box edge (10,9) -> circle (18,19)
+    hex (10  9 19 18  30 29 39 38) (40 24 1) simpleGrading (1 1 0.25)
+    // left:   box edge (9,5) -> circle (19,16)
+    hex ( 9  5 16 19  29 25 36 39) (40 24 1) simpleGrading (1 1 0.25)
+);
+
+// Arc edges for the cylinder surface (between the four +/-45 deg circle points).
+// midpoints:  bottom (0.2,0.15)  right (0.25,0.2)  top (0.2,0.25)  left (0.15,0.2)
+edges
+(
+    arc 16 17 (0.2  0.15 0.0)
+    arc 17 18 (0.25 0.2  0.0)
+    arc 18 19 (0.2  0.25 0.0)
+    arc 19 16 (0.15 0.2  0.0)
+    arc 36 37 (0.2  0.15 0.01)
+    arc 37 38 (0.25 0.2  0.01)
+    arc 38 39 (0.2  0.25 0.01)
+    arc 39 36 (0.15 0.2  0.01)
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 4 24 20)
+            (4 8 28 24)
+            (8 12 32 28)
+        );
+    }
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (3 7 27 23)
+            (7 11 31 27)
+            (11 15 35 31)
+        );
+    }
+    walls
+    {
+        type wall;
+        faces
+        (
+            // lower wall (y = 0)
+            (0 1 21 20)
+            (1 2 22 21)
+            (2 3 23 22)
+            // upper wall (y = 0.41)
+            (12 13 33 32)
+            (13 14 34 33)
+            (14 15 35 34)
+        );
+    }
+    cylinder
+    {
+        type wall;
+        faces
+        (
+            (16 17 37 36)
+            (17 18 38 37)
+            (18 19 39 38)
+            (19 16 36 39)
+        );
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            // z = 0 faces (8 outer regions + 4 O-grid blocks)
+            (0 1 5 4)
+            (1 2 6 5)
+            (2 3 7 6)
+            (4 5 9 8)
+            (6 7 11 10)
+            (8 9 13 12)
+            (9 10 14 13)
+            (10 11 15 14)
+            (5 6 17 16)
+            (6 10 18 17)
+            (10 9 19 18)
+            (9 5 16 19)
+            // z = 0.01 faces
+            (20 21 25 24)
+            (21 22 26 25)
+            (22 23 27 26)
+            (24 25 29 28)
+            (26 27 31 30)
+            (28 29 33 32)
+            (29 30 34 33)
+            (30 31 35 34)
+            (25 26 37 36)
+            (26 30 38 37)
+            (30 29 39 38)
+            (29 25 36 39)
+        );
+    }
+);
+
+mergePatchPairs ();

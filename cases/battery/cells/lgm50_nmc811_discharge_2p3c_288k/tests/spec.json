@@ -1,0 +1,9 @@
+{
+  "case_id": "lgm50_nmc811_discharge_2p3c_288k",
+  "kind": "discharge",
+  "parameter_set": "Chen2020",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 1.1015,
+  "reproduction_timeout_s": 600
+}

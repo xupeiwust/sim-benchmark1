@@ -1,163 +1,158 @@
 <div align="center">
 
-<img src="assets/banner.svg" alt="sim-benchmark — industrial simulation agent benchmark" width="820">
+# HWE-bench
 
-<br>
-
-> **An industrial simulation agent benchmark.** Hand an LLM agent a real
-> CAE/EDA task — meshing, boundary conditions, solver invocation, log parsing,
-> KPI extraction — and grade what it actually produced. No LLM-as-judge; the
-> verifier re-runs the agent's claimed extraction commands against the
-> agent's produced solver artifacts.
+**How well can an LLM do hardware engineering?**
 
 <p align="center">
-  <a href="#quick-start"><img src="https://img.shields.io/badge/Quick_Start-2_min-3b82f6?style=for-the-badge" alt="Quick Start"></a>
-  <a href="#first-reference-runs"><img src="https://img.shields.io/badge/Reference_runs-Claude_Opus_4.6_%E2%80%A2_MiniMax_M2.5hs_%E2%80%A2_M2.7-8b5cf6?style=for-the-badge" alt="Reference models"></a>
+  <a href="https://hwe-bench.svdailab.com/"><img src="https://img.shields.io/badge/Leaderboard-hwe--bench.svdailab.com-3b82f6?style=for-the-badge" alt="Leaderboard"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Quick_Start-2_min-8b5cf6?style=for-the-badge" alt="Quick Start"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-eab308?style=for-the-badge" alt="License"></a>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/runner-Harbor-009688" alt="Harbor">
-  <img src="https://img.shields.io/badge/circuits-LTspice-blue" alt="LTspice">
-  <img src="https://img.shields.io/badge/CFD-OpenFOAM-orange" alt="OpenFOAM">
-  <img src="https://img.shields.io/badge/scoring-source--provenance-7c3aed" alt="Source provenance">
+  <img src="https://img.shields.io/badge/edition-CAE-blue" alt="Edition">
 </p>
 
-[What this measures](#what-this-measures) · [Scope](#scope) · [Reference runs](#first-reference-runs) · [Quick start](#quick-start) · [Scoring](#how-scoring-works-in-60-seconds) · [Layout](#repository-layout)
+[What this measures](#what-this-measures) · [What is in this repo](#what-is-in-this-repo) · [A task](#what-a-task-looks-like) · [Scoring](#how-scoring-works-in-60-seconds) · [Quick start](#quick-start) · [Layout](#repository-layout)
 
 </div>
 
 ---
 
+HWE-bench is SWE-bench for hardware. It measures whether a model can do
+**digital engineering** — get real work done in the software a hardware
+engineer actually sits in front of: design/CAD, modeling/CAE, production/PLM.
+Tasks are taken from engineering practice rather than synthesized from papers.
+
+The current edition is **HWE-bench-CAE**, the modeling workflow. Hardware
+engineering is wider than modeling, and later editions cover the rest of it.
+
 ## What this measures
 
-Every task hands the agent a natural-language problem statement, a working
-container with a real solver installed, and one rule: produce
-`/tmp/agent/result.json` whose KPIs come with **source provenance** —
-`(value, source.kind, source.path, source.extract)`. The verifier re-runs
-each `source.extract` command against the file the agent named and confirms
-the value. Hand-written numbers, fabricated logs, and unreproducible KPIs
-score zero.
+Every other engineering-agent benchmark scores *"does the code run / does the
+testbench pass / is the file valid."* HWE-bench scores **whether the number is
+right** — whether the agent picked the right model, resolved the mesh,
+converged the run, and reported a value that lands inside a tolerance band that
+is itself defensible.
 
-**Out of scope (deliberately).** This is not a knowledge quiz, not a
-syntax-of-Fluent test, not an LLM-as-judge tournament. It does not require
-the agent to use any specific tool or library — `sim-cli`, native solver
-CLIs, Python wrappers, or the agent's own scratch scripts are all valid
-launch routes. Tooling is implementation, not the thing being benchmarked.
+Three properties define it:
 
-## Scope
+- **The task is executable, not passive data.** Each task is a container, a
+  prompt, a reference solution and a verifier, run by
+  [Harbor](https://www.harborframework.com/).
+- **The judge is code.** `tests/test.sh` writes `reward.json` inside the
+  container. The verifier strips the submission's numeric artifacts and re-runs
+  the submission's own entry point, so the number scored can only be one the
+  submission's code produced.
+- **The unit is the engineering task, not the tool.** A task states the
+  physics, the operating point, the quantity to report and the tolerance it
+  must land in — never which program to type. The container ships a working
+  toolchain; how the agent drives it is its business, and the same task can be
+  stood up on a different solver without changing what is asked or how it is
+  graded.
 
-| Domain | Tasks | Backing solver |
-|---|---:|---|
-| Circuits / SPICE | 20 | LTspice (free, open-format) |
-| Fluids / CFD | 17 | OpenFOAM (open source) |
+**Where the reference comes from.** Ground truth is the reference solution a
+competent practitioner gets with this class of tool at this operating point:
+published cross-code results at the same grid level where they exist, and this
+repo's calibrated oracle where they do not. A band's centre is that reference;
+its floor is how much competent practitioners actually disagree, because
+narrower than that is scoring noise. Experimental data is cited as provenance
+and sanity check — the score does not ask whether the model reproduces reality,
+since coarse-mesh RANS sitting 20% off a wind tunnel is a fact about RANS
+rather than about the agent.
 
-Every task has a deterministic `solution/solve.sh` oracle that produces
-the verifier's upper-bound sanity check. Coverage will keep growing on the
-OpenFOAM side (more turbulent boundary layers, transonic airfoils, separated
-flows) as new oracles are written and validated.
+**Why the answers are not recallable.** Operating points are chosen off the
+published tables — nobody tabulated φ = 1.02 at 1418 K and 1.3 atm — so there is
+nothing to look up and the run has to happen. Where a reference moves smoothly
+with the operating point and stepping off it would only leave an interpolation,
+the KPI is defined *between* two runs instead (a ratio of two closures, a delta
+between two configurations the prompt names), which cannot be produced without
+solving twice.
 
-See [`CASES.md`](CASES.md) for the full catalog with leakage, tier, and
-oracle-status flags per case. See [`SCHEMA.md`](SCHEMA.md) for the case /
-verifier contract.
+**Budget is part of the task.** Engineering is finishing under a finite budget,
+so a run that overruns is graded on what it left behind, and that count is
+published beside the mean rather than hidden in it.
 
-## First reference runs
+## What is in this repo
 
-Every task ships with a deterministic `solution/solve.sh` oracle. Running
-the oracle gives the verifier's upper-bound sanity check; model rows are
-read against that ceiling.
+**The public set is the scored set.** `cases/` holds exactly the tasks the
+published leaderboard is computed over — one representative per physics family,
+on the three tracks the board reports — so a number on
+[hwe-bench.svdailab.com](https://hwe-bench.svdailab.com/) can be reproduced
+against the tasks it was measured on.
 
-We include first reference runs with Claude Opus 4.6, MiniMax-M2.5-highspeed,
-MiniMax-M2.7-highspeed, and MiniMax-M2.7 through a claude-code harness.
+| track | what it covers |
+|---|---|
+| `combustion` | 0-D ignition delay, 1-D laminar flames (Cantera) |
+| `battery` | cell models, thermal rise, degradation (PyBaMM) |
+| `cfd` | external aero, internal flow, natural convection (OpenFOAM) |
 
-| Suite | Tasks | Claude Opus 4.6 | MiniMax-M2.7-highspeed | MiniMax-M2.5-highspeed | MiniMax-M2.7 | Oracle ceiling |
-|---|---:|---:|---:|---:|---:|---:|
-| LTspice circuits | 20 | **0.986** | **0.899** | **0.899** | **0.838** | 1.000 |
-| OpenFOAM fluids | 17 | **0.814** | **0.520** | **0.457** | **0.462** | n/a* |
+[`CASES.md`](CASES.md) is the derived catalog — every case, its solver, its KPI
+and its state. It is regenerated by `tools/gen_cases_md.py`, so it never falls
+out of date with the tree the way a hand-kept count does.
 
-\* OpenFOAM oracle reference run not yet produced; oracles are calibrated and `solution/solve.sh` is in repo.
+**What is not here.** Each track is a *family*: one physics kind parameterised
+into many operating points sharing one evaluator. Only the representative each
+family contributes to the board is published; the rest of the family, and the
+tracks that have not reached the board, stay private. That larger inventory is
+built for post-training — engineering-simulation environments with a
+programmatic, non-hackable reward, parameterisable into as many operating
+points as an RL run needs. If that is what you are building,
+<contact@svdailab.com>.
 
-Reads:
-- **LTspice**: all four agents complete most artifact-grounded circuit
-  workflows. Opus 4.6 is at 19/20 perfect (only `opamp_integrator` at 0.72);
-  the MiniMax pair leave more headroom and parameter-sweep / design-selection
-  tasks still discriminate between them.
-- **OpenFOAM**: CFD is the harder suite — agents must author case files,
-  mesh, run solvers, post-process fields, and produce replayable KPI provenance.
-  The 11-case set covers Bénard convection, dam-break multiphase, DNS
-  turbulence, oblique shock, non-Newtonian flow, pitzdaily, and lid-driven
-  cavities at Re=100/400/1000. Opus opens a clear ~11-point gap;
-  M2.7-highspeed is the strongest MiniMax variant on this suite;
-  the reasoning M2.7 underperforms its highspeed sibling on CFD;
-  `pitzdaily-bfs-rans` is a model watershed (Opus 0.978 vs M2.7 0.000).
+## What a task looks like
 
-These are reference runs, not a mature cross-model leaderboard. Per-case
-scores, completion policy, and harness-exception accounting live in
-[`LEADERBOARD.md`](LEADERBOARD.md) and the per-run records under
-[`results/`](results/).
-
-The useful early signal is workflow-shaped: artifact-grounded grading
-separates agents that can talk about simulation from agents that can produce
-solver artifacts that survive replay.
-
-## Why three audiences should care
-
-### For AI / agent companies
-
-A hard, reproducible, end-to-end task suite where the only thing that scores
-is **what the model actually produced**, not whether it described the right
-answer in chat. Every task is a real solver run with artifact-grounded
-grading: the model writes a netlist, runs LTspice, parses the `.log`, and
-submits the parse command alongside the value. We re-run the parse. If your
-`value` and our re-extraction disagree, you score zero on that KPI.
-
-This gives a clean, commercially-relevant signal that:
-- separates models that "know about" vs models that "can complete"
-  industrial workflows;
-- breaks down by task tier (S/M/L), leakage class, and template
-  (measurement / numerical / workflow);
-- runs locally with `harbor` + Docker — no submission portal, no API key
-  for us, no rate-limited grader.
-
-To publish a leaderboard row, see [`REPRODUCING.md`](REPRODUCING.md). To
-see what the harness does on each trial, see [`docs/hooks.md`](docs/hooks.md).
-
-### For CAE / EDA software vendors
-
-Industrial CAE has been "the agent layer is too brittle" for a decade.
-This benchmark turns that into a measurable signal — over real cases,
-real solver artifacts, real numerical-vs-physical pass criteria — and
-makes it possible to talk concretely about *which* parts of the agent loop
-fail on *which* solvers.
-
-You can use this to:
-- evaluate whether AI agents can drive your solver well enough for
-  customer-facing automation;
-- benchmark internal solver wrappers / Python APIs against the same task
-  suite the open community runs;
-- propose new cases via PR — see [`cases/ltspice/circuits/README.md`](cases/ltspice/circuits/README.md)
-  and [`cases/openfoam/fluids/README.md`](cases/openfoam/fluids/README.md) for tier / leakage
-  norms.
-
-The contract is in [`SCHEMA.md`](SCHEMA.md).
-
-### For CAE practitioners
-
-If you've been asked "should we put an LLM in front of our solver
-workflow", this is a yardstick. Run the oracle smoke (no LLM, free):
-
-```bash
-uv tool install harbor
-git clone https://github.com/svd-ai-lab/sim-benchmark && cd sim-benchmark
-harbor run -p cases/ltspice/circuits -i rc_highpass_ac --agent oracle -y
-# Expect: reward = 1.000, wall-clock ~1 min on Docker Desktop.
+```text
+cases/<track>/<subdomain>/<case-id>/
+├── task.toml               # Harbor schema 1.3 + [metadata.sim]
+├── instruction.md          # the prompt, handed to the agent verbatim
+├── environment/            # OPTIONAL overlay — only if the task needs an extra tool
+├── solution/solve.sh       # the oracle. Required here, optional in Harbor
+└── tests/                  # the verifier: spec.json + test.sh → reward.json
 ```
 
-If that returns 1.0, your environment is sound and any model run you do
-will be apples-to-apples comparable to ours. Then run a model — the same
-command with `--agent claude-code` (or your wrapper) replacing
-`--agent oracle`. See [`REPRODUCING.md`](REPRODUCING.md) for the three
-reproduction paths (GHCR pull / build from source / paranoid).
+`instruction.md` fixes an **output interface** — a file name, its columns,
+their units and normalisation — the agent's own run writes it, and the verifier
+reads only that plus a check that the solver actually ran. It never reaches
+into the submission's setup: not the mesh, not the discretisation, not a
+boundary-condition keyword. That is what keeps the free choices free, and it is
+what makes one evaluator per track enough for every case in it.
+
+The interface is always a CSV, and its columns are the difficulty ladder:
+
+| KPI shape | interface | what the evaluator does |
+|---|---|---|
+| scalar | one row, one column per quantity (`cd`) | read it → tolerance band |
+| time series | `time_s`, then one column per state variable | derive the event (ignition delay, time-to-X) |
+| profile / curve | the normalised pair (`y_over_h`, `u_over_Ubulk`) | interpolate to reference stations → L2 |
+| order of accuracy | `h`, `l2_error`, ≥ 3 rows | fit the slope → compare to the scheme's theoretical order |
+
+## How scoring works in 60 seconds
+
+```
+final_score = kpi_score · numerics_ok
+
+kpi_score   = Σ group.weight · group_score        # group weights sum to 1.0
+per-KPI     = source_verified · physics_pass · band_pass
+  source_verified — the value re-extracts from an artifact that exists on disk
+  physics_pass    — the value lies inside [physics_min, physics_max]
+  band_pass       — BINARY: |value − gt_value| ≤ pass_tol → 1, else 0
+```
+
+`band_pass` has no partial credit, deliberately: a computed number that is
+wrong is not less wrong for being wrong by less. Every run is bracketed by two
+free reference points — the reference solution, which scores 1.0 by
+construction, and an empty submission, which has to score below 0.5. The full
+contract, and the one place this chain is stated normatively, is
+[`SCHEMA.md`](SCHEMA.md); the ranking method and the accounting rules that make
+two runs comparable are in [`LEADERBOARD.md`](LEADERBOARD.md).
+
+Scores themselves are not kept in this repo. A leaderboard row is one model, on
+one commit, in one environment — cheap to recompute and stale the moment a
+toolchain moves. The published board lives at
+[hwe-bench.svdailab.com](https://hwe-bench.svdailab.com/).
 
 ## Quick start
 
@@ -166,112 +161,76 @@ reproduction paths (GHCR pull / build from source / paranoid).
 uv tool install harbor
 
 # 2. clone
-git clone https://github.com/svd-ai-lab/sim-benchmark && cd sim-benchmark
+git clone https://github.com/svd-ai-lab/hwe-bench && cd hwe-bench
 
-# 3. oracle smoke on one circuit (no LLM, no API key)
-harbor run -p cases/ltspice/circuits -i rc_highpass_ac --agent oracle -y
+# 3. oracle smoke on one combustion case (no LLM, no API key)
+harbor run -p cases/combustion/kinetics -i ch4_air_idt_phi0p55_1633k_9p2atm --agent oracle -y
 
-# 4. oracle smoke on a CFD case (also no LLM; needs the OpenFOAM base
-#    image — see REPRODUCING.md Path B for local builds)
-harbor run -p cases/openfoam/fluids -i lid_driven_cavity_re100 --agent oracle -y
+# 4. oracle smoke on a CFD case (also no LLM; needs the cfd base
+#    image — see REPRODUCING.md for local builds)
+harbor run -p cases/cfd/fluids -i lid_driven_cavity_ghia_re1000 --agent oracle -y
 ```
 
-Both should print `reward: 1.000`. If you see anything else, the bug is
-in your environment, not in the agent.
+The oracle involves no LLM and no sampling, so the same case on the same image
+gives the same number every time, and that number is 1.000. What matters is
+that **your number matches the one the oracle produces elsewhere** — if it does
+not, the bug is in your environment, not the agent. See [`ORACLE.md`](ORACLE.md).
 
-## How scoring works in 60 seconds
-
-Every case is verified against a `tests/kpis.json` that lists named KPIs
-and how to measure them. The agent submits:
-
-```json
-{
-  "f_3db": {
-    "value": 175.6,
-    "source": {
-      "kind": "ltspice_log",
-      "path": "/root/case/rc_lowpass.log",
-      "query": "measure",
-      "measurement": "f_3db"
-    }
-  }
-}
-```
-
-The verifier opens the file at `path`, runs the declared extraction, gets
-the actual measured value, and compares against ground truth (within the
-tolerance `tests/kpis.json` declares). Scoring templates per task type:
-
-| Template | Groups | Used for |
-|---|---|---|
-| `measurement` | setup 0.10 / outputs 0.90 | "measure this circuit" |
-| `numerical` | setup 0.10 / numerical 0.15 / outputs 0.75 | "this CFD case must converge" |
-| `workflow` | setup 0.15 / process 0.25 / outputs 0.60 | multi-step GUI / artifact tasks |
-
-Total per case is a weighted sum of the per-group means. See
-[`SCHEMA.md`](SCHEMA.md) for the formal contract.
+To run a model instead, swap `--agent oracle` for `--agent claude-code` (or
+your own wrapper). The three reproduction paths (GHCR pull / build from source /
+paranoid) are in [`REPRODUCING.md`](REPRODUCING.md).
 
 ## Repository layout
 
 ```text
-sim-benchmark/
-├── cases/                       # solver/physics/case-id three-level layout
-│   ├── ltspice/circuits/        # LTspice tasks
-│   └── openfoam/fluids/         # OpenFOAM tasks
-├── configs/               # release run configs (oracle, M2.7, M2.5)
-├── docs/                  # design appendices
+hwe-bench/
+├── cases/<track>/<subdomain>/<case-id>/   # track → physics-class → case
 ├── environment/
-│   ├── base/              # OpenFOAM base image
-│   └── wine-base/         # LTspice-on-Wine image
-├── lib/
-│   └── sim_benchmark_verifier/   # the grader (Python)
-├── tools/                 # harness, lint, aggregation, scoring helpers
-├── results/               # per-run record artifacts
-├── CASES.md               # public catalog with status / leakage / tier
-├── LEADERBOARD.md         # current and historical results
-├── ORACLE.md              # oracle baseline + verifier sanity checks
-├── RELEASE.md             # release gate
-├── REPRODUCING.md         # three reproduction paths
-└── SCHEMA.md              # case + verifier contract
+│   ├── domains/             # one fullstack image per track (+ VERSIONS.md)
+│   └── _common/             # the harness every domain image bakes in
+├── lib/sim_benchmark_verifier/     # the grader + per-solver detectors (Python)
+├── tools/                   # lint, oracle runners, aggregation, publishing
+├── docs/                    # methodology, architecture, demand records
+├── CASES.md · SCHEMA.md · LEADERBOARD.md · ORACLE.md · REPRODUCING.md
 ```
 
-## Roadmap
-
-- **Now** — deterministic verifier, in-trial Stop hook with schema and
-  extract-runnability passes, four reference model rows.
-- **Next** — broader OpenFOAM coverage (transonic airfoil, more separated
-  flows, more multiphase), harden Docker Hub package distribution.
-- **Later** — stable schema, public leaderboard, multi-org submission flow.
-
-Track open work on [GitHub Issues](https://github.com/svd-ai-lab/sim-benchmark/issues).
+The package and image identifiers keep the codebase's own name
+(`sim-benchmark-<domain>-fullstack`, `lib/sim_benchmark_verifier`,
+`sim-benchmark/<case>` in `task.toml`). Those are identifiers, not branding: a
+digest already pulled is the reason they do not move.
 
 ## Contributing
 
-PRs welcome. Two common contributions:
+Issue-first: a case PR without a linked, approved proposal issue gets closed
+(it keeps the suite from becoming a drive-by case dump). Two common
+contributions:
 
-- **A new case.** Use [`tools/new_circuit_case.py`](tools/new_circuit_case.py)
-  for circuits or copy an existing fluids case as a template. Run
-  [`tools/lint_case.py`](tools/lint_case.py) and the verifier tests
-  before opening a PR. See [`SCHEMA.md`](SCHEMA.md) §9.
-- **A model harness.** New `agent_harness.py:Agent` subclass; bring your
-  own routing layer. See [`tools/agent_harness.py`](tools/agent_harness.py)
-  for the existing CC + ccr pattern.
+- **A new case.** Copy a sibling in the same track as a template, then fill
+  `task.toml` + `instruction.md` + `tests/spec.json` + `solution/solve.sh`.
+  Three checks have to pass: the oracle scores exactly 1.0, a deliberately
+  broken run scores below 0.5, and **a numerically correct submission written
+  differently from the oracle also scores exactly 1.0** — that third one is
+  where the defects actually are. The contract is [`SCHEMA.md`](SCHEMA.md).
+- **A model.** Harbor owns the runner, so a new model is a credential set and
+  an agent name, not a harness.
+
+Bringing a brand-new solver onto the track follows contract → oracle → runtime;
+see [`.claude/skills/solver-benchmark-blueprint`](.claude/skills/solver-benchmark-blueprint/SKILL.md).
+
 
 ## Citing
 
 ```bibtex
-@misc{simbenchmark2026,
-  title  = {sim-benchmark: An Industrial Simulation Agent Benchmark},
+@misc{hwebench2026,
+  title  = {HWE-bench: A Hardware-Engineering Agent Benchmark},
   author = {{svd-ai-lab}},
   year   = {2026},
-  url    = {https://github.com/svd-ai-lab/sim-benchmark}
+  url    = {https://github.com/svd-ai-lab/hwe-bench}
 }
 ```
 
 ## License
 
-Apache 2.0. See [`LICENSE`](LICENSE).
-
-The repo bundles example assets (LTspice netlists, OpenFOAM mesh files)
-that are themselves under their respective upstream licenses; see each
-case's `solution/` directory for source attribution.
+Apache 2.0. See [`LICENSE`](LICENSE). Bundled example assets (meshes, mechanisms,
+parameter sets) remain under their respective upstream licenses; see each case's
+`solution/` directory for source attribution.

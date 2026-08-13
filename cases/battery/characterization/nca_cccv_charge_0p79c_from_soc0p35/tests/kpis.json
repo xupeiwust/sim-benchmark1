@@ -1,0 +1,69 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "nca_cccv_charge_0p79c_from_soc0p35",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "constant-current charge to the voltage limit followed by a constant-voltage hold to the termination current",
+    "parameter_set": "NCA_Kim2011",
+    "model": "SPMe",
+    "model_options": {},
+    "initial_soc": 0.35,
+    "ambient_temperature_K": 298.15,
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 3708.05,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 3708.05,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 3708.04,
+        "settings": {
+          "rtol": 1e-05,
+          "atol": 1e-05
+        }
+      }
+    },
+    "spread_abs": 0.010000000000218279,
+    "spread_rel": 2.6968352638767755e-06,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "ocv_envelope": {
+      "n_samples_checked": 189,
+      "max_abs_overpotential_V": 0.03027463539809272,
+      "max_dissipation_violation_V": -0.008067145069047044,
+      "initial_voltage_error_V": 0.008067145069047044,
+      "Q_span_Ah": 0.4831330397279977
+    },
+    "ocv_max_deviation_basis": "1.4x the reference run's own worst departure from the evaluator's open-circuit-voltage curve, plus 50 mV",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks for what this parameterisation predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "charge_time_s": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Total charge time of the NCA_Kim2011 cell over a constant-current charge at 0.79C from 35% state of charge up to 4.2 V, followed by a constant-voltage hold at 4.2 V until the current falls to 8 mA.",
+      "unit": "s",
+      "gt_value": 3708.05,
+      "physics_min": 100.0,
+      "physics_max": 60000.0,
+      "pass_tol": 185.4025,
+      "gross_error_tol": 741.6100000000001,
+      "weight": 1.0
+    }
+  }
+}

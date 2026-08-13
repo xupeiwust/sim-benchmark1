@@ -1,0 +1,9 @@
+{
+  "case_id": "ecker_graphite_mean_voltage_0p84c_292k",
+  "kind": "rate_capability",
+  "parameter_set": "Ecker2015",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.216,
+  "reproduction_timeout_s": 900
+}

@@ -1,0 +1,25 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     |                                                 |
+|   \\  /    A nd           |                                                 |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object fvSchemes; }
+
+// Second order in space throughout. linearUpwind rather than pure central for
+// the convective term: at 20x20 the cell Peclet number is u*h/nu = 2, exactly
+// the stability limit of central differencing, so a central scheme would put
+// the coarsest grid of the study on the edge of oscillating -- and the whole
+// point of the study is that all three grids are in the same asymptotic range.
+ddtSchemes          { default steadyState; }
+gradSchemes         { default Gauss linear; }
+divSchemes
+{
+    default                             none;
+    div(phi,U)                          Gauss linearUpwind grad(U);
+    div((nuEff*dev2(T(grad(U)))))       Gauss linear;
+}
+laplacianSchemes    { default Gauss linear corrected; }
+interpolationSchemes { default linear; }
+snGradSchemes       { default corrected; }

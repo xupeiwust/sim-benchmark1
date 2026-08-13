@@ -1,0 +1,9 @@
+{
+  "case_id": "nca_pulse_resistance_0p6a_soc0p74",
+  "kind": "pulse",
+  "parameter_set": "NCA_Kim2011",
+  "initial_soc": 0.74,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.0894,
+  "reproduction_timeout_s": 600
+}

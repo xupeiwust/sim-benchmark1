@@ -1,0 +1,57 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/backstep-laminar-armaly-re389"
+description = "2D laminar backward-facing step (Armaly, Durst, Pereira & Schoenung 1983, J. Fluid Mech. 127:473). Expansion ratio 1.94, Re=389 (based on 2x step height and mean inlet velocity), steady laminar regime. Primary recirculation reattachment length xr/h on the bottom wall vs the canonical Armaly experimental/CFD validation quantity."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "laminar", "backstep", "separation", "reattachment", "armaly", "2d", "vv", "openfoam"]
+
+[environment]
+docker_image    = "sim-benchmark-cfd-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 10240
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 3600
+user        = "agent"
+
+[verifier]
+timeout_sec      = 2700
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 10240
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "backstep-laminar-armaly-re389"
+solver            = "openfoam"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 230
+source_type       = "paper"
+source_channel    = "paper"
+source_citation   = "Armaly, B. F., Durst, F., Pereira, J. C. F. and Schoenung, B., 'Experimental and theoretical investigation of backward-facing step flow,' Journal of Fluid Mechanics, Vol. 127, 1983, pp. 473-496. DOI:10.1017/S0022112083002839. Canonical laminar BFS validation: expansion ratio 1.94, primary reattachment length xr/S vs Re."
+source_url        = "https://doi.org/10.1017/S0022112083002839"
+difficulty_tier   = "M"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_v2_reproduction"
+score_template    = "numerical"
+leakage_risk      = 2
+capability_target = "physics"
+demand_record     = "docs/demand_sources/records/paper/cfd/demand-cfd-backstep-laminar-armaly-re389-paper-001.yaml"
+tags              = ["native-openfoam", "field-derived-kpi", "separation", "reattachment", "wall-bounded", "laminar"]

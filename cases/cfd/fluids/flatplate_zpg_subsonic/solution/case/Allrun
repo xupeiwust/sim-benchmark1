@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eo pipefail
+cd "$(dirname "$0")"
+if ! command -v blockMesh >/dev/null 2>&1; then
+    set +u
+    source /usr/lib/openfoam/openfoam2412/etc/bashrc
+    set -u
+fi
+# Every solver step leaves a log -- see #286/#300/#336: simpleFoam exits 0
+# whether its criterion fired or its iteration budget ran out, and this
+# oracle was one of three leaving nothing on disk that could tell them apart.
+blockMesh 2>&1 | tee log.blockMesh
+checkMesh 2>&1 | tee log.checkMesh
+simpleFoam 2>&1 | tee log.simpleFoam
+simpleFoam -postProcess -func WallShear -latestTime 2>&1 | tee log.wallShear
+postProcess -func WallSurface -latestTime 2>&1 | tee log.wallSurface
+simpleFoam -postProcess -func ForceCoeffs -latestTime 2>&1 | tee log.forceCoeffs
+python3 extract_plate.py

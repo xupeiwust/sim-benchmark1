@@ -1,0 +1,65 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "naca0012_subsonic",
+  "solver": "openfoam",
+  "source": {
+    "primary_url": "https://tmbwg.github.io/turbmodels/naca0012numerics_val.html",
+    "grid_url": "https://raw.githubusercontent.com/TMBWG/turbmodels/main/NACA0012_grids/n0012_225-65.p2dfmt",
+    "reference_url": "https://raw.githubusercontent.com/TMBWG/turbmodels/main/NACA0012numerics_val/cfl3d_results_sa.dat",
+    "data_source": "NASA Turbulence Modeling Resource, NACA 0012 numerics study. CFL3D with Spalart-Allmaras on the SAME 225x65 grid this case supplies (h = sqrt(1/N) = 0.00835, 14336 cells), averaged over TMR's three independent grid families: CL 1.0834344, CD 0.0147120400. The two KPIs take that reference differently and the difference is deliberate -- CL_at_alpha_10's gt_value IS the published CL, CD_at_alpha_10's gt_value is this repo's own oracle and the published CD is cited provenance only. Which is which, and why, is in each KPI's pass_tol_source; do not read this field as saying both are cross-code (#295)."
+  },
+  "oracle_provenance": {
+    "method": "simpleFoam + Spalart-Allmaras on the supplied official TMR grid, wall-resolved (first-layer spacing 8.02e-6 c, no wall functions), nuTilda_inf = 3 nu_inf per TMR's SA freestream, Re_c = 6e6, 6000 SIMPLE iterations to residualControl.",
+    "our_value": {
+      "CL_at_alpha_10": 1.073245,
+      "CD_at_alpha_10": 0.0125844
+    },
+    "agreement": "OpenFOAM lands 0.94% below the CFL3D three-family mean in lift on the same grid — inside the band this case scores against. In drag it lands 14.5% below CFL3D at this grid, while sitting only 3.1% above the grid-converged value: OpenFOAM shows much less coarse-grid drag overshoot than CFL3D does here. NASA documents (openfoam_issues.html, AIAA 2014-2087) that OpenFOAM's SA does not reproduce TMR's SA equations exactly; that documented implementation gap is what makes the drag band wide, and it is carried explicitly in T_good_source rather than buried in a round percentage.",
+    "gt_type_note": "Neither gt_value is experiment. Ladson's measured CL/CD are a different question and are not what is scored; what is scored is a reference solution from this class of tool at this operating point on this grid. CL_at_alpha_10 takes that reference from published cross-code CFD (CFL3D-SA, three-family mean at this grid level). CD_at_alpha_10 cannot: the same published series gives 0.0147120400 there, no OpenFOAM run reaches it, and anchoring on it would zero this repo's own oracle -- so CD is anchored on the oracle and the published value stays as provenance. One case, two KPIs, two sources (#295).",
+    "supersedes": "The previous oracle meshed the airfoil with snappyHexMesh and no boundary layers (y+ ~ 1000, wall functions), which stalled prematurely at alpha = 10 and put CL 38% low and CD 8.6x high against this same reference. Its tolerances had been widened until both the stalled and the attached solution scored, which is precisely why the case could not tell them apart. Its calibration note held that re-anchoring needed a 1-2M-cell wall-resolved mesh; NASA's own grid is wall-resolved at 14336 cells and solves in minutes, which is what made this rebuild cheap.",
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "stopping": {
+      "stops_on": "criterion",
+      "criterion": "The SOLUTION stops changing, not a residual threshold: the run proceeds in blocks of 1000 iterations and stops the first time both Cd and Cl have changed by less than 2e-5 relative over one whole block. Declared and evaluated in solution/case/run_case.py (SETTLE_BLOCK / SETTLE_TOL); the run writes stopping.json recording which way it stopped, and a run that reaches the cap without settling exits non-zero instead of reporting (#273's rule, measured as a negative control below).",
+      "converged_iterations": 8000,
+      "iteration_cap": 18000,
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU, #336. Residual floors and the 30000-iteration probe from #286 / #295 / #312; the settling trajectory, the criterion, the two rejected implementations and both controls from #336.",
+      "why_not_a_residual_criterion": "The residuals on this case's own TMR 225x65 grid stop moving in the first significant figure by iteration 7500 and sit at Ux 3.6e-9, p 3.5e-8 and nuTilda 1.08e-5 out to 30000, four orders above the 1e-9 the case used to declare on nuTilda. So no residual threshold here is both reachable and meaningful. Worse, the four reachable candidates measured in #312 fire at 631 / 1222 / 1827 / 3105 and move CD's gt_value by 1.98% / 0.55% / 0.28% / 0.075%, and the trade-off runs the wrong way -- the candidate that disturbs gt least sits only 1.1x above the residual floor, fragile in exactly the direction that created this defect. #295's ruling was therefore to change WHAT THE CRITERION IS ABOUT rather than to loosen it, so that the landing point does not move and gt_value does not have to.",
+      "why_not_runtimecontrol": "OpenFOAM's own runTimeControl `average` condition on (Cd Cl) was tried first and cannot express this criterion with any margin. Measured on this grid it fires at iteration 4230 with tolerance 1e-5 and 4758 with 2e-6, and does not fire inside 20000 iterations with 1e-6 -- its measure floors out between 1e-6 and 2e-6, so every setting either stops far too early (4230 lands 0.025% from gt, five times the target) or never. The explicit block comparison has no floor: the same measure falls from 5.3e-3 at 2000 through 2.0e-5 at 8000 to 9.2e-9 at 20000, so the tolerance sits three orders above where the measure ends.",
+      "gt_did_not_move": "THE POINT OF THE REPAIR. CD_at_alpha_10's gt_value 0.012584393709 is bit-identical to the old capped 6000-iteration run, and it is untouched. Under the new criterion the oracle reports 0.012583862339, which is 0.0042% away -- inside the 0.005% the ruling set, and 0.08% of the 5% band. CL_at_alpha_10 reports 1.0732297287 against the published TMR gt 1.0834344, the same 0.94% as before. The insensitivity is structural rather than lucky: Cd is flat to 0.005% of gt for every stopping point from about 5500 iterations onward, so where exactly the criterion fires does not matter, and every tolerance from 5e-6 to 2e-4 fires between 6000 and 9000.",
+      "controls": "Positive: solve.sh through tests/test.sh, the real strip-and-re-run, reward.json 1.0, solve 221 s and verifier 221 s against reproduction_timeout_s = 900 (24.6%). Negative: the same oracle with SETTLE_TOL 1e-12 and the cap at 3000 exits 1, writes no results.csv, and leaves stopping.json with converged false and the whole trace -- so a run that did not settle cannot report a number. Restarting between blocks does not perturb the answer: the blocked run reads Cd 0.012583862339 at iteration 8000 against 0.01258386233 for a single continuous run to the same iteration.",
+      "note": "Formally broken, substantively fine, and the repair had to keep both halves true. The old declaration -- residualControl p 1e-8 / U 1e-9 / nuTilda 1e-9 -- was never once met, so the case announced a stopping rule while stopping on endTime 6000, and nothing on disk could tell the two apart. But the SOLUTION was settled: 6000 against 30000 iterations moves CL by 0.0004% and CD by 0.005%, which is the opposite of ghia_re100 and the reason the reported numbers were never a property of the cap. So the criterion changed and gt_value did not (#295, #336)."
+    }
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "CL_at_alpha_10": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Lift coefficient at alpha = 10 deg on the supplied grid",
+      "gt_value": 1.0834344,
+      "pass_tol": 0.05417172,
+      "gross_error_tol": 0.1665656,
+      "physics_min": 0.9,
+      "physics_max": 1.25,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Tightened from 10%. The 10% was justified as absorbing a free closure choice; the instruction now pins Spalart-Allmaras, which is what gt_value is and what the oracle runs. The oracle lands 0.94% from gt_value. Thin-airfoil theory's 2*pi per radian is far outside the band, which is what the instruction's analytical-shortcut notice asserts and the tightening only strengthens.",
+      "gt_value_source": "PUBLISHED CROSS-CODE, unlike CD on this same case. gt_value 1.0834344 is the CFL3D-SA three-family mean at this case's own grid level, from NASA TMR's cfl3d_results_sa.dat at h = .00835: 1.0838199480 / 1.0831563192 / 1.0833269410, mean 1.0834344027. Re-verified against that file in #295 — the recorded gt is its rounding to 2.7e-9. This repo's oracle lands 1.0732446052, 0.940% below, well inside the band, which is why CL could stay anchored where CD could not. Consequence: unlike CD, this gt does not move when the oracle's landing point moves."
+    },
+    "CD_at_alpha_10": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Drag coefficient at alpha = 10 deg on the supplied grid",
+      "gt_value": 0.012584393709,
+      "pass_tol": 0.00062921968545,
+      "gross_error_tol": 0.002,
+      "physics_min": 0.008,
+      "physics_max": 0.03,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Tightened from 10%. Drag has no closed form at all — its viscous part requires resolving the boundary layer on the supplied grid.",
+      "gt_value_source": "THIS REPO'S ORACLE, not the published cross-code value — the opposite of CL, and the sentence that used to stand here said the opposite of this one. gt_value 0.012584393709 is bit-identical to solution/solve.sh's own output on the supplied grid. The published CFL3D-SA three-family mean at this grid level is 0.0147120400 (0.0144876 / 0.0149485 / 0.0147000, from NASA TMR's cfl3d_results_sa.dat at h = .00835) and gt was that value until 7fa21426 re-anchored it. The reason for re-anchoring holds: the 14.46% between the two is a difference between OpenFOAM's SA and TMR's that NASA documents itself (openfoam_issues.html, AIAA 2014-2087), no OpenFOAM run closes it, and scoring drag against the published number bills the agent for a cross-code difference rather than measuring anything the agent did — this repo's own perfect oracle would score zero. What went wrong is the record, not the decision: 7fa21426 wrote the re-anchoring down here, 0f22d56e's re-band deleted it and replaced it with 'gt_value is the NASA TMR cross-code SA reference on the supplied grid ... the oracle reproduces gt_value exactly', which is false in both halves and stood for three commits while oracle_provenance.agreement in this same file went on recording the 14.5% gap. Re-verified against the primary file in #295. TWO CONSEQUENCES A READER NEEDS. (1) This gt moves whenever the oracle's landing point moves, so the stopping rule below is not a detail — see oracle_provenance.stopping. (2) The published CD sits OUTSIDE this KPI's band (5% of gt is [0.011955, 0.013214]), which is deliberate anti-recall (a model reciting TMR's tabulated drag scores zero) and is also a trap the case sets with its own citation: instruction.md hands the agent the TMR numerics page, and that page tabulates the number this KPI zeroes."
+    }
+  }
+}

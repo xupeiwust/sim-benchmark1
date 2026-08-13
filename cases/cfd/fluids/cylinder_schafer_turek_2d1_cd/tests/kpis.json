@@ -1,0 +1,51 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "cylinder_schafer_turek_2d1_cd",
+  "source": {
+    "primary_url": "https://doi.org/10.1007/978-3-322-89849-4_39",
+    "data_source": "Schäfer, M. and Turek, S. (with Durst, F., Krause, E., Rannacher, R.), 'Benchmark Computations of Laminar Flow Around a Cylinder', in Flow Simulation with High-Performance Computers II, Notes on Numerical Fluid Mechanics 48:547-566, Vieweg (1996). DOI:10.1007/978-3-322-89849-4_39. Test case 2D-1: steady laminar incompressible flow around a circular cylinder (D=0.1) in a 2.2 x 0.41 m channel, cylinder centre (0.2,0.2), parabolic inlet Umax=0.3 -> Umean=0.2, nu=1e-3 -> Re=20. Quantity of interest: drag coefficient cD.",
+    "ref_data_source": "FeatFlow DFG benchmark 2D-1 reference table (https://wwwold.mathematik.tu-dortmund.de/~featflow/en/benchmarks/cfdbenchmarking/flow/dfg_benchmark1_re20.html): the committee reference drag coefficient is cD = 5.57953523384.",
+    "reference_value": "cD = 5.57953523384 (Schäfer-Turek / FeatFlow DFG benchmark 2D-1, steady laminar Re=20)",
+    "note": "gt_value is the PUBLISHED committee reference (5.57953523384), NOT the bundled solver output. The included OpenFOAM simpleFoam laminar case (O-grid around the cylinder, ~25k cells, parabolic codedFixedValue inlet, forceCoeffs with magUInf=0.2, lRef=0.1, Aref=D*span) reproduces the reference within the T_good band; the agent must produce its own real OpenFOAM solve and read cD from the integrated surface force.",
+    "cd_definition_note": "cD = 2 F_D / (rho Umean^2 D h) with Umean=0.2, D=0.1, rho=1, h=span. In OpenFOAM forceCoeffs: magUInf=0.2, lRef=0.1, Aref=D*span (frontal area), rhoInf=1. The Cd column index in coefficient.dat must be read from the header (do not assume), per of_forcecoeffs_column_order."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "cd": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Drag coefficient cD of the cylinder for the Schäfer-Turek DFG benchmark 2D-1 (steady laminar, Re=20), cD = 2 F_D / (rho Umean^2 D h)",
+      "gt_value": 5.57953523384,
+      "pass_tol": 0.278976761692,
+      "gross_error_tol": 0.66954423,
+      "physics_min": 4.5,
+      "physics_max": 7.0,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Widened from 4%. gt is the published Schaefer-Turek / FeatFlow DFG 2D-1 committee reference cD = 5.57953523384, not a solver output; the oracle lands at 5.5855, 0.11% away, so the widening costs no discrimination the case had. No recallable value enters the band that was not already at its centre — the committee reference IS gt. physics_min = 4.5 / physics_max = 7.0 bracket the confined-cylinder Re = 20 drag for this 2.2 x 0.41 geometry, so an under-resolved cylinder boundary layer, a wrong normalisation or Aref, a wrong inlet profile or a wrong nu still fall outside.",
+      "kpi_quality_note": "gt=published benchmark; anti-shortcut=OpenFOAM artifact gate. ANTI-SHORTCUT STATUS: STRONG. The DFG 2D-1 drag coefficient has NO closed form — it is set by the full pressure+viscous force distribution over a confined cylinder with a parabolic inlet at finite blockage, and is THE canonical Schäfer-Turek/DFG validation quantity. It cannot be inferred from an unbounded-Stokes/Oseen drag law or a flat-plate correlation (those neglect channel blockage and the parabolic profile). The value must be read from the integrated cylinder surface force in a converged field; a reported value with no polyMesh/ + non-zero time-dir U,p artifact scores 0 via the openfoam artifact detector. Doubly gated: tolerance band (no recallable formula matches at this blockage) + artifact detector.",
+      "gt_value_source": "Published committee reference cD = 5.57953523384 (FeatFlow DFG benchmark 2D-1 table; Schäfer & Turek 1996). T_good=4% T_bad=12% of gt; verified the unbounded-Stokes/Oseen recall values (cD_Stokes ~ huge, cD_Oseen for an isolated cylinder differ by >50%) lie outside T_good, defeating the analytical shortcut.",
+      "pass_tol_pct": 4,
+      "gross_error_tol_pct": 12
+    }
+  },
+  "oracle_provenance": {
+    "solver": "openfoam",
+    "openfoam_version": "ESI v2412",
+    "gt_kind": "committee-reference",
+    "reference": "Schäfer & Turek 1996 DFG benchmark 2D-1; FeatFlow reference table cD=5.57953523384",
+    "calibration_date": "pending",
+    "stopping": {
+      "criterion": "residualControl p/U 1e-7 in solution/case/system/fvSolution",
+      "stops_on": "criterion",
+      "converged_iterations": 914,
+      "iteration_cap": 3000,
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU, #286",
+      "note": "Stops on its criterion, at 3.3x headroom. Recorded because the number is not otherwise knowable without re-running: simpleFoam exits 0 either way and leaves the same fields behind, so a cap that had drifted below the criterion would look exactly like this one (#273, #286)."
+    },
+    "kpi_quality_note": "gt=published benchmark; anti-shortcut=OpenFOAM artifact gate. Headline KPI cd carries full weight; mesh/numerical KPIs are weight-0 diagnostics."
+  },
+  "oracle_status": "cfd_openfoam_interface_hand"
+}

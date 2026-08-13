@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+// Kinematic pressure (incompressible, m^2/s^2). The streamwise driving is a
+// body force (constant/fvOptions), NOT a pressure difference, so the cyclic
+// pressure field only carries the (zero-mean) periodic fluctuation. A single
+// reference cell pins the level (see system/fvSolution pRefCell/pRefValue).
+
+dimensions [0 2 -2 0 0 0 0];
+
+internalField uniform 0;
+
+boundaryField
+{
+    inlet
+    {
+        type            cyclic;
+    }
+    outlet
+    {
+        type            cyclic;
+    }
+    bottomWall
+    {
+        type            zeroGradient;
+    }
+    topWall
+    {
+        type            zeroGradient;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

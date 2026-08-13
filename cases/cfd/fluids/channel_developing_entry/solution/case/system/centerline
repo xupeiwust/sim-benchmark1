@@ -1,0 +1,23 @@
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class dictionary;
+    object centerline;
+}
+type sets;
+libs ("libsampling.so");
+interpolationScheme cellPoint;
+setFormat raw;
+fields (U);
+sets
+(
+    centerline
+    {
+        type uniform;
+        axis x;
+        start (0.005 0 0.5);
+        end (5.995 0 0.5);
+        nPoints 600;
+    }
+);

@@ -1,39 +1,96 @@
-__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
-.venv/
-.venv-*/
-.sim/
-/logs/
-/tmp/
-/jobs/
-.DS_Store
-Thumbs.db
-
-# Sub-agent / dev scratch scripts. Convention: anything prefixed `tmp_`
-# at repo root or in tools/ is a one-shot script not meant for the tree.
-tmp_*.py
-tmp_*.sh
-
-# uv lockfiles for sub-packages: not adopted as canonical yet.
-lib/*/uv.lock
-
-# Local API credentials (never commit)
-API
-*_API.json
-claude_API.json
-_attic/
-*.bak
-# vv-sources/: working scratch space for case-source mining (PDFs, papers,
-# v&v library snapshots, mined inventories). Local-only — not tracked.
-vv-sources/
 
 # Build-context symlinks pointing at sibling repos (sim-cli, sim-ltspice,
-# sim-plugin-ltspice, sim-skills). These are recreated locally on each
+# Local API credentials (never commit)
+# Oracle run-output residue under solution/ — regenerated on every run, not
+# Root scratch (per CLAUDE.md: no runtime code at repo root). The tmp_*.py /
+# Sub-agent / dev scratch scripts. Convention: anything prefixed `tmp_`
+# at repo root or in tools/ is a one-shot script not meant for the tree.
 # build host via README instructions; not portable across Win/Linux.
+# sim-plugin-ltspice, sim-skills). These are recreated locally on each
+# source. The case ships solve.sh; result.json / reward*.json are products.
+# tmp_*.sh rules above miss other extensions and one-off probes.
+# uv lockfiles for sub-packages: not adopted as canonical yet.
+# v&v library snapshots, mined inventories). Local-only — not tracked.
+# vv-sources/: working scratch space for case-source mining (PDFs, papers,
+*.bak
+*.egg-info/
+*.pyc
+*.pyo
+*.tar
+*_API.json
+# Exported conversation transcripts (/export) dropped under a case dir
+cases/**/benchmark.txt
+.DS_Store
+# A compute host runs pytest in the tree it was handed, so this appears there
+# and is extra by definition. Until it was listed here it was the only thing on
+# either host that `check_host_tree.py` could not account for, which made the
+# one class of drift that needs a person's eye look like it had five members.
+.pytest_cache/
+.sim/
+.venv-*/
+.venv/
+/decode.py
+/jobs/
+# Harbor writes one job tree per launcher invocation; -o names it, so these
+# multiplied at the repo root (jobs-screen, jobs-L1, jobs-gpt...) until the
+# launcher started nesting them under results-local/jobs/ — being ignored, they
+# never showed up in `git status` to make the clutter visible. Kept as a net for
+# a `harbor run -o ...` issued by hand.
+/jobs-*/
+/logs/
 /sim-cli
 /sim-ltspice
 /sim-plugin-ltspice
 /sim-skills
+/tmp/
+/tmp_*
+API
+Thumbs.db
+__pycache__/
+_attic/
+_oracle/
+cases/**/solution/result.json
+cases/**/solution/reward.json
+cases/**/solution/reward_detail.json
+claude_API.json
+lib/*/uv.lock
 runs-attic-*/
+tmp_*.py
+tmp_*.sh
+vv-sources/
+
+# Local benchmark result store (figures, reward detail, run index).
+# Results are data, not code: they stay on the machine that produced them.
+results-local/
+results/
+
+# Agent scratch — ONE place: `.scratch/` at the root of the worktree you are
+# working in. One-shot probe scripts, sweep logs, intermediate dumps.
+#
+# Anchored on purpose. Unanchored it would also bless a `.scratch/` inside a
+# case directory, and `environment/` there is hashed into the case's container
+# identity by Harbor whether git ignores it or not — so the ignore would hide
+# from `tools/check_host_tree.py` exactly the class of file that tool exists to
+# find. At the root there is nothing to hide from: no compared path reaches it.
+#
+# Per-worktree by construction, so parallel agents do not collide, and it is
+# what #345 already used before it was ignored.
+/.scratch/
+
+# `/temp/` and `/tmp/` (above) are the same idea under two earlier names. They
+# stay ignored as a net for old habits; neither is the convention any more.
+/temp/
+
+# A stale `python -m build` output tree was tracked here; the package is built
+# from source, so the copy only ever drifted.
+lib/*/build/
+
+# Agent worktrees: real git worktrees, tracked by git itself, never content.
+.claude/worktrees/
+
+
+# The board deploy stamp: written by `check_board_deploy.py --write-stamp`
+# immediately before the rsync that carries it, so the host can name the commit
+# it is serving (#534 item 5). Per-deploy, not per-commit -- it records what was
+# shipped, which is exactly the fact a tracked file could not carry.
+deploy/hwe-bench-log/.deploy-stamp.json

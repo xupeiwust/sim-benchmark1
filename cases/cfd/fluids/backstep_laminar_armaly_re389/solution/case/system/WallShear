@@ -1,0 +1,12 @@
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class dictionary;
+    object WallShear;
+}
+type wallShearStress;
+libs (fieldFunctionObjects);
+patches (lower_wall_downstream lower_wall_upstream step_face upper_wall);
+writeControl timeStep;
+writeFields true;

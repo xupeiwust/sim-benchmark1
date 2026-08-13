@@ -1,0 +1,62 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "nh3_flame_speed_repair_mechanism",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "freely-propagating adiabatic premixed flame, mixture-averaged transport, inlet velocity taken as the unstretched laminar flame speed",
+    "mechanism": "example_data/ammonia-CO-H2-Alzueta-2023.yaml",
+    "phase": null,
+    "cantera_version": "3.2.0",
+    "variants": {
+      "baseline": {
+        "value": 9.82145,
+        "settings": {
+          "ratio": 3,
+          "slope": 0.06,
+          "curve": 0.12
+        }
+      },
+      "fine": {
+        "value": 9.76669,
+        "settings": {
+          "ratio": 2,
+          "slope": 0.03,
+          "curve": 0.06
+        }
+      },
+      "coarse": {
+        "value": 9.87358,
+        "settings": {
+          "ratio": 4,
+          "slope": 0.1,
+          "curve": 0.2
+        }
+      }
+    },
+    "spread_abs": 0.05476,
+    "spread_rel": 0.005575551471524054,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "gt_type_note": "Mechanism-specific solver reference, not an experimental measurement: the task asks for what this mechanism predicts.",
+    "reanchor_note": "Re-anchored at phi=0.94 / 328 K / 1.7 atm by #264. Until then this case carried the operating point, gt_value, band and all three variant values of `nh3_air_flame_speed_phi1p03_1p2atm_312k` byte for byte -- one measurement counted twice in the live set, and counted twice again wherever cases are aggregated by family. The new point was calibrated with the same three refinement settings and the same pinned Cantera 3.2.0, and the procedure was validated before it was trusted: it reproduced the OLD point's stored 11.187 / 11.0876 / 11.2853 to the last digit, and the in-container oracle then returned 9.82145 for the new point, matching the host-side calibration exactly. The band is the same flat 5% it always was and moved only because gt_value did. **De-duplicating did not make this case harder** -- #257 measured it saturated, and the reason is that the planted defect is a named string constant on line 11 of the supplied script, which a different operating point does not touch."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "flame_speed_cm_s": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Unstretched laminar flame speed of ammonia/air at phi=0.94, 328 K unburned, 1.7 atm, mixture-averaged transport.",
+      "unit": "cm/s",
+      "gt_value": 9.82145,
+      "physics_min": 1.0,
+      "physics_max": 60.0,
+      "pass_tol": 0.4910725,
+      "gross_error_tol": 1.96429,
+      "weight": 1.0
+    }
+  }
+}

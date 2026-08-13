@@ -1,0 +1,59 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "flatplate_zpg_subsonic",
+  "historical_revalidation_2026_06_07": {
+    "status": "superseded by native-openfoam-v2.1; retained for provenance only",
+    "host": "rserver — sim-benchmark-cfd-fullstack:latest (OpenFOAM ESI v2412)",
+    "oracle_score": 0.9973,
+    "anti_cheat": "openfoam artifact detector active (polyMesh + time dir), solver_evidence=True",
+    "note": "This score used the old source-provenance verifier and pre-v2 KPI grouping; do not compare it with native v2.1 scores."
+  },
+  "source": {
+    "primary_url": "https://tmbwg.github.io/turbmodels/flatplate.html",
+    "data_source": "NASA TMR SST-Vm/SST flat-plate results, including CFL3D/FUN3D compressible data and the published incompressible SST/SST-V comparison",
+    "cross_code_spread_cf": "TMR finest 545x385 compressible SST-Vm: 0.00269055 to 0.00269085 across FUN3D and CFL3D; NASA separately documents the incompressible-code spread",
+    "cross_code_spread_drag": "TMR finest-grid compressible SST-Vm: CFL3D 0.002853324 vs FUN3D 0.002844174"
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "cf_x097": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Skin-friction coefficient C_f at x=0.9700 on the plate",
+      "gt_value": 0.0026907,
+      "pass_tol": 0.000134535,
+      "gross_error_tol": 0.0004,
+      "physics_min": 0.0005,
+      "physics_max": 0.01,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Widened from 4.46%. gt is the midpoint of the published NASA TMR finest 545x385 compressible SST-Vm results, CFL3D 0.00269085355 and FUN3D 0.00269054633, which agree to 0.01%; NASA reports SST / SST-V / SST-Vm are nearly identical for this low-speed case. The oracle lands 3.2% away, so the band also covers the documented incompressible and practical OpenFOAM spread. No recallable value enters that was not already at the band's centre — both published codes ARE gt."
+    },
+    "drag_coefficient": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Integrated viscous drag coefficient over the full plate length",
+      "gt_value": 0.002849,
+      "pass_tol": 0.00014245,
+      "gross_error_tol": 0.0004,
+      "physics_min": 0.0005,
+      "physics_max": 0.01,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Widened from 3.51%. gt is the midpoint of the same published NASA TMR finest-grid family (CFL3D 0.002853324, FUN3D 0.002844174). The oracle lands 3.1% away, which is the low-Mach incompressible approximation plus practical mesh and numerics; 3.51% left that margin at 0.4 percentage points."
+    }
+  },
+  "oracle_provenance": {
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "gt_provenance": "published_reference",
+    "reference": "NASA Turbulence Modeling Resource, flat-plate verification case. gt cf at x=0.97 = 0.0026907 is the midpoint of the published finest-grid (545x385) compressible SST-Vm results from CFL3D (0.00269085355) and FUN3D (0.00269054633).",
+    "stopping": {
+      "criterion": "residualControl p/U/k/omega 1e-5 in solution/case/system/fvSolution",
+      "stops_on": "criterion",
+      "converged_iterations": 1641,
+      "iteration_cap": 4000,
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU, #286",
+      "note": "Shipped with endTime 3000 against 1641 measured iterations -- converged, by 83%, on one host. The cap is raised to above twice the measured cost so a slower path to the same criterion still converges rather than silently reporting the cap's answer. The run is unchanged either way: re-measured at endTime 4000 it stops at the same 1641 iterations, reporting cf_x097 = 0.00260384889 and drag_coefficient = 0.00276106336, both inside this case's bands. gt_value is the published NASA TMR CFL3D/FUN3D midpoint and does not move. This oracle keeps no solver log at all -- its Allrun runs `simpleFoam` without redirecting -- so nothing on disk recorded which of the two stopped it before this measurement (#286)."
+    }
+  }
+}

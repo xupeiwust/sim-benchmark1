@@ -1,0 +1,49 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      omega;
+}
+
+dimensions [0 0 -1 0 0 0 0];
+
+// Free-stream specific dissipation rate, fixed by the eddy-viscosity ratio the
+// task states rather than by a mixing length:
+//   nut_inf = 0.009 * nu = 0.009 * 3.3333333e-7 = 3.0e-9
+//   omega   = k / nut_inf = 8.8935e-7 / 3.0e-9 = 296.45
+internalField uniform 296.45;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 296.45;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform 296.45;
+        value           uniform 296.45;
+    }
+    wall
+    {
+        type            omegaWallFunction;
+        value           uniform 60;
+    }
+    top
+    {
+        type            symmetry;
+    }
+    symLower
+    {
+        type            symmetry;
+    }
+
+    frontBack
+    {
+        type            empty;
+    }
+}

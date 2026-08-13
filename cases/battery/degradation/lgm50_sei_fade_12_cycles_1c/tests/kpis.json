@@ -1,0 +1,71 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "lgm50_sei_fade_12_cycles_1c",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "per-cycle discharge capacity segmented from the reproduced trace, first cycle against last",
+    "parameter_set": "OKane2022",
+    "model": "SPMe",
+    "model_options": {
+      "SEI": "solvent-diffusion limited"
+    },
+    "initial_soc": 1.0,
+    "ambient_temperature_K": 298.15,
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 0.328065,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 0.327984,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 0.327981,
+        "settings": {
+          "rtol": 1e-05,
+          "atol": 1e-05
+        }
+      }
+    },
+    "spread_abs": 8.399999999997299e-05,
+    "spread_rel": 0.0002560468199898587,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "ocv_envelope": {
+      "n_samples_checked": 186,
+      "max_abs_overpotential_V": 0.315823377933385,
+      "max_dissipation_violation_V": -0.15327152537237243,
+      "initial_voltage_error_V": 0.15327152537237243,
+      "Q_span_Ah": 5.1099478137619565
+    },
+    "ocv_max_deviation_basis": "1.4x the reference run's own worst departure from the evaluator's open-circuit-voltage curve, plus 50 mV",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks for what this parameterisation predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "capacity_fade_pct": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Capacity fade of the OKane2022 cell over twelve consecutive cycles, each a 1C discharge to 2.5 V followed by a 1C charge to 4.2 V and a constant-voltage hold at 4.2 V until the current falls to 50 mA, with solid-electrolyte-interphase growth active so the cell ages as it cycles.",
+      "unit": "%",
+      "gt_value": 0.328065,
+      "physics_min": 0.0,
+      "physics_max": 60.0,
+      "pass_tol": 0.01640325,
+      "gross_error_tol": 0.065613,
+      "weight": 1.0
+    }
+  }
+}

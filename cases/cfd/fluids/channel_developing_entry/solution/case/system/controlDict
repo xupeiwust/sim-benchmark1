@@ -1,0 +1,43 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     simpleFoam;
+
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+// A CAP, not the stopping rule. `residualControl` in fvSolution is what stops
+// this run: it is first met at iteration 1672 on the domain image (measured on
+// this case's own shipped mesh, #286), and the cap sits above twice that. It
+// used to be 2000, which this case did converge under -- by 1.20x, on one
+// host. That is not a margin. The iteration count is not a constant of the
+// case: GAMG agglomeration and the linear-solver path move it between OpenFOAM
+// builds, and `lid_driven_cavity_ghia_re100` is what the same margin looks like
+// once it goes negative -- it stopped on its cap for its whole life with
+// nothing recording that it had (#266, #273). Raising the cap changes no
+// number here: re-measured at 4000, the run still stops at the same 1672
+// iterations with the same reported value.
+endTime         4000;
+
+deltaT          1;
+
+writeControl    timeStep;
+writeInterval   500;
+
+purgeWrite      2;
+
+writeFormat     ascii;
+writePrecision  8;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;

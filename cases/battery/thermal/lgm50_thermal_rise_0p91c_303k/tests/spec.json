@@ -1,0 +1,9 @@
+{
+  "case_id": "lgm50_thermal_rise_0p91c_303k",
+  "kind": "thermal",
+  "parameter_set": "ORegan2022",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.5243,
+  "reproduction_timeout_s": 600
+}

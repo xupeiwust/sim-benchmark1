@@ -17,8 +17,8 @@ USD cost rules:
 Usage:
   python3 tools/aggregate_economics.py jobs/release-v0.1-ltspice20-minimax-m25/2026-05-06__17-13-51 \
       jobs/release-v0.1-ltspice20-minimax-m27/2026-05-06__22-06-27 \
-      --output-json results/v0.1/economics.json \
-      --output-md  results/v0.1/economics.md
+      --output-json results-local/economics.json \
+      --output-md  results-local/economics.md
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ from pathlib import Path
 #   variant, so we apply the 20 % of input ratio observed on the base + M2.7
 #   tiers as a stable estimate.
 # Updates: keep this dict in sync with sources cited in
-# `results/v0.1/economics.md`.
+# `results-local/economics.md`.
 MODEL_PRICES: dict[str, dict[str, float]] = {
     "MiniMax-M2.5-highspeed": {
         "input": 0.30, "output": 2.40, "cache_read": 0.06,

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -eo pipefail
+cd "$(dirname "$0")"
+if ! command -v blockMesh >/dev/null 2>&1; then
+    set +u
+    source /usr/lib/openfoam/openfoam2412/etc/bashrc
+    set -u
+fi
+# Keep a log of every solver step: simpleFoam exits 0 whether it stopped on a
+# criterion or on its iteration budget, so without a log nothing on disk says
+# which happened.
+blockMesh 2>&1 | tee log.blockMesh
+checkMesh 2>&1 | tee log.checkMesh
+simpleFoam 2>&1 | tee log.simpleFoam
+simpleFoam -postProcess -func bulkU -latestTime 2>&1 | tee log.bulkU
+postProcess -func writeCellCentres -latestTime 2>&1 | tee log.cellCentres
+python3 extract_channel.py 0.0025316455696202532

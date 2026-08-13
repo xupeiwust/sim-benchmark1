@@ -1,0 +1,11 @@
+{
+  "case_id": "ndodecane_air_idt_phi0p83_1319k_14p2atm",
+  "kind": "idt",
+  "mechanism": "nDodecane_Reitz.yaml",
+  "fuel": "c12h26",
+  "phi": 0.83,
+  "T0_K": 1319.0,
+  "P0_atm": 14.2,
+  "phase": "nDodecane_IG",
+  "reproduction_timeout_s": 900
+}

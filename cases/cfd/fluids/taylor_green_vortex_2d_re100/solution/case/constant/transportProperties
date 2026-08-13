@@ -1,0 +1,16 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Taylor-Green (1937) decaying vortex, nondimensional.
+// Re = U_ref * L_ref / nu with U_ref = 1, L_ref = 1, so nu = 1/Re.
+// For Re = 100:  nu = 1/100 = 0.01.
+
+transportModel  Newtonian;
+
+nu              0.01;

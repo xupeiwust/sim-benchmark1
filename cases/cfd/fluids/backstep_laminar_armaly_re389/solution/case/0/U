@@ -1,0 +1,38 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+dimensions [0 1 -1 0 0 0 0];
+
+internalField uniform (1.0 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        // Uniform mean inlet velocity; the upstream development length
+        // (x in [-20 S, 0]) lets the laminar profile fill out before the
+        // step. U_mean = 1.0 m/s gives Re = U_mean * 2 S / nu = 389.
+        type            fixedValue;
+        value           uniform (1.0 0 0);
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform (0 0 0);
+        value           uniform (1.0 0 0);
+    }
+    "(upper_wall|lower_wall_upstream|lower_wall_downstream|step_face)"
+    {
+        type            noSlip;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

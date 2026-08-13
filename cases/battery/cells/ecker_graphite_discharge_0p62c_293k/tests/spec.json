@@ -1,0 +1,9 @@
+{
+  "case_id": "ecker_graphite_discharge_0p62c_293k",
+  "kind": "discharge",
+  "parameter_set": "Ecker2015",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.1627,
+  "reproduction_timeout_s": 600
+}

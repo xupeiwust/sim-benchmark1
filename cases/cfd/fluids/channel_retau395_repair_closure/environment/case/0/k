@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      k;
+}
+
+dimensions [0 2 -2 0 0 0 0];
+
+// Turbulent kinetic energy. In the log layer k ~ u_tau^2 / sqrt(Cmu)
+// = 1 / sqrt(0.09) ~ 3.33 (u_tau = 1). A uniform seed of 1 converges fine.
+internalField uniform 1.0;
+
+boundaryField
+{
+    inlet
+    {
+        type            cyclic;
+    }
+    outlet
+    {
+        type            cyclic;
+    }
+    bottomWall
+    {
+        type            kqRWallFunction;
+        value           uniform 1e-11;
+    }
+    topWall
+    {
+        type            kqRWallFunction;
+        value           uniform 1e-11;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

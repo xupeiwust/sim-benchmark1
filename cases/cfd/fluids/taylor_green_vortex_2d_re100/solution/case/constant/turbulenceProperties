@@ -1,0 +1,12 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      turbulenceProperties;
+}
+
+// The Taylor-Green vortex is an EXACT laminar Navier-Stokes solution: no
+// turbulence model, no k / omega / nut fields.
+simulationType  laminar;

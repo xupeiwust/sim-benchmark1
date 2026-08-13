@@ -1,0 +1,9 @@
+{
+  "case_id": "lco_graphite_pulse_resistance_0p9a_soc0p66",
+  "kind": "pulse",
+  "parameter_set": "Ai2020",
+  "initial_soc": 0.66,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.1101,
+  "reproduction_timeout_s": 600
+}

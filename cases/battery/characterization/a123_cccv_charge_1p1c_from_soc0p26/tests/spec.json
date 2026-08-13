@@ -1,0 +1,9 @@
+{
+  "case_id": "a123_cccv_charge_1p1c_from_soc0p26",
+  "kind": "cccv",
+  "parameter_set": "Prada2013",
+  "initial_soc": 0.26,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.3514,
+  "reproduction_timeout_s": 600
+}

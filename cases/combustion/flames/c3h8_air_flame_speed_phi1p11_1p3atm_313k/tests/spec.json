@@ -1,0 +1,11 @@
+{
+  "case_id": "c3h8_air_flame_speed_phi1p11_1p3atm_313k",
+  "kind": "flame_speed",
+  "mechanism": "gri30.yaml",
+  "fuel": "C3H8",
+  "phi": 1.11,
+  "T0_K": 313.0,
+  "P0_atm": 1.3,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

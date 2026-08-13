@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -eo pipefail
+cd "$(dirname "$0")"
+if ! command -v blockMesh >/dev/null 2>&1; then
+    set +u
+    source /usr/lib/openfoam/openfoam2412/etc/bashrc
+    set -u
+fi
+blockMesh
+checkMesh
+simpleFoam
+simpleFoam -postProcess -func WallShear -latestTime
+postProcess -func WallSurface -latestTime
+python3 extract_reattachment.py

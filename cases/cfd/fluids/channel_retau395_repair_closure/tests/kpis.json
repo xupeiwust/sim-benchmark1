@@ -1,0 +1,46 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "channel_retau395_repair_closure",
+  "source": {
+    "primary_url": "https://pubs.aip.org/aip/pof/article/11/4/943/253866",
+    "reference": "R. D. Moser, J. Kim & N. N. Mansour, 'Direct numerical simulation of turbulent channel flow up to Re_tau=590', Physics of Fluids 11(4):943-945 (1999). DOI 10.1063/1.869966. Re_tau=395 case (actual Re_tau=392.24, Table I).",
+    "reference_value": "Ub/u_tau ~ 17.5 (bulk mean velocity over friction velocity); equals Re_b/Re_tau with the published Re_b ~ 6875 at Re_tau ~ 395 (Re_b based on bulk velocity and channel half-width).",
+    "data_source": "Moser-Kim-Mansour 1999 DNS mean-velocity statistics for the Re_tau=395 plane channel (committee/community reference dataset, UT Austin / former UIUC channel-flow database)."
+  },
+  "kpi_quality_note": "gt=published turbulent benchmark (Moser-Kim-Mansour 1999 DNS at Re_tau=395); anti-shortcut=the evaluator's own re-run plus `has_mesh_and_solution` on the directory that re-run produced (polyMesh + non-zero time dir with U,p), which `openfoam_interface` checks after stripping the submission's artifacts (#211). The sentence this note used to end with -- 'Ub/u_tau is an integral of the whole velocity profile, not recoverable from a closed form, so the agent must actually solve the RANS field' -- was wrong and is removed rather than softened, the same retraction the twin case `turbulent_channel_flow_retau395` already carries (0f22d56e / #197). Integrating the log law over the channel half-height gives Ub/u_tau = (1/kappa)*ln(Re_tau) + B - 1/kappa, which at Re_tau = 395 with kappa = 0.41, B = 5.2 is 17.344: 0.89% from gt = 17.5 and comfortably inside the 5% band, so the closed form does not merely exist, it scores. CLAUDE.md names this KPI by name as the worked example of a value that should be replaced rather than defended. The band is NOT the place to fix that -- #257 classes this case as 'change the KPI', and #264 leaves gt_value and pass_tol untouched.",
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "ub_over_utau": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Bulk mean velocity normalised by friction velocity, Ub/u_tau, for fully-developed turbulent plane-channel flow at Re_tau=395",
+      "gt_value": 17.5,
+      "pass_tol": 0.875,
+      "gross_error_tol": 2.625,
+      "physics_min": 12.0,
+      "physics_max": 25.0,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Unchanged in value — this case already carried 5%, though the note said 6%. gt = Moser-Kim-Mansour 1999 DNS at Re_tau = 395, Ub/u_tau ~ 17.5 (published Re_b ~ 6875 / Re_tau ~ 395); the oracle lands at 17.508, 0.05% away. physics_min / physics_max [12, 25] reject a non-physical or laminar result.",
+      "kpi_quality_note": "ANTI-SHORTCUT: WEAK, and the repair shape does not change that. gt_value = 17.5 is Moser-Kim-Mansour 1999 DNS at Re_tau = 395 and is byte-identical -- value, pass_tol, gross_error_tol and physics window -- to turbulent_channel_flow_retau395's KPI of the same name, whose own known_weakness already records that the quantity is a recallable closed form (the log law gives Ub/u_tau, and the DNS value is published). Measured, not inferred: #608's step-2 screen bought an answer for this case from deepseek-v4-flash with instruction.md only and no way to execute anything, and it came back 1.0 -- so a full mark here has been obtained with no solver. What this case changes relative to its sibling is the TASK SHAPE (a broken closure setup is shipped and the agent has to find and repair it), and CLAUDE.md's #588 paragraph is the general form of why that is not enough on its own: a shape change is a claim about recall only when the KPI moves with it, and this one's did not. Recorded rather than repaired -- the KPI rewrite is #625's queue item 4, and until it lands this case is an easy anchor and should be frozen `solved` if it is frozen at all, not read as the track's clean example."
+    }
+  },
+  "oracle_provenance": {
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "gt_provenance": "published_reference",
+    "reference": "Moser, Kim & Mansour 1999, Phys. Fluids 11:943, DNS of turbulent channel flow. gt Ub/u_tau = 17.5 is the published bulk-to-friction velocity ratio at Re_tau=395, obtained as Re_b/Re_tau (~6875/395). Published DNS, not a solver output of this repo.",
+    "stopping": {
+      "stops_on": "fixed_iteration_budget",
+      "budget_declared_in": "task",
+      "iteration_cap": 5000,
+      "converged_iterations": null,
+      "criterion_reachable": true,
+      "criterion_fires_at": 19671,
+      "why_not_the_criterion": "THE BUDGET IS PART OF THE TASK, NOT AN ORACLE DETAIL. The controlDict holding endTime 5000 lives in environment/case/, which Harbor uploads into the agent's working directory, and solve.sh takes the case from there and deliberately keeps no copy under solution/. So every agent is handed the same deterministic budget and the answers are comparable; raising it would change what the task hands out, not how the oracle happens to run. instruction.md now states this. The criterion is reachable and cheap -- 1e-6 fires at iteration 19671 in 47 s against this case's own 600 s reproduction budget -- so keeping the budget is a choice, and the residualControl block that used to declare 1e-6 in the fixture is deleted rather than kept, because a declaration that the shipped run never satisfies is a false statement in the file the agent reads (#296, #336).",
+      "note": "CONVERGING MOVES THIS ANSWER AWAY FROM THE PUBLISHED REFERENCE, AND THAT IS WHY IT IS WRITTEN HERE RATHER THAN LEFT IN AN ISSUE. The capped run reports 17.5078201, 0.045% from the Moser-Kim-Mansour DNS gt of 17.5; converged at iteration 19671 it reports 17.63022, 0.74% -- sixteen times further out. So the gt is anchored on the fixed-budget run deliberately, and anyone who reads 'stops at its cap' as a defect and repairs it will make the reference worse. It is also the most extreme instance of the anti-correlation #286 swept for: on this case, agreement with gt is evidence about nothing. gt_value is the published DNS ratio and does not move; pass_tol, the physics window, the KPI name, the cap and the fixture's numerical content are all untouched.",
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU. Reachability probe to 150000 iterations and both landing points from #286 / #300; the deletion of the false declaration and its positive control from #336."
+    }
+  }
+}

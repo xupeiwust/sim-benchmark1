@@ -1,0 +1,9 @@
+{
+  "case_id": "lco_graphite_thermal_rise_2p35c_299k",
+  "kind": "thermal",
+  "parameter_set": "Ai2020",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.7446,
+  "reproduction_timeout_s": 600
+}

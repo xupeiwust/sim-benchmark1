@@ -1,0 +1,21 @@
+{
+  "case_id": "plane_poiseuille_friction_factor",
+  "interface": {
+    "file": "grid_convergence.csv",
+    "columns": [
+      "n_cells_wall_normal",
+      "h",
+      "l2_error"
+    ],
+    "min_rows": 3
+  },
+  "kpis": {
+    "observed_order_u": {
+      "derive": "log_log_slope",
+      "x": "h",
+      "y": "l2_error"
+    }
+  },
+  "measured_submission_wall_sec": 901,
+  "reproduction_timeout_s": 2400
+}

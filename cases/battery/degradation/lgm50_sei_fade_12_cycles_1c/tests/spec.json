@@ -1,0 +1,9 @@
+{
+  "case_id": "lgm50_sei_fade_12_cycles_1c",
+  "kind": "cycling",
+  "parameter_set": "OKane2022",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.4922,
+  "reproduction_timeout_s": 900
+}

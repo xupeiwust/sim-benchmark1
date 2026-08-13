@@ -1,0 +1,17 @@
+{
+  "case_id": "channel_developing_entry",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "u_centerline_ratio"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "u_centerline_ratio": {
+      "derive": "single_row",
+      "value": "u_centerline_ratio"
+    }
+  },
+  "reproduction_timeout_s": 600
+}

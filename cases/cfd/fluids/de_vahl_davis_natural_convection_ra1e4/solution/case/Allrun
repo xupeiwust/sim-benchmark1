@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -eo pipefail
+cd "$(dirname "$0")"
+if ! command -v blockMesh >/dev/null 2>&1; then
+    set +u
+    source /usr/lib/openfoam/openfoam2412/etc/bashrc
+    set -u
+fi
+blockMesh
+checkMesh
+buoyantBoussinesqSimpleFoam
+postProcess -func 'grad(T)' -latestTime > log.gradT 2>&1
+postProcess -func gradTwall -latestTime > log.gradTwall 2>&1
+python3 extract_nusselt.py

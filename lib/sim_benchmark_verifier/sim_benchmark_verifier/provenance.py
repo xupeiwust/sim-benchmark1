@@ -79,7 +79,7 @@ def _validate_extractor(extract: str) -> str | None:
         except ValueError as e:
             return f"extractor stage {stage!r} unparseable: {e}"
         if not tokens:
-            return f"extractor has empty pipe stage"
+            return "extractor has empty pipe stage"
         head = tokens[0]
         if head not in _ALLOWED_BINARIES:
             return f"extractor stage starts with disallowed binary {head!r}"
@@ -100,7 +100,7 @@ def _values_match(claimed: float, extracted: str) -> tuple[bool, str]:
     """Compare claimed vs re-extracted value with attribution-grade tolerance.
 
     Provenance answers "did you actually read this from the file?", not
-    "is this engineering-accurate" — that's T_good/T_bad's job. Two
+    "is this engineering-accurate" — that's the tolerance band's job. Two
     layers managing the same number is double-counting, so we keep
     provenance loose (1% relative). At this tolerance:
 
@@ -109,7 +109,7 @@ def _values_match(claimed: float, extracted: str) -> tuple[bool, str]:
       - a totally-fabricated number (-0.5 vs -0.06) fails
 
     1% is "is this number from this file at all", not "did you copy it
-    digit-for-digit". The downstream T_good/T_bad windows are what
+    digit-for-digit". The downstream tolerance band is what
     constrain numerical accuracy.
     """
     extracted = extracted.strip()
@@ -166,7 +166,8 @@ def _verify_file_extract(value, source: dict) -> VerifyResult:
     try:
         proc = subprocess.run(
             ["bash", "-c", extract],
-            input=file_text, capture_output=True, text=True, timeout=10,
+            input=file_text, capture_output=True,
+            encoding="utf-8", errors="replace", timeout=10,
         )
     except subprocess.TimeoutExpired:
         return VerifyResult(False, "extractor timed out (>10s)")
@@ -372,7 +373,8 @@ def _fetch_sim_run_stdout(run_id: str) -> str:
     try:
         proc = subprocess.run(
             ["sim", "--json", "logs", str(run_id), "--field", "stdout"],
-            capture_output=True, text=True, timeout=10, check=False,
+            capture_output=True, encoding="utf-8", errors="replace",
+            timeout=10, check=False,
         )
     except (FileNotFoundError, subprocess.TimeoutExpired):
         return ""
@@ -401,7 +403,8 @@ def _verify_sim_run_stdout(value, source: dict, sim_records: list[dict]) -> Veri
     try:
         proc = subprocess.run(
             ["bash", "-c", extract],
-            input=stdout, capture_output=True, text=True, timeout=10,
+            input=stdout, capture_output=True,
+            encoding="utf-8", errors="replace", timeout=10,
         )
     except subprocess.TimeoutExpired:
         return VerifyResult(False, "extractor timed out (>10s)")

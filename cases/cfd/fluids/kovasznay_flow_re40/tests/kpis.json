@@ -1,0 +1,49 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "kovasznay_flow_re40",
+  "oracle_status": "cfd_openfoam_interface_hand",
+  "oracle_provenance": {
+    "host": "sim-benchmark-cfd-fullstack:latest, OpenFOAM ESI v2412, 8-core x86-64",
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "calibration_date": "auto",
+    "extract_method": "solution/case/Allrun runs run_study.py: three uniform grids (20x20, 40x40, 80x80) on [0,1]x[-0.5,0.5], simpleFoam laminar steady, exact Kovasznay u,v imposed on all four sides by codedFixedValue evaluated at each face centre. Cell centres come from writeCellCentres, not from arithmetic on the spacing. l2_error_u is the grid-normalised L2 norm of (u_computed - u_exact) over cell centres; grid_convergence.csv carries one row per grid and the evaluator fits the slope itself.",
+    "evals": "observed_order_u's gt is 2.0, the THEORETICAL order of a second-order spatial discretisation -- a published property of the method, not the oracle's output. The oracle fits 1.9866 (pairwise 1.9820 and 1.9912), which is what confirms all three grids sit in the asymptotic range; it is a check on the reference, not the reference itself. l2_error_finest_u's gt IS oracle-derived, and its band is loose for exactly that reason.",
+    "oracle_wall_sec": 31,
+    "auto_batch": false,
+    "stopping": {
+      "criterion": "residualControl p 1e-10 in solution/case/system/fvSolution, applied to each of the study's three grids",
+      "stops_on": "criterion",
+      "converged_iterations": 1052,
+      "iteration_cap": 20000,
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU, #286",
+      "note": "Three grids share one controlDict, so the recorded cost is the WORST level: 129 / 326 / 1052 iterations at 20x20 / 40x40 / 80x80. All three stop on the criterion, the finest at 19x headroom. A grid study is where a capped run does the most damage -- the finest level is the one that runs out first, and an error norm produced by the cap rather than by the discretisation is exactly the quantity the observed order is fitted to."
+    },
+    "kpi_quality_note": "Migrated to the output-interface contract (CLAUDE.md, 'The output interface'). The previous KPI was u at the point (0.5, 0), which the prompt's own boundary-condition statement makes computable in one line -- u = 1 - exp(lam*0.5) = 0.382373 -- so the case scored recall plus a token solve, and its own kpis.json claimed the formula was withheld when the instruction stated it in full. The KPI is now a RELATION BETWEEN RUNS: an observed order is not a property of the operating point, has nothing to recall, and cannot be produced without solving every refinement level. That is also what makes the closed form safe to state in the prompt -- which it must be, because it is the boundary condition."
+  },
+  "source": {
+    "primary_url": "https://doi.org/10.1017/S0305004100023999",
+    "data_source": "Kovasznay, L. I. G. (1948), 'Laminar flow behind a two-dimensional grid,' Mathematical Proceedings of the Cambridge Philosophical Society 44(1):58-62. Exact 2D steady Navier-Stokes solution: u = 1 - exp(lam*x)*cos(2*pi*y), v = (lam/2/pi)*exp(lam*x)*sin(2*pi*y), lam = Re/2 - sqrt(Re^2/4 + 4*pi^2).",
+    "reference_value": "The exact solution is the reference field; the scored quantities are the order at which a discretisation converges to it, and the residual error at the finest level.",
+    "physics_note": "Re = U_ref*L/nu = 1*1/0.025 = 40, lam = -0.9637405. The field is smooth and analytic on the domain, with one full period of cos(2*pi*y) across it, so a second-order scheme is already in its asymptotic range at 20x20 -- confirmed by the oracle's two pairwise orders agreeing to 0.01."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "observed_order_u": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Observed order of spatial accuracy: the least-squares slope of log(l2_error_u) against log(h) over the three grids the task fixes. 2.0 for a genuinely second-order discretisation.",
+      "gt_value": 2.0,
+      "physics_min": 0.5,
+      "physics_max": 3.5,
+      "pass_tol": 0.25,
+      "gross_error_tol": 0.75,
+      "pass_tol_source": "The one KPI #190 exempts from the flat 5% band, and deliberately: pass_tol = 0.25 stays ABSOLUTE rather than becoming a percentage, because the question is which order the discretisation achieved, and 0.25 is what separates 1 from 2 from 3. Theory-anchored GT: a second-order spatial discretisation converges at 2.0. The band is sized by the two measurements that bracket the decision it has to make. A correct second-order solve lands at 1.9866 (error 0.013), so 0.25 clears it by an order of magnitude while still admitting the 1.9-2.1 spread of a different-but-legitimate second-order scheme. A first-order scheme — the same case with `Gauss upwind`, measured, not assumed — lands at 0.938 and scores zero. 5% of 2.0 would be 0.10, which would start failing legitimate second-order schemes for fitting noise.",
+      "kpi_quality_note": "The KPI that makes a closed-form problem scorable. An order is a property of the discretisation rather than of the operating point, so it is absent from any training corpus and cannot be recalled, and it cannot be produced without actually solving all three levels. It also closes the `0/` seeding hole by construction: seeding every grid with the exact field drives the error to round-off everywhere, and a slope fitted through that is noise rather than 2.0. physics_min = 0.5 deliberately keeps a genuinely first-order solve INSIDE the window, so it decays through T_bad instead of being called unphysical -- it is a real convergent solve that answered the wrong question.",
+      "gt_value_source": "Theoretical order of a second-order spatial discretisation (2.0). Confirmed to be in the asymptotic range by the oracle's pairwise orders 1.9820 (20->40) and 1.9912 (40->80)."
+    }
+  }
+}

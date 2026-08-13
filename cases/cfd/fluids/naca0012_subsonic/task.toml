@@ -1,0 +1,71 @@
+schema_version = "1.3"
+# What the verifier is given, not a wish list. In separate-verifier mode Harbor
+# stages ONLY these paths into the verifier container, so a path the evaluator
+# reads and this list omits simply is not there: declaring the conventional
+# `/tmp/agent/submission` here — which this case never writes — left the generic
+# scorer reporting "result.json not found" and scoring 0 on a run that had
+# actually succeeded.
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/naca0012-subsonic"
+description = "NACA 0012 airfoil at M=0.15, Re=6e6, fully turbulent: CL/CD at alpha=10 on NASA TMR's official 225x65 grid, vs published CFL3D-SA on the same grid."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "turbulent", "airfoil", "naca0012", "2d", "vv", "openfoam"]
+
+[environment]
+docker_image    = "sim-benchmark-cfd-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 10240
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 5400
+user        = "agent"
+
+[verifier]
+timeout_sec      = 1200
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 10240
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+# The task_id no longer matches the COMSOL port. That port instantiates the
+# old contract -- free-meshed alpha sweep scored against Ladson's experiment --
+# and this case now asks a different question: one alpha, on NASA's supplied
+# grid, scored against published CFL3D on that same grid. Same KPI names and
+# the same tolerance band are what make two directories one task; neither
+# survives here, so keeping the shared id would have made the pair look
+# portable when it is not.
+task_id         = "naca0012-subsonic-tmr-grid"
+solver          = "openfoam"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 171
+source_type     = "vv_standard"
+source_channel    = "workshop-vv"
+source_citation = "NASA Turbulence Modeling Resource, NACA 0012 numerics study. Reference values: CFL3D with Spalart-Allmaras on the official 225x65 grid, averaged over TMR's three grid families (NACA0012numerics_val/cfl3d_results_sa.dat); FUN3D and TAU from the same series size the code-to-code tolerance term."
+source_url      = "https://tmbwg.github.io/turbmodels/naca0012numerics_val.html"
+difficulty_tier = "M"
+gt_type         = "high-fidelity-solver"
+range_value     = 1.0
+tags            = ["solver-neutral", "scalar-kpi", "supplied-grid", "turbulent-airfoil"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+reference_status = "official_grid_shipped"
+runtime_status  = "official_grid_cross_code_calibrated"
+score_template  = "numerical"
+leakage_risk    = 1
+capability_target = "numerical"

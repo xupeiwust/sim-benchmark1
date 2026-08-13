@@ -1,120 +1,42 @@
-# sim-benchmark trial architecture & generality
+# HWE-bench trial architecture & generality
 
 How a single trial actually executes — and which parts of this design
-extend to simulation domains beyond what we currently ship (LTspice +
-OpenFOAM).
+extend to simulation domains beyond the ones we currently ship (see
+[`../CASES.md`](../CASES.md) for the live list).
 
-For per-hook implementation detail, see [`hooks.md`](hooks.md). This
-doc is the level above: how the pieces fit, and a first-principles
-read on which assumptions can travel.
+This doc is the level above the code: how the pieces fit, and a
+first-principles read on which assumptions can travel. The hooks it used to
+point at went with the self-built runner.
 
 ## Trial pipeline (left → right time)
 
+Harbor owns this. `tools/run_harbor_trial.sh` picks a dataset, an agent
+(`claude-code` / `codex` / `oracle` / `nop`) and a credential set; Harbor builds
+the environment from `task.toml`'s `docker_image`, runs the agent in it, then
+starts a **second** container for the verifier when the case declares
+`environment_mode = "separate"`, and collects the paths named in `artifacts`.
+
 ```
-┌─────────────────┐  ┌─────────────────────────────────────┐  ┌────────────────┐
-│ harbor builds   │  │  trial container                    │  │ host           │
-│ case image FROM │  │                                     │  │                │
-│ patched base    │  │  ┌─────────────┐                    │  │                │
-│ (sim_benchmark_ │──┼─▶│ harness     │ install hooks +    │  │                │
-│  verifier +     │  │  │ install     │ skills + (ccr/proxy│  │                │
-│  detectors      │  │  │ (agent_     │ if applicable)     │  │                │
-│  baked in)      │  │  │  harness.py)│                    │  │                │
-│                 │  │  └─────────────┘                    │  │                │
-└─────────────────┘  │                                     │  │                │
-                     │  ┌─────────────────────────────┐    │  │                │
-                     │  │ agent loop                  │    │  │                │
-                     │  │   read instruction.md       │    │  │                │
-                     │  │   run solver via shell      │    │  │                │
-                     │  │   write artifacts           │    │  │                │
-                     │  │   write /tmp/agent/result   │    │  │                │
-                     │  │   .json                     │    │  │                │
-                     │  │   try to stop               │    │  │                │
-                     │  │     → Stop hook fires       │    │  │                │
-                     │  │       Pass 1: schema OK?    │    │  │                │
-                     │  │       Pass 2: extract runs? │    │  │                │
-                     │  │     → block / pass          │    │  │                │
-                     │  │   (loop until pass)         │    │  │                │
-                     │  └─────────────────────────────┘    │  │                │
-                     │                                     │  │                │
-                     │  ┌─────────────────────────────┐    │  │                │
-                     │  │ verifier (score.py)          │   │  │                │
-                     │  │   _score_groups()            │   │  │                │
-                     │  │     per-KPI verify_source    │   │  │                │
-                     │  │     compute kpi_score        │   │  │                │
-                     │  │   annotate_per_kpi()         │   │  │                │
-                     │  │     → detector dispatch      │   │  │                │
-                     │  │     → solver_stage / prov    │   │  │                │
-                     │  │   write reward.json + detail │───┼──┼──▶ jobs/<dir>/  │
-                     │  └─────────────────────────────┘    │  │                │
-                     └─────────────────────────────────────┘  └────────────────┘
+harbor run -p <dataset> -a <agent> -o <jobs dir>
+  │
+  ├─ container 1: agent      reads instruction.md, drives the solver,
+  │                          writes deliverables under /tmp/agent/submission
+  │
+  └─ container 2: verifier   re-extracts the KPIs from those deliverables and
+     (network: none)         writes /logs/verifier/reward.json
 ```
 
-Five layers, each with **one job**:
-
-| Layer | Code | Job |
-|---|---|---|
-| Harness install | `tools/agent_harness.py:_install_hooks()` | Drop hook scripts into the container, write `~/.claude/settings.json` |
-| Skills mount | `tools/agent_harness.py:_register_sim_skills()` | Make `sim-skills/` visible to Claude as native skills |
-| Hooks (in-trial) | `tools/agent_harness.py:_*_HOOK_SRC` | Schema/runnability check + subprocess wedge defence |
-| Agent loop | claude-code | Read prompt, drive the solver, write `result.json`, attempt to stop |
-| Verifier (post-stop) | `lib/sim_benchmark_verifier/score.py` | Compute score from artifacts + KPI claims, annotate failure axes |
-
-Two design rules hold across all five:
-
-1. **Verifier is the only judge of correctness.** Hooks do schema +
-   runnability bookkeeping; detectors add post-hoc attribution
-   metadata. Neither touches the score.
-2. **Artifact-rooted, not contract-rooted.** Verifier + detectors read
-   files the solver actually produced. Doesn't matter whether the
-   agent invoked `sim-cli` or shelled out directly.
-
-## Harness layer (in detail)
-
-`tools/agent_harness.py` exposes two `ClaudeCode` subclasses, picked
-per agent in the YAML config:
-
-| Class | Upstream | Used for |
-|---|---|---|
-| `ClaudeCodeAnthropicDirect` | `${ANTHROPIC_BASE_URL}` (native Anthropic protocol) | Claude Opus 4.6 via xaminim, MiniMax `…/anthropic` endpoint, etc. |
-| `ClaudeCodeViaCcr` | claude-code-router (3456) → `openai_usage_proxy` (3457) → OpenAI-format upstream | MiniMax M2.5 / M2.7 via `api.minimaxi.com/v1/chat/completions`, paratera Kimi/GLM/DeepSeek |
-
-Both subclasses share three install steps, in order:
-
-1. **Replace `claude.ai/install.sh` with npm + taobao mirror.** The
-   official installer is geo-blocked from CN; we install
-   `@anthropic-ai/claude-code` from the npmmirror registry.
-2. **Mount `sim-skills/` into `~/.claude/skills/`.** Claude Code reads
-   skill metadata at startup from this path; the agent then sees them
-   as native skills it can call (no "load a skill" turn cost).
-3. **Install the two hooks + write `settings.json`** at three paths
-   (user, sessions dir, project cwd) so claude-code finds at least
-   one of them regardless of how it boots.
-
-The ccr variant additionally stands up an in-container proxy chain to
-inject `stream_options.include_usage=true` into OpenAI requests
-(otherwise MiniMax / paratera return `usage: {input_tokens: 0, ...}`
-and the cost meter is blind).
-
-## Hooks layer
-
-| Hook | Event | Purpose | Information leak |
-|---|---|---|---|
-| `result_json_check.py` | `Stop` | Force agent to write a contract-conformant `/tmp/agent/result.json` before exiting. Pass 1 schema, Pass 2 file_extract runnability. | Reveals only "schema valid yes/no" + "extract returns non-empty yes/no". Never values, never `gt_value`, never `T_decay`, never whether claim ≈ extracted. |
-| `bash_timeout.py` | `PreToolUse` matcher=`Bash` | Wrap every Bash call in `timeout --kill-after=5s <secs>s bash -c <orig>` so daemonized children (wineserver, etc.) get cleaned up by GNU `timeout(1)`'s session-group signal — claude-code's own SIGKILL doesn't reach them. | None (transparent rewrite the agent doesn't see). |
-
-The boundary is sharp: **hooks fix agent-environment affordance gaps,
-they do not change the contract**. Adding a hook that, say, told the
-agent "your value is off by 8 %" would leak GT-adjacent semantics and
-make the verifier's `T_decay` curve reverse-engineerable. We
-deliberately don't.
-
-For implementation, see [`hooks.md`](hooks.md).
+What we own inside that is the case, the verifier library and the domain image —
+not the loop. The harness layer and the two Claude Code hooks that used to sit
+here were deleted with the self-built runner; `docs/infra_migration_plan.md`
+records why, and the short version is that a hook was compensating for a case
+defect rather than an agent one.
 
 ## Detector layer (post-stop, post-score)
 
 The verifier (`score.py`) runs after the agent has stopped. It
 computes scores, then dispatches the per-KPI score dicts through the
-detector plugin layer (`lib/sim_benchmark_verifier/detectors/`).
+detector plugin layer (`lib/sim_benchmark_verifier/sim_benchmark_verifier/detectors/`).
 Detectors emit two annotations onto each per-KPI entry — both are
 **diagnostic-only metadata, not score components**.
 
@@ -149,7 +71,7 @@ Currently: `result.json = {kpi: {value: <number>, source: <how to re-extract>}}`
 | **Field outputs (CFD vorticity field, FEA stress contour)** | ⚠️ | Single scalar reduction (max, integral, line-probe) fits; full field comparison needs different verifier |
 | **Image outputs (camera frame from robotic sim, CAD render)** | ❌ | No scalar; would need perceptual similarity metric or LLM judge |
 | **Time-series / trajectory (joint angles over time)** | ⚠️ | Reduce to scalar features (overshoot, settling time, RMS); the contract works, the case author has more upfront work |
-| **Stochastic outputs (Monte Carlo, RL training reward)** | ⚠️ | Single trial returns a sample; tolerance via `T_decay` accommodates fuzz but not full distribution |
+| **Stochastic outputs (Monte Carlo, RL training reward)** | ⚠️ | Single trial returns a sample, and the tolerance band is binary — it accommodates **no** fuzz, so a sampling spread comparable to `pass_tol` scores at random. The fix is a KPI defined on the distribution (a quantile, a fixed-seed statistic), never a wider band: a band widened until both a right and a wrong answer pass has stopped measuring anything |
 
 #### A2. Extraction is **re-runnable** by the verifier
 
@@ -192,21 +114,19 @@ checkpointing + multiple foreground calls, or `run_in_background=true`.
 | > 30 min | Solver checkpointing (`writeInterval` for OF, `RESTART_SOL=YES` for SU2) + multiple foreground calls. Each retry continues from previous endpoint. |
 | > 1 day | Doesn't fit at all. The trial container itself is bounded by harbor's `agent.timeout_s × timeout_multiplier`. Architecture would need a different runtime (job queue + checkpoint orchestration). |
 
-#### A5. Agent framework is **claude-code**
+#### A5. Agent framework is whatever Harbor can drive
 
-Currently: hooks use Claude Code's `Stop` and `PreToolUse` hook system.
-Switching agent framework requires porting both hooks.
+This assumption **was** "the agent framework is claude-code", and it is no longer
+true: the board carries a `codex` row beside the `claude-code` ones, and the two
+differ in ways that reach the measurement. The live example is the turn budget —
+`claude_code` exposes `max_turns`, `codex` exposes no such flag, so a 60-turn cap
+applied to one and not the other inflated the codex row's lead until every capped
+trial was re-run without it.
 
-| Framework | Equivalent of Stop hook? | Equivalent of PreToolUse Bash? |
-|---|---|---|
-| Claude Code (current) | ✅ native | ✅ native |
-| Terminal-Bench `terminus-2` | Built-in: refuses to terminate until result.json written | No equivalent needed (different shell architecture) |
-| Open-source agent (langchain, autogen) | Wrap final-output validator | Wrap subprocess.run with timeout |
-| Code Interpreter / OpenAI assistant | Limited — no native hook events | Need an outer-loop validator |
-
-The **principle** (in-trial validation, in-trial wedge prevention) is
-agent-agnostic; the **implementation** is claude-code-specific. Each
-new agent framework needs its own port.
+So the assumption that survives is weaker and worth stating plainly: **a task
+must be answerable by any agent Harbor can drive, and any budget we impose must
+be expressible for all of them.** A budget only one framework understands is not
+a measurement parameter, it is a handicap on the others.
 
 ### Things that travel cleanly across simulation domains
 
@@ -260,7 +180,6 @@ Don't force it when:
 
 ## References
 
-- [`hooks.md`](hooks.md) — per-hook implementation detail
 - [`SCHEMA.md`](../SCHEMA.md) — case + verifier contract, two-axis enum
 - [`../lib/sim_benchmark_verifier/EVIDENCE.md`](../lib/sim_benchmark_verifier/EVIDENCE.md) — detector calibration TPR/FPR
 - [sim-proj#125 RFC (private)](https://github.com/svd-ai-lab/sim-proj/issues/125) — two-axis design discussion

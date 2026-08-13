@@ -1,0 +1,67 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Oracle mesh for lid_driven_cavity_ghia_re1000.
+| Classic 2D lid-driven square cavity (Ghia, Ghia & Shin 1982 benchmark).
+| Unit square: 0 <= x <= 1, 0 <= y <= 1, unit z-thickness (single cell).
+| Uniform 128 x 128 mesh so the vertical-centerline (x=0.5) u-profile is
+| resolved well enough to recover the Ghia Re=1000 minimum (u ~ -0.383 at
+| y ~ 0.172). The top wall (lid) moves at Ux = 1; the other three walls
+| are stationary no-slip. Re = U*L/nu = 1*1/0.001 = 1000.
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+scale   1;
+
+vertices
+(
+    (0   0   0)    // 0
+    (1   0   0)    // 1
+    (1   1   0)    // 2
+    (0   1   0)    // 3
+    (0   0   0.1)  // 4
+    (1   0   0.1)  // 5
+    (1   1   0.1)  // 6
+    (0   1   0.1)  // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (128 128 1) simpleGrading (1 1 1)
+);
+
+edges ();
+
+boundary
+(
+    movingWall
+    {
+        type wall;
+        faces ((3 7 6 2));   // top wall  y = 1 (the lid)
+    }
+    fixedWalls
+    {
+        type wall;
+        faces
+        (
+            (0 4 7 3)   // left wall   x = 0
+            (1 2 6 5)   // right wall  x = 1
+            (0 1 5 4)   // bottom wall y = 0
+        );
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+
+mergePatchPairs ();

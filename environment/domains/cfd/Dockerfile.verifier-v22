@@ -1,0 +1,9 @@
+FROM sim-benchmark-cfd-fullstack:latest
+
+USER root
+COPY lib/sim_benchmark_verifier /opt/sim-benchmark-verifier-v22/
+RUN pip install --no-cache-dir --break-system-packages --force-reinstall \
+    /opt/sim-benchmark-verifier-v22
+
+WORKDIR /tmp/agent
+ENTRYPOINT []

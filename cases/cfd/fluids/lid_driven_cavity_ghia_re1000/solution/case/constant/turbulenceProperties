@@ -1,0 +1,13 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      turbulenceProperties;
+}
+
+// Re = 1000 lid-driven cavity is steady laminar (the primary vortex is
+// stationary; transition to unsteadiness is well above this Re).
+// No RAS/LES model, no k / omega / nut fields.
+simulationType  laminar;

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Reference entry point. Everything the contract asks for happens in run_study.py:
+# three meshes, three solves, the error norm, and grid_convergence.csv.
+set -euo pipefail
+cd "$(dirname "$(realpath "$0")")"
+exec python3 run_study.py

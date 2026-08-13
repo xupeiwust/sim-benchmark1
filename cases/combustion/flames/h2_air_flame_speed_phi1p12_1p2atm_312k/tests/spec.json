@@ -1,0 +1,11 @@
+{
+  "case_id": "h2_air_flame_speed_phi1p12_1p2atm_312k",
+  "kind": "flame_speed",
+  "mechanism": "h2o2.yaml",
+  "fuel": "H2",
+  "phi": 1.12,
+  "T0_K": 312.0,
+  "P0_atm": 1.2,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

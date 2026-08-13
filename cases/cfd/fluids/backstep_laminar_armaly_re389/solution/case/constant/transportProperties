@@ -1,0 +1,18 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Laminar incompressible. Armaly et al. 1983 backward-facing step, Re = 389.
+// Re is based on 2 x step height and the mean inlet velocity:
+//   Re = U_mean * (2 S) / nu
+// with U_mean = 1.0 m/s, S = 0.0049 m (step height), 2 S = 0.0098 m:
+//   nu = U_mean * 2 S / Re = 1.0 * 0.0098 / 389 = 2.51928e-05 m^2/s.
+
+transportModel  Newtonian;
+
+nu              2.51928e-05;

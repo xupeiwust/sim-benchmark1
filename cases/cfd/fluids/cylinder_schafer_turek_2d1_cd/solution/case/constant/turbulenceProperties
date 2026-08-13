@@ -1,0 +1,11 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      turbulenceProperties;
+}
+
+// Steady laminar flow (Re = 20). No RANS model, no k/omega/nut fields.
+simulationType  laminar;

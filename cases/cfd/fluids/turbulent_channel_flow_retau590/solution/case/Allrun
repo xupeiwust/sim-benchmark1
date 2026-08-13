@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+
+blockMesh > log.blockMesh 2>&1
+checkMesh -allGeometry > log.checkMesh 2>&1
+simpleFoam > log.simpleFoam 2>&1
+simpleFoam -postProcess -func bulkU -latestTime
+postProcess -func writeCellCentres -latestTime
+python3 extract_channel.py 0.0016949152542372881

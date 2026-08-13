@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+// Taylor-Green (1937) decaying vortex, nondimensional, Re=100 -> nu = 1/Re = 0.01.
+// Exact unsteady 2D incompressible Navier-Stokes solution on a doubly-periodic
+// 2*pi x 2*pi box:
+//   Ux(x,y,t) = -cos(x)*sin(y)*exp(-2*nu*t)
+//   Uy(x,y,t) =  sin(x)*cos(y)*exp(-2*nu*t)
+// The internalField below is the t=0 field (exp factor = 1). It is OVERWRITTEN
+// by `setExprFields` in the oracle before the solver starts, but a placeholder
+// uniform value is kept here so the field is structurally valid. All side
+// patches are cyclic (doubly-periodic); the spanwise faces are empty (2D).
+dimensions [0 1 -1 0 0 0 0];
+
+internalField uniform (0 0 0);
+
+boundaryField
+{
+    left
+    {
+        type            cyclic;
+    }
+    right
+    {
+        type            cyclic;
+    }
+    bottom
+    {
+        type            cyclic;
+    }
+    top
+    {
+        type            cyclic;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

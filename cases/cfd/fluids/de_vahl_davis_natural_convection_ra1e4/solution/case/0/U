@@ -1,0 +1,33 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+// Closed square cavity, natural convection. All four walls are no-slip.
+dimensions [0 1 -1 0 0 0 0];
+
+internalField uniform (0 0 0);
+
+boundaryField
+{
+    hotWall
+    {
+        type            noSlip;
+    }
+    coldWall
+    {
+        type            noSlip;
+    }
+    adiabaticWalls
+    {
+        type            noSlip;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

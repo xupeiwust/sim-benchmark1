@@ -1,0 +1,17 @@
+{
+  "case_id": "taylor_green_vortex_2d_re100",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "u_peak_at_tstar"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "u_peak_at_tstar": {
+      "derive": "single_row",
+      "value": "u_peak_at_tstar"
+    }
+  },
+  "reproduction_timeout_s": 600
+}

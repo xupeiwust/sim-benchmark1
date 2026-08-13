@@ -1,0 +1,9 @@
+{
+  "case_id": "a123_pulse_resistance_1p8a_soc0p51",
+  "kind": "pulse",
+  "parameter_set": "Prada2013",
+  "initial_soc": 0.51,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.1333,
+  "reproduction_timeout_s": 600
+}

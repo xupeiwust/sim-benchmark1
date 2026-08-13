@@ -1,0 +1,30 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+
+// Fixed mean streamwise pressure gradient driving the channel.
+// At statistical equilibrium the wall shear balances the applied body force:
+//   tau_w / rho = (-dp/dx) * delta   =>   u_tau^2 = (-dp/dx) * delta.
+// Choosing the source magnitude = u_tau^2 / delta = 1 (with delta = 1) fixes
+// u_tau = 1 exactly, so with nu = u_tau*delta/Re_tau the case sits at
+// Re_tau = 395 by construction. This is a fixed-gradient (not fixed-flux)
+// forcing: the bulk velocity Ub is then an OUTPUT of the solve, and
+// Ub/u_tau = Ub is the quantity compared against the DNS reference.
+
+momentumSource
+{
+    type            vectorSemiImplicitSource;
+    selectionMode   all;
+
+    volumeMode      specific;          // source per unit volume (kinematic)
+    injectionRateSuSp
+    {
+        // (Su  Sp): explicit body force (1 0 0) m/s^2, zero implicit part.
+        U           ((1 0 0) 0);
+    }
+}

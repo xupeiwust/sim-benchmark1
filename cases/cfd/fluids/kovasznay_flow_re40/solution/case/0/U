@@ -1,0 +1,39 @@
+FoamFile { version 2.0; format ascii; class volVectorField; object U; }
+
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (1 0 0);
+
+// The exact Kovasznay velocity is imposed on all four sides. codedFixedValue
+// evaluates it at each face centre from the patch's own Cf(), so nothing here
+// depends on how blockMesh happened to order the boundary faces -- writing the
+// values out as a nonuniform List would.
+boundaryField
+{
+    sides
+    {
+        type            codedFixedValue;
+        value           uniform (1 0 0);
+        name            kovasznayVelocity;
+        code
+        #{
+            const scalar Re  = 40.0;
+            const scalar lam = Re/2.0 - Foam::sqrt(Re*Re/4.0 + 4.0*constant::mathematical::pi*constant::mathematical::pi);
+            const scalar twoPi = 2.0*constant::mathematical::pi;
+            const vectorField& Cf = patch().Cf();
+            vectorField vals(Cf.size(), vector::zero);
+            forAll(Cf, i)
+            {
+                const scalar x = Cf[i].x();
+                const scalar y = Cf[i].y();
+                vals[i] = vector
+                (
+                    1.0 - Foam::exp(lam*x)*Foam::cos(twoPi*y),
+                    (lam/twoPi)*Foam::exp(lam*x)*Foam::sin(twoPi*y),
+                    0.0
+                );
+            }
+            operator==(vals);
+        #};
+    }
+    frontAndBack { type empty; }
+}

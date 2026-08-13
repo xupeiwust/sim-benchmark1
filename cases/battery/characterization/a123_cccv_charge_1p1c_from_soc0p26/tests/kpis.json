@@ -1,0 +1,69 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "a123_cccv_charge_1p1c_from_soc0p26",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "constant-current charge to the voltage limit followed by a constant-voltage hold to the termination current",
+    "parameter_set": "Prada2013",
+    "model": "SPMe",
+    "model_options": {},
+    "initial_soc": 0.26,
+    "ambient_temperature_K": 298.15,
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 2612.22,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 2612.2,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 2612.19,
+        "settings": {
+          "rtol": 1e-05,
+          "atol": 1e-05
+        }
+      }
+    },
+    "spread_abs": 0.02999999999974534,
+    "spread_rel": 1.1484484461395038e-05,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "ocv_envelope": {
+      "n_samples_checked": 265,
+      "max_abs_overpotential_V": 0.21526103860158985,
+      "max_dissipation_violation_V": -0.07941729141349807,
+      "initial_voltage_error_V": 0.08106852659041541,
+      "Q_span_Ah": 2.303450990802929
+    },
+    "ocv_max_deviation_basis": "1.4x the reference run's own worst departure from the evaluator's open-circuit-voltage curve, plus 50 mV",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks for what this parameterisation predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "charge_time_s": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Total charge time of the Prada2013 cell over a constant-current charge at 1.1C from 26% state of charge up to 3.6 V, followed by a constant-voltage hold at 3.6 V until the current falls to 30 mA.",
+      "unit": "s",
+      "gt_value": 2612.22,
+      "physics_min": 100.0,
+      "physics_max": 60000.0,
+      "pass_tol": 130.611,
+      "gross_error_tol": 522.444,
+      "weight": 1.0
+    }
+  }
+}

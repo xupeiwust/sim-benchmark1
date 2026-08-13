@@ -1,0 +1,9 @@
+{
+  "case_id": "nmc_pouch_cccv_charge_1p3c_from_soc0p23",
+  "kind": "cccv",
+  "parameter_set": "Mohtat2020",
+  "initial_soc": 0.23,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.2142,
+  "reproduction_timeout_s": 600
+}

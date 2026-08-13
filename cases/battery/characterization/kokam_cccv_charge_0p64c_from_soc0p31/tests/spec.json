@@ -1,0 +1,9 @@
+{
+  "case_id": "kokam_cccv_charge_0p64c_from_soc0p31",
+  "kind": "cccv",
+  "parameter_set": "Marquis2019",
+  "initial_soc": 0.31,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.1988,
+  "reproduction_timeout_s": 600
+}

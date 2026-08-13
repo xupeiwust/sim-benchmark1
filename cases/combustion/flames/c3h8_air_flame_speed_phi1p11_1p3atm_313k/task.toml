@@ -1,0 +1,64 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/c3h8-air-flame-speed-phi1p11-1p3atm-313k"
+description = "propane laminar flame speed at phi=1.11, 1.3 atm, scored from an evaluator-reproduced freely-propagating flame solution."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["combustion", "cantera", "chemical-kinetics", "propane", "laminar-flame-speed"]
+
+[environment]
+docker_image    = "sim-benchmark-combustion-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 4096
+gpus            = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode    = "public"
+
+[agent]
+timeout_sec = 1800
+user        = "agent"
+
+[verifier]
+timeout_sec      = 1020
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 4096
+gpus         = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+solver            = "cantera"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 16
+source_type       = "tutorial"
+source_channel    = "tutorial-variant"
+difficulty_tier   = "M"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_tolerance_study"
+score_template    = "numerical"
+leakage_risk      = 2
+capability_target = "physics"
+source_citation   = "GRI-Mech 3.0 (Smith, Golden, Frenklach et al.), the mechanism distributed with Cantera as gri30.yaml"
+source_url        = "https://cantera.org/stable/examples/python/onedim/adiabatic_flame.html"
+tags              = ["combustion", "cantera", "numeric-kpi", "native-reproduction", "equilibrium-gated"]
+task_id           = "c3h8-air-flame-speed-phi1p11-1p3atm-313k"
+prototype_origin  = "cantera:samples/python/onedim/adiabatic_flame.py"
+prototype_delta   = "The example is not in the image -- Cantera has shipped no Python examples inside the wheel since 3.0 -- so the collision is with the published page and the upstream source tree, not with a file the container holds. Moved: the example burns one hydrogen/oxygen/argon mixture at a single canonical atmospheric point, while this case's fuel, equivalence ratio, unburned temperature and pressure are all table parameters and none of them is a round number; the oxidizer is air rather than argon-diluted oxygen. Changed: the mechanism is the one named in source_citation. Dropped: the example's Soret and multicomponent re-solves, mixture-averaged transport being part of this task's specification. Replaced: the deliverable is the results.csv output interface this benchmark grades, not the example's printed value and plots. Kept, deliberately: the freely-propagating flame, the domain width and the refine-criteria triple -- the perturbation is in the operating point, not in the numerics."

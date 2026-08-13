@@ -1,0 +1,21 @@
+{
+  "case_id": "ch4_air_flame_speed_meet_resolution_spec",
+  "kind": "flame_speed",
+  "mechanism": "gri30.yaml",
+  "fuel": "CH4",
+  "phi": 1.07,
+  "T0_K": 312.0,
+  "P0_atm": 1.2,
+  "phase": null,
+  "reproduction_timeout_s": 900,
+  "resolution_spec": {
+    "file": "grid_independence.csv",
+    "level_columns": ["n_grid_points", "n_points", "grid_points"],
+    "value_columns": ["flame_speed_cm_s", "flame_speed", "su_cm_s"],
+    "reported_kpi": "flame_speed_cm_s",
+    "min_levels": 3,
+    "min_span_ratio": 2.0,
+    "max_rel_change": 0.02,
+    "max_rel_gap_to_reported": 0.02
+  }
+}

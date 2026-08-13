@@ -1,0 +1,65 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+# The name is an identifier, not a description, and it stays put: every stored
+# trial and every Harbor registry entry is keyed on it. The case now scores the
+# spatial accuracy of the plane-channel solution rather than its friction
+# factor (#199), and re-keying the benchmark to spell that would orphan both.
+name        = "sim-benchmark/plane-poiseuille-friction-factor"
+description = "Spatial accuracy on fully-developed laminar plane-channel (2D Poiseuille) flow. A straight 2D channel of full gap D = 1 and length 30 (nu = 0.01) is driven by a fixed streamwise pressure difference and solved on 60x20, 120x40 and 240x80 grids. KPI: the observed order of accuracy -- the slope of log(L2 error in the bulk-normalised velocity profile at x = 20) against log(h). The order is a relation between runs, so it cannot be recalled from the closed-form parabola the prompt has to state, and it cannot be produced without solving every refinement level. f*Re = 96 is retained as a weight-0 diagnostic: it is what the stored trials before #199 were scored against."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "laminar", "poiseuille", "plane-channel", "grid-convergence", "order-of-accuracy", "navier-stokes", "2d", "openfoam", "vv"]
+
+[environment]
+docker_image    = "sim-benchmark-cfd-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 10240
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 3600
+user        = "agent"
+
+[verifier]
+# Must exceed spec.json's reproduction_timeout_s (2400), or the container is
+# killed before the evaluator can write reward.json and the trial is stored as
+# unmeasured rather than as a score. Raised from 900 alongside the budget, which
+# a three-grid refinement study needs and a single solve did not.
+timeout_sec      = 2520
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 10240
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "plane-poiseuille-friction-factor"
+solver            = "openfoam"
+# Measured: solution/solve.sh on the domain image at the declared 2 cpus, which
+# is three meshes and three steady solves each run to a residual floor. Recorded
+# so the case's price is legible before anyone schedules a sweep -- a refinement
+# study costs more than one solve by construction, and this is what that came to.
+oracle_wall_sec   = 569
+source_type       = "paper"
+source_channel    = "paper"
+difficulty_tier   = "M"
+gt_type           = "analytical"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_interface_reproduction"
+score_template    = "numerical"
+leakage_risk      = 1
+capability_target = "numerical"
+source_citation   = "F. M. White, 'Viscous Fluid Flow,' 3rd ed., McGraw-Hill, 2006 (fully-developed laminar duct flow between parallel plates: u(y) = (3/2)*u_mean*(1 - (2y/D)^2), the exact profile the discretisation error is measured against). Corroborated by R. K. Shah and A. L. London, 'Laminar Flow Forced Convection in Ducts,' Academic Press, 1978. The scored quantity is not a value from either source but the order at which a discretisation converges to that exact profile; the theoretical order of a second-order spatial scheme is 2."
+source_url        = "https://www.google.com/books/edition/Viscous_Fluid_Flow/_8FQAAAAMAAJ"
+demand_record     = "docs/demand_sources/records/paper/cfd/demand-cfd-plane-poiseuille-friction-factor-paper-001.yaml"
+tags              = ["native-openfoam", "laminar", "poiseuille", "output-interface", "relation-kpi", "grid-convergence"]

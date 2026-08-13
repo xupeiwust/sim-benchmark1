@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        smoother        GaussSeidel;
+        tolerance       1e-9;
+        relTol          0.01;
+    }
+
+    U
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-9;
+        relTol          0.1;
+    }
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 0;
+    consistent      yes;
+
+    // Closed cavity has no fixed-pressure boundary; pin a reference cell.
+    pRefCell        0;
+    pRefValue       0;
+
+    // The criterion, not the cap, is what stops this run: measured at 3216
+    // iterations (#273). Touch it and controlDict's endTime plus
+    // tests/kpis.json's oracle_provenance.stopping must be re-measured with it --
+    // solve_inner.py fails the run when the cap is what stopped it.
+    residualControl
+    {
+        p               1e-6;
+        U               1e-6;
+    }
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p               0.9;
+    }
+    equations
+    {
+        U               0.7;
+    }
+}

@@ -1,0 +1,64 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/ecker-graphite-mean-voltage-0p84c-292k"
+description = "rate capability of the Ecker2015 cell, scored from an evaluator-reproduced rate_capability simulation."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["battery", "pybamm", "lithium-ion", "electrochemistry", "rate_capability"]
+
+[environment]
+docker_image    = "sim-benchmark-battery-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 4096
+gpus            = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode    = "public"
+
+[agent]
+timeout_sec = 1800
+user        = "agent"
+
+[verifier]
+timeout_sec      = 1080
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 4096
+gpus         = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "ecker-graphite-mean-voltage-0p84c-292k"
+solver            = "pybamm"
+# Measured cost of producing the reference answer: solution/solve.sh plus
+# the evaluator's clean reproduction, one arm at a time in the shipped
+# domain image at the `cpus` this case declares. Recorded so a case's price
+# is legible before anyone schedules a sweep.
+oracle_wall_sec   = 22
+source_type       = "tutorial"
+source_channel    = "tutorial-variant"
+difficulty_tier   = "M"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_tolerance_study"
+score_template    = "numerical"
+leakage_risk      = 2
+capability_target = "physics"
+source_citation   = "Ecker, Tran, Dechent et al., J. Electrochem. Soc. 162 (2015) A1836/A1849 — Kokam 7.5 Ah cell parameterisation, distributed with PyBaMM as the Ecker2015 parameter set"
+source_url        = "https://github.com/pybamm-team/PyBaMM/blob/main/examples/scripts/rate_capability.py"
+prototype_origin  = "pybamm:examples/scripts/rate_capability.py"
+prototype_delta   = "The example is not in the image -- the installed PyBaMM package ships no example tree at all, only the parameter sets -- so the collision is with the upstream repository and the rendered documentation page, not with a file the container holds. Moved: the example sweeps one bundled default cell over a ladder of round C-rates and plots the result, while this case pins two rates on one named parameter set at one ambient temperature, neither rate round, and reports a number. Redefined, and this is the whole of the case: the graded quantity is the RELATIVE capacity lost between the two rates, so the cell's nominal capacity -- the one number about a commercial cell that is printed on its datasheet and is therefore recallable -- divides out exactly, and what is left is this parameterisation's transport solution. Added: a CC-CV recharge between the two discharges, so both are measured on one trace from one full state of charge rather than across two runs. Dropped: the sweep itself, and with it the rate-capability and Ragone plots that are the example's whole output. Replaced: the deliverable is the results.csv output interface this benchmark grades, not a plot. Kept as well: the numerics of PyBaMM's own O'Regan parameter-set notebook -- its var_pts dict, its exponential particle submesh refined toward the particle surface, and its IDAKLU solver -- so the perturbation is in the operating point, not in the numerics."
+tags              = ["battery", "pybamm", "numeric-kpi", "native-reproduction", "ocv-gated"]

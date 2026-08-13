@@ -1,0 +1,13 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      turbulenceProperties;
+}
+
+// Ra = 1e4 cavity convection is steady and laminar (transition to unsteady
+// natural convection occurs well above this Rayleigh number). No RAS/LES model,
+// no k / epsilon / nut / alphat fields.
+simulationType  laminar;

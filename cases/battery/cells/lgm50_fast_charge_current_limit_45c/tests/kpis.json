@@ -1,0 +1,91 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "lgm50_fast_charge_current_limit_45c",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "bisection on the constant-current stage of a CCCV charge for the largest current whose volume-averaged cell temperature stays at or below the stated ceiling, followed by the reported run at that current",
+    "parameter_set": "Chen2020",
+    "model": "SPMe",
+    "model_options": {
+      "thermal": "lumped"
+    },
+    "initial_soc": 0.2,
+    "ambient_temperature_K": 298.15,
+    "temperature_ceiling_K": 318.15,
+    "search_interval_A": [1.0, 10.0],
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 7.202950,
+        "charge_time_s": 4478.963,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 7.202812,
+        "charge_time_s": 4480.118,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 7.200752,
+        "charge_time_s": 4474.738,
+        "settings": {
+          "rtol": 1e-04,
+          "atol": 1e-04
+        }
+      },
+      "fine_mesh": {
+        "value": 7.203156,
+        "charge_time_s": 4474.655,
+        "settings": {
+          "var_pts": 40
+        }
+      }
+    },
+    "spread_abs": 0.002404,
+    "spread_rel": 0.00033375,
+    "spread_rel_charge_time": 0.00121969,
+    "pass_tol_basis": "flat 5% of the reference value. The measured numerical spread across solver tolerance and mesh refinement is 0.033% on the current and 0.122% on the charge time, so the band sits roughly two orders of magnitude above the noise it must not be grading. What the band is for is the search: a submission that finds the constraint boundary at all lands inside, one that reports a plausible-looking current without searching does not.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "search_note": "The temperature rise is not monotone in current over the whole charger range: above roughly 11 A the constant-voltage hold fails to converge and the truncated run reads as a cool one, which would let a naive search walk past the boundary. The instruction bounds the charger at 10.0 A, which keeps the search inside the region where the constraint is monotone and the boundary unique. That bound is a hardware limit in the task statement, not a hint about where the answer is.",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks where this parameterisation puts the boundary."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "i_charge_max_a": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Largest constant current, in amperes, for which a CCCV charge of the Chen2020 cell from 20% state of charge — constant current to 4.2 V, then a hold at 4.2 V to 250 mA — keeps the volume-averaged cell temperature at or below 318.15 K throughout.",
+      "unit": "A",
+      "gt_value": 7.20288,
+      "physics_min": 1.0,
+      "physics_max": 10.0,
+      "pass_tol": 0.360144,
+      "gross_error_tol": 1.440576,
+      "weight": 0.5,
+      "kpi_quality_note": "ANTI-SHORTCUT: the value is where a constraint binds, not a property of any single run, so there is nothing to read off one solve and nothing tabulated to recall — 1.44C for this cell under this cooling is not a published number. The evaluator's strip-and-re-run is what makes the search compulsory rather than optional: results.csv is deleted before the submission's own entry point is re-executed, so a current typed into the file reproduces nothing."
+    },
+    "charge_time_at_limit_s": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Total duration in seconds of the CCCV charge run at the limiting current, from the start of the constant-current stage to the moment the current falls to 250 mA.",
+      "unit": "s",
+      "gt_value": 4478.97,
+      "physics_min": 600.0,
+      "physics_max": 30000.0,
+      "pass_tol": 223.9485,
+      "gross_error_tol": 895.794,
+      "weight": 0.5,
+      "kpi_quality_note": "This is the KPI that defends the protocol. Reporting the right current is not enough: a submission that omits the constant-voltage hold finishes the same charge in roughly 1000 s against 4479 s here, which is 15 band widths out, while a submission whose current is anywhere inside its own band lands inside this one too — so the pair is consistent rather than double jeopardy."
+    }
+  }
+}

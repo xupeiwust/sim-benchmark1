@@ -1,0 +1,11 @@
+{
+  "case_id": "c2h4_air_flame_speed_phi1p14_1p2atm_309k",
+  "kind": "flame_speed",
+  "mechanism": "gri30.yaml",
+  "fuel": "C2H4",
+  "phi": 1.14,
+  "T0_K": 309.0,
+  "P0_atm": 1.2,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

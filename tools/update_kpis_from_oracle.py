@@ -37,8 +37,8 @@ def main():
                 continue
             old_gt = d["kpis"][kpi_name].get("gt_value")
             d["kpis"][kpi_name]["gt_value"] = gt
-            d["kpis"][kpi_name]["T_good_source"] = (
-                d["kpis"][kpi_name].get("T_good_source", "") +
+            d["kpis"][kpi_name]["pass_tol_source"] = (
+                d["kpis"][kpi_name].get("pass_tol_source", "") +
                 f" Oracle measured {gt} on wine LTspice 26 (2026-04-28)."
             )
             print(f"  {case_id}.{kpi_name}: {old_gt} -> {gt}")

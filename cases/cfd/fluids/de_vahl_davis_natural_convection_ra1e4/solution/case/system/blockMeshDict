@@ -1,0 +1,73 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Oracle mesh for de_vahl_davis_natural_convection_ra1e4.
+| Differentially-heated square cavity (de Vahl Davis 1983 benchmark).
+| Unit square: 0 <= x <= 1, 0 <= y <= 1, unit z-thickness (single cell).
+|   left  wall x = 0 : hot  (T = 1)
+|   right wall x = 1 : cold (T = 0)
+|   top + bottom     : adiabatic (zeroGradient T)
+| Gravity acts in -y. 80 x 80 uniform mesh resolves the thin vertical
+| boundary layers at Ra = 1e4 well enough to recover the de Vahl Davis
+| hot-wall average Nusselt number (~2.24).
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+scale   1;
+
+vertices
+(
+    (0   0   0)    // 0
+    (1   0   0)    // 1
+    (1   1   0)    // 2
+    (0   1   0)    // 3
+    (0   0   0.1)  // 4
+    (1   0   0.1)  // 5
+    (1   1   0.1)  // 6
+    (0   1   0.1)  // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (80 80 1) simpleGrading (1 1 1)
+);
+
+edges ();
+
+boundary
+(
+    hotWall
+    {
+        type wall;
+        faces ((0 4 7 3));   // left wall  x = 0  (hot, T = 1)
+    }
+    coldWall
+    {
+        type wall;
+        faces ((1 2 6 5));   // right wall x = 1  (cold, T = 0)
+    }
+    adiabaticWalls
+    {
+        type wall;
+        faces
+        (
+            (0 1 5 4)   // bottom wall y = 0 (adiabatic)
+            (3 7 6 2)   // top wall    y = 1 (adiabatic)
+        );
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+
+mergePatchPairs ();

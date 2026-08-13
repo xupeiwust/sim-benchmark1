@@ -10,12 +10,9 @@ Tests are split into two sections: legacy single-axis (v3.1
 """
 from __future__ import annotations
 
-import pytest
 
 from sim_benchmark_verifier.failure_class import (
     PER_KPI_CLASSES,
-    PROVENANCE_STAGES,
-    SOLVER_STAGES,
     annotate_per_kpi,
     classify_kpi,
     classify_provenance,

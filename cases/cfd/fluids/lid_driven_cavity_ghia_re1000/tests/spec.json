@@ -1,0 +1,17 @@
+{
+  "case_id": "lid_driven_cavity_ghia_re1000",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "u_min_vertical_centerline"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "u_min_vertical_centerline": {
+      "derive": "single_row",
+      "value": "u_min_vertical_centerline"
+    }
+  },
+  "reproduction_timeout_s": 600
+}

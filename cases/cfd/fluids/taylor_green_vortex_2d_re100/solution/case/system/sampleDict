@@ -1,0 +1,39 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      sampleDict;
+}
+
+// Sample the velocity along a y-line through x = pi (where |cos(x)| = 1, so the
+// streamwise component Ux = -cos(x)*sin(y)*exp(-2*nu*t) reaches its peak
+// magnitude in x). The peak |Ux| over the line is the Taylor-Green decayed
+// amplitude exp(-2*nu*t); at t=5, Re=100 this is exp(-0.1) ~ 0.904837.
+// A cloud of points along the line is sampled at mid-span (z = 0.05); the
+// oracle reads the maximum |Ux| from the written velocity field directly.
+
+type            sets;
+libs            ("libsampling.so");
+
+interpolationScheme cellPoint;
+setFormat       raw;
+
+fields
+(
+    U
+);
+
+sets
+(
+    peakLine
+    {
+        type    cloud;
+        axis    xyz;
+        points
+        (
+            (3.14159265 1.57079633 0.05)
+        );
+    }
+);

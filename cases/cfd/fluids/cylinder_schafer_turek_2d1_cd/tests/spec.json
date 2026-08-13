@@ -1,0 +1,12 @@
+{
+  "case_id": "cylinder_schafer_turek_2d1_cd",
+  "interface": {
+    "file": "results.csv",
+    "columns": ["cd"],
+    "min_rows": 1
+  },
+  "kpis": {
+    "cd": {"derive": "single_row", "value": "cd"}
+  },
+  "reproduction_timeout_s": 1800
+}

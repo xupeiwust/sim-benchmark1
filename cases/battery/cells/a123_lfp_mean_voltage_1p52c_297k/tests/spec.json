@@ -1,0 +1,9 @@
+{
+  "case_id": "a123_lfp_mean_voltage_1p52c_297k",
+  "kind": "rate_capability",
+  "parameter_set": "Prada2013",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 1.3425,
+  "reproduction_timeout_s": 900
+}

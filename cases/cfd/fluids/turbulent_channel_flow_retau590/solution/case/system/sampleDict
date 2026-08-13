@@ -1,0 +1,77 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      sampleDict;
+}
+
+// One sampled set: the streamwise velocity U across the FULL channel height
+// (wall-normal y from -1 to +1) at the mid-x station x = 2. The flow is
+// periodic and homogeneous in x, so any x station gives the same profile.
+// The bulk-mean velocity is the height-average of Ux:
+//     U_b = (1/(2*delta)) * integral_{-delta}^{+delta} Ux dy,
+// and because the body force fixes u_tau = 1, U_b/u_tau = U_b directly.
+//
+// ESI OpenFOAM v2412 removed the "points" set type; use "cloud" with axis xyz
+// so the raw setFormat writes full point coordinates (x y z) then the field
+// components. v2412 also writes ONE combined file per set with all requested
+// fields concatenated (here only U), named <set>_U.xy; parse by the set-name
+// prefix. Cloud columns are x y z Ux Uy Uz (6 cols, Ux = col 4 -> parts[3]).
+// Points are clustered toward both walls to resolve the steep near-wall
+// gradient on the graded mesh.
+
+type            sets;
+libs            ("libsampling.so");
+
+interpolationScheme cellPoint;
+setFormat       raw;
+
+fields
+(
+    U
+);
+
+sets
+(
+    uProfile
+    {
+        type    cloud;
+        axis    xyz;
+        points
+        (
+            (2.0 -0.9995 0.5)
+            (2.0 -0.998  0.5)
+            (2.0 -0.995  0.5)
+            (2.0 -0.990  0.5)
+            (2.0 -0.980  0.5)
+            (2.0 -0.960  0.5)
+            (2.0 -0.930  0.5)
+            (2.0 -0.890  0.5)
+            (2.0 -0.840  0.5)
+            (2.0 -0.780  0.5)
+            (2.0 -0.700  0.5)
+            (2.0 -0.600  0.5)
+            (2.0 -0.480  0.5)
+            (2.0 -0.340  0.5)
+            (2.0 -0.180  0.5)
+            (2.0  0.000  0.5)
+            (2.0  0.180  0.5)
+            (2.0  0.340  0.5)
+            (2.0  0.480  0.5)
+            (2.0  0.600  0.5)
+            (2.0  0.700  0.5)
+            (2.0  0.780  0.5)
+            (2.0  0.840  0.5)
+            (2.0  0.890  0.5)
+            (2.0  0.930  0.5)
+            (2.0  0.960  0.5)
+            (2.0  0.980  0.5)
+            (2.0  0.990  0.5)
+            (2.0  0.995  0.5)
+            (2.0  0.998  0.5)
+            (2.0  0.9995 0.5)
+        );
+    }
+);

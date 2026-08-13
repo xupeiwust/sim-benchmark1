@@ -1,0 +1,20 @@
+{
+  "case_id": "kovasznay_flow_re40",
+  "interface": {
+    "file": "grid_convergence.csv",
+    "columns": [
+      "n_cells_per_side",
+      "h",
+      "l2_error_u"
+    ],
+    "min_rows": 3
+  },
+  "kpis": {
+    "observed_order_u": {
+      "derive": "log_log_slope",
+      "x": "h",
+      "y": "l2_error_u"
+    }
+  },
+  "reproduction_timeout_s": 2400
+}

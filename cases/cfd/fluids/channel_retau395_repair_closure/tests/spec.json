@@ -1,0 +1,17 @@
+{
+  "case_id": "channel_retau395_repair_closure",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "ub_over_utau"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "ub_over_utau": {
+      "derive": "single_row",
+      "value": "ub_over_utau"
+    }
+  },
+  "reproduction_timeout_s": 600
+}

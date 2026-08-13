@@ -1,9 +1,0 @@
-* First-order RL low-pass — f_3dB = R/(2πL) ≈ 1592 Hz.
-V1 in  0   AC 1
-L1 in  out 10m
-R1 out 0   100
-
-.ac dec 50 10 100k
-.meas AC gain_dc FIND mag(V(out)) AT 10
-.meas AC f_3db   WHEN mag(V(out))=gain_dc*0.7071 CROSS=1
-.end

@@ -8,7 +8,7 @@ optionally `verifier/reward_detail.json` (four-tier breakdown), and prints
 a table: rows = models, cols = tasks, cells = score.
 
 Usage:
-    python3 tools/aggregate_leaderboard.py jobs/paratera-matrix/2026-04-21__HH-MM-SS/
+    python3 tools/aggregate_leaderboard.py jobs/matrix/2026-04-21__HH-MM-SS/
 
 Run with `--details` for a per-case four-tier breakdown.
 """
@@ -138,7 +138,7 @@ def main() -> int:
     for r in results:
         cell[(label(r), r["task"])] = r["score"]
 
-    print("## Leaderboard (Harbor-native terminus-2, paratera)")
+    print("## Leaderboard (Harbor-native terminus-2)")
     print()
     header_tiers = " | ".join(f"{t} ({tier_by_case.get(t, '?')})" for t in tasks)
     header = "| Model | " + header_tiers + " | mean |"

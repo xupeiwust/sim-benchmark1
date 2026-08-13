@@ -1,0 +1,9 @@
+{
+  "case_id": "nca_cccv_charge_0p79c_from_soc0p35",
+  "kind": "cccv",
+  "parameter_set": "NCA_Kim2011",
+  "initial_soc": 0.35,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.0924,
+  "reproduction_timeout_s": 600
+}

@@ -1,0 +1,78 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Oracle mesh for channel_developing_entry.
+| 2D plane channel, half-height H = 0.5 (full height D = 2H = 1).
+| Domain: 0 <= x <= 6, -0.5 <= y <= 0.5, unit z-thickness.
+| Entry (hydrodynamic) length scales as ~0.04*Re*D = 4.0 at Re=100; the
+| 6.0-long domain leaves >1.5 entry lengths so the outlet sees the fully
+| developed parabolic profile. Cells clustered toward both walls so the
+| developing shear layers are resolved; the KPI station x = 1.0 sits well
+| inside the developing region.
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+scale   1;
+
+vertices
+(
+    (0   -0.5   0)    // 0
+    (6   -0.5   0)    // 1
+    (6    0.5   0)    // 2
+    (0    0.5   0)    // 3
+    (0   -0.5   1)    // 4
+    (6   -0.5   1)    // 5
+    (6    0.5   1)    // 6
+    (0    0.5   1)    // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (240 80 1)
+    simpleGrading
+    (
+        ( (0.30 0.55 0.25) (0.70 0.45 4.0) )
+        ( (0.5 0.5 0.1) (0.5 0.5 10.0) )
+        1
+    )
+);
+
+edges ();
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ((0 4 7 3));
+    }
+    outlet
+    {
+        type patch;
+        faces ((1 2 6 5));
+    }
+    walls
+    {
+        type wall;
+        faces
+        (
+            (0 1 5 4)   // bottom wall  y = -0.5
+            (3 7 6 2)   // top wall     y = +0.5
+        );
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+
+mergePatchPairs ();

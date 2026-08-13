@@ -1,0 +1,17 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Incompressible laminar channel flow.
+// Re = u_mean * D / nu, with D = 2H = 1 (full channel height) and
+// u_mean = 1 (the uniform inlet velocity, which equals the mean velocity
+// by mass conservation). For Re = 100:  nu = u_mean * D / Re = 1 * 1 / 100.
+
+transportModel  Newtonian;
+
+nu              0.01;

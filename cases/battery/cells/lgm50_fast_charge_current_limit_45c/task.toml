@@ -1,0 +1,64 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/lgm50-fast-charge-current-limit-45c"
+description = "largest constant charge current a CCCV protocol can use on the Chen2020 cell without the volume-averaged cell temperature crossing 318.15 K, scored from an evaluator-reproduced search."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["battery", "pybamm", "lithium-ion", "electrothermal", "limit-search"]
+
+[environment]
+docker_image    = "sim-benchmark-battery-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 4096
+gpus            = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode    = "public"
+
+[agent]
+timeout_sec = 1800
+user        = "agent"
+
+[verifier]
+timeout_sec      = 1020
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 4096
+gpus         = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "lgm50-fast-charge-current-limit-45c"
+solver            = "pybamm"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core. Most of it is the search rather
+# than any single solve -- the bisection runs about twenty charges to bracket
+# the boundary, and an agent pays that once per attempt. It is the reason this
+# case's reproduction budget is larger than the track's report-a-number cases.
+oracle_wall_sec   = 98
+source_type       = "novel_variant"
+source_channel    = "constructed"
+difficulty_tier   = "L"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_tolerance_study"
+score_template    = "numerical"
+leakage_risk      = 1
+capability_target = "solve"
+demand_record     = "docs/demand_sources/records/constructed/battery/demand-battery-fast-charge-current-limit-001.yaml"
+source_citation   = "Chen, Kuhn, Wu et al., J. Electrochem. Soc. 167 (2020) 080534 — LG M50 21700 NMC811/graphite cell, distributed with PyBaMM as the Chen2020 parameter set. The cell is published; the limiting current asked for here is not."
+source_url        = "https://doi.org/10.1149/1945-7111/ab9050"
+tags              = ["battery", "pybamm", "numeric-kpi", "native-reproduction", "ocv-gated", "limit-search"]

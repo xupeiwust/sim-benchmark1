@@ -1,0 +1,66 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/channel-retau395-repair-closure"
+description = "A runnable Re_tau=395 channel case is handed over with a laminar closure; diagnose why the bulk velocity is an order of magnitude high and repair it. KPI = Ub/u_tau vs Moser-Kim-Mansour 1999 DNS."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "turbulent", "channel-flow", "repair", "diagnosis", "openfoam", "dns-reference"]
+
+[environment]
+docker_image    = "sim-benchmark-cfd-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 10240
+gpus            = 0
+network_mode    = "public"
+
+# A repair starts from a converging case, so the budget covers diagnosis plus
+# two solves rather than meshing from scratch: the oracle solve is ~50 s and
+# the evaluator re-runs it once more. 600 s keeps the whole task inside the
+# ten-minute iteration target.
+[agent]
+timeout_sec = 600
+user        = "agent"
+
+[verifier]
+timeout_sec      = 900
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 10240
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+# Deliberately NOT the same task_id as turbulent-channel-flow-retau395: same
+# physics and same KPI band, but a different question. That case asks whether a
+# model can build the case; this one hands it a working case and asks whether it
+# can tell which single modelling decision is wrong. A shared task_id would
+# claim they are ports of one task, and a model can be good at one and bad at
+# the other.
+task_id           = "channel-retau395-repair-closure"
+solver            = "openfoam"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 47
+source_type       = "novel_variant"
+source_channel    = "constructed"
+source_citation   = "Repair variant of the Re_tau=395 channel case. Reference value: Moser, Kim & Mansour, 'Direct numerical simulation of turbulent channel flow up to Re_tau=590', Physics of Fluids 11(4):943-945 (1999), DOI 10.1063/1.869966."
+source_url        = "https://pubs.aip.org/aip/pof/article/11/4/943/253866"
+difficulty_tier   = "S"
+gt_type           = "paper-reported"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_v2_reproduction"
+score_template    = "numerical"
+capability_target = "debugging"
+leakage_risk      = 2
+tags              = ["native-openfoam", "field-derived-kpi", "repair-task", "fast-iteration", "turbulent"]

@@ -1,0 +1,9 @@
+{
+  "case_id": "nmc_pouch_energy_2p4c_299k",
+  "kind": "discharge",
+  "parameter_set": "Mohtat2020",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.9997,
+  "reproduction_timeout_s": 600
+}

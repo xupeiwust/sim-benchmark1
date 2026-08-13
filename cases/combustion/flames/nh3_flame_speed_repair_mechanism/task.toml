@@ -1,0 +1,68 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/nh3-flame-speed-repair-mechanism"
+description = "An ammonia flame-speed script runs clean on GRI-Mech 3.0 and returns a burning velocity 45% low; diagnose the mechanism choice and repair it."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["combustion", "cantera", "chemical-kinetics", "ammonia", "laminar-flame-speed"]
+
+[environment]
+docker_image    = "sim-benchmark-combustion-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 4096
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 600
+user        = "agent"
+
+[verifier]
+timeout_sec      = 1020
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 4096
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+task_id           = "nh3-flame-speed-repair-mechanism"
+solver            = "cantera"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, on the domain image. Recorded so a case's
+# price is legible before anyone schedules a sweep -- half of it is a single
+# solve, and an agent pays that once per attempt.
+#
+# Re-measured for the #264 operating point rather than scaled: one solve of the
+# repaired script inside `sim-benchmark-combustion-fullstack:latest` at
+# `--cpus 2` takes 20.5 s, and the evaluator runs it a second time, so 41 s. The
+# same recipe on the OLD point (phi=1.03 / 312 K / 1.2 atm) gives 12.4 s per
+# solve on this host against the 19 s recorded here before, which is the host
+# difference rather than a change in the case -- quoted so the two numbers are
+# not read as a 2x regression. Margin against `[agent].timeout_sec` is ~15x,
+# down from ~31x; solving is still not what consumes the budget, and the
+# evaluator's own `reproduction_timeout_s = 900` is 44x the reproduction.
+oracle_wall_sec   = 41
+source_type       = "novel_variant"
+source_channel    = "constructed"
+difficulty_tier   = "S"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_tolerance_study"
+score_template    = "numerical"
+leakage_risk      = 2
+capability_target = "debugging"
+source_citation   = "Alzueta et al. (2023) ammonia/CO/H2 mechanism, distributed with Cantera as example_data/ammonia-CO-H2-Alzueta-2023.yaml"
+source_url        = "https://cantera.org/stable/examples/python/onedim/adiabatic_flame.html"
+tags              = ["combustion", "cantera", "numeric-kpi", "native-reproduction", "equilibrium-gated"]
+prototype_origin  = "cantera:samples/python/onedim/adiabatic_flame.py"
+prototype_delta   = "Two steps removed from the example rather than one, and both are recorded because source_channel = \"constructed\" says where the *question* came from, not where the physics template did. Step one is the flame template every case on this track shares: the example is not in the image (Cantera has shipped no Python examples inside the wheel since 3.0), its hydrogen/oxygen/argon mixture at a canonical atmospheric point becomes an ammonia/air point at a table-chosen operating point, its Soret and multicomponent re-solves are dropped, and the deliverable becomes the results.csv output interface this benchmark grades. Step two is this case's own construction, which is not derived from any example: the agent is handed a complete, clean-running script carrying one planted defect, and is asked to find it. What it is scored on is therefore diagnosis, not setup. It was built by copying the sibling `nh3_air_flame_speed_phi1p03_1p2atm_312k`, and until #264 it still carried that sibling's operating point, gt_value, band and three variant values unchanged -- one measurement counted twice in the live set. It now stands at its own point (phi=0.94 / 328 K / 1.7 atm), re-anchored with the same refinement study and the same pinned Cantera. De-duplicating is all that did: #257 measured this case saturated at 1.00 for all three models, and it stays saturated, because the planted defect is a named string constant on line 11 and no operating point moves that."

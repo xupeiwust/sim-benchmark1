@@ -1,13 +1,13 @@
 """rescore.py — offline re-scorer using existing reward_detail.json data.
 
 Most schema iterations don't need to re-run the LLM agent or the solver.
-Tweaking T_good/T_bad, physics_min/physics_max, or group weights only
+Tweaking pass_tol, physics_min/physics_max, or group weights only
 needs the per-KPI **values** that the verifier already captured at trial
 time. Those live in `<trial>/verifier/reward_detail.json` under
 `kpi_detail.per_kpi.<name>.value`.
 
 This tool reads frozen reward_detail.json + a new kpis.json spec, applies
-the new physics_pass + t_decay + group weights to the existing values,
+the new physics_pass + band_pass + group weights to the existing values,
 and writes a new reward.json (or prints to stdout). meta_score is carried
 through unchanged.
 
@@ -40,7 +40,7 @@ _LIB = Path(__file__).resolve().parents[1] / "lib" / "sim_benchmark_verifier"
 sys.path.insert(0, str(_LIB))
 from sim_benchmark_verifier.score import (  # noqa: E402
     W_META, W_KPI,
-    _physics_pass, _t_decay, _validate_groups,
+    _band_pass, _physics_pass, _validate_groups,
 )
 
 
@@ -56,7 +56,7 @@ def _rescore_one_kpi(name: str, spec: dict, frozen: dict | None) -> dict:
             "kpi_score":       None,
             "source_verified": None,
             "physics_pass":    None,
-            "t_decay":         None,
+            "band_pass":       None,
             "why":             "needs full rescore — KPI absent from trial-time reward_detail",
         }
 
@@ -71,22 +71,22 @@ def _rescore_one_kpi(name: str, spec: dict, frozen: dict | None) -> dict:
             "kpi_score":       0.0,
             "source_verified": source_verified,
             "physics_pass":    0.0,
-            "t_decay":         0.0,
+            "band_pass":       0.0,
             "value":           value,
             "why":             frozen.get("why") or "trial-time source verification failed",
         }
 
     value = float(value)
     phys, phys_why = _physics_pass(spec, value)
-    decay = _t_decay(spec, value)
-    score = source_verified * phys * decay
+    band = _band_pass(spec, value)
+    score = source_verified * phys * band
     return {
         "value":           value,
         "kpi_score":       round(score, 4),
         "source_verified": source_verified,
         "physics_pass":    round(phys, 4),
         "physics_why":     phys_why,
-        "t_decay":         round(decay, 4),
+        "band_pass":       round(band, 4),
         "extracted":       frozen.get("extracted"),
     }
 

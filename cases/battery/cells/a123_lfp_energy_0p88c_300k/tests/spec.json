@@ -1,0 +1,9 @@
+{
+  "case_id": "a123_lfp_energy_0p88c_300k",
+  "kind": "discharge",
+  "parameter_set": "Prada2013",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 1.567,
+  "reproduction_timeout_s": 600
+}

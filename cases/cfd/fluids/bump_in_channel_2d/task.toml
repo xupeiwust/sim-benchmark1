@@ -1,0 +1,63 @@
+schema_version = "1.3"
+# What the verifier is given, not a wish list. In separate-verifier mode Harbor
+# stages ONLY these paths into the verifier container, so a path the evaluator
+# reads and this list omits simply is not there: declaring the conventional
+# `/tmp/agent/submission` here — which this case never writes — left the generic
+# scorer reporting "result.json not found" and scoring 0 on a run that had
+# actually succeeded.
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/bump-in-channel-2d"
+description = "2D bump-in-channel at M=0.2, Re=3e6 on length 1, fully turbulent. CD vs the CFL3D/FUN3D k-omega SST TMR reference on the supplied 177x81 grid."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["cfd", "rans", "turbulent", "bump", "channel", "2d", "vv", "openfoam"]
+
+[environment]
+docker_image    = "sim-benchmark-cfd-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 10240
+gpus            = 0
+network_mode    = "public"
+
+[agent]
+timeout_sec = 3600
+user        = "agent"
+
+[verifier]
+timeout_sec      = 2700
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 10240
+gpus         = 0
+# Harbor's Docker Desktop provider cannot use its nftables egress sidecar.
+# tests/docker-compose.yaml still gives the verifier container network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+solver          = "openfoam"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 589
+source_type     = "vv_standard"
+source_channel    = "workshop-vv"
+source_citation = "NASA Turbulence Modeling Resource, 2D Bump-in-Channel verification case. Reference values: CFL3D and FUN3D k-omega SST on the official 177x81 grid (Bump/SST/force_convergence_sst.dat)."
+source_url      = "https://tmbwg.github.io/turbmodels/bump.html"
+difficulty_tier = "M"
+gt_type         = "high-fidelity-solver"
+range_value     = 0.005
+tags            = ["solver-neutral", "scalar-kpi", "pressure-gradient", "wall-bounded"]
+release_status  = "public_runnable"
+oracle_status   = "available"
+reference_status = "reference_rebuild_required"
+runtime_status  = "official_grid_cross_code_calibrated"
+score_template  = "numerical"
+leakage_risk    = 1
+capability_target = "numerical"

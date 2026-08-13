@@ -1,0 +1,11 @@
+{
+  "case_id": "ch3oh_air_idt_phi0p66_1583k_6p8atm",
+  "kind": "idt",
+  "mechanism": "gri30.yaml",
+  "fuel": "CH3OH",
+  "phi": 0.66,
+  "T0_K": 1583.0,
+  "P0_atm": 6.8,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

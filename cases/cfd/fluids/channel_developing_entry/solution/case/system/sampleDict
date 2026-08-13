@@ -1,0 +1,38 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      sampleDict;
+}
+
+// Sample the velocity field along the channel centerline (y = 0), at
+// mid-span (z = 0.5), from just inside the inlet to just inside the outlet.
+// The KPI is the streamwise component U_x at the developing station
+// x = 0.01*Re*(2H) = 1.0, normalised by the mean velocity u_mean = 1.0.
+// 600 points over 0.005 <= x <= 5.995 let the post-processor interpolate
+// to x = 1.0.
+
+type            sets;
+libs            ("libsampling.so");
+
+interpolationScheme cellPoint;
+setFormat       raw;
+
+fields
+(
+    U
+);
+
+sets
+(
+    centerline
+    {
+        type    uniform;
+        axis    x;
+        start   (0.005 0.0 0.5);
+        end     (5.995 0.0 0.5);
+        nPoints 600;
+    }
+);

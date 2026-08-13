@@ -1,0 +1,64 @@
+schema_version = "1.3"
+artifacts = ["/tmp/agent/submission"]
+
+[task]
+name        = "sim-benchmark/ch3oh-air-idt-phi0p66-1583k-6p8atm"
+description = "methanol ignition delay at phi=0.66, 1583 K, 6.8 atm, scored from an evaluator-reproduced constant-volume reactor history."
+authors     = [{name = "sim-benchmark"}]
+keywords    = ["combustion", "cantera", "chemical-kinetics", "methanol", "ignition-delay"]
+
+[environment]
+docker_image    = "sim-benchmark-combustion-fullstack:latest"
+cpus            = 2
+memory_mb       = 4096
+storage_mb      = 4096
+gpus            = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode    = "public"
+
+[agent]
+timeout_sec = 1800
+user        = "agent"
+
+[verifier]
+timeout_sec      = 1020
+user             = "agent"
+environment_mode = "separate"
+
+[verifier.environment]
+cpus         = 2
+memory_mb    = 4096
+storage_mb   = 4096
+gpus         = 0
+# Harbor's docker provider refuses to ENFORCE "no-network" and aborts the run
+# rather than downgrading, so declaring it makes the case unrunnable. The
+# verifier container is still isolated: tests/docker-compose.yaml gives it
+# network_mode: none.
+network_mode = "public"
+
+[metadata.sim]
+solver            = "cantera"
+# Measured cost of producing the reference answer: solution/solve.sh plus the
+# evaluator's clean reproduction, one core, on the domain image. Recorded so a
+# case's price is legible before anyone schedules a sweep -- roughly half of it
+# is a single solve, and an agent pays that once per attempt.
+oracle_wall_sec   = 3
+source_type       = "tutorial"
+source_channel    = "tutorial-variant"
+difficulty_tier   = "M"
+gt_type           = "high-fidelity-solver"
+release_status    = "public_runnable"
+oracle_status     = "available"
+runtime_status    = "oracle_calibrated_local_tolerance_study"
+score_template    = "numerical"
+leakage_risk      = 2
+capability_target = "physics"
+source_citation   = "GRI-Mech 3.0 (Smith, Golden, Frenklach et al.), the mechanism distributed with Cantera as gri30.yaml"
+source_url        = "https://cantera.org/stable/examples/python/reactors/non_ideal_shock_tube.html"
+tags              = ["combustion", "cantera", "numeric-kpi", "native-reproduction", "equilibrium-gated"]
+task_id           = "ch3oh-air-idt-phi0p66-1583k-6p8atm"
+prototype_origin  = "cantera:samples/python/reactors/non_ideal_shock_tube.py"
+prototype_delta   = "The example is not in the image -- Cantera has shipped no Python examples inside the wheel since 3.0 -- so the collision is with the published page and the upstream source tree, not with a file the container holds. Moved: the example runs a single canonical stoichiometric point at one high pressure, while this case's fuel, equivalence ratio, initial temperature and pressure are all table parameters and none of them is a round number. Redefined: the reported delay is the maximum of dT/dt, not the example's peak-OH criterion. Dropped: the example's real-gas (Redlich-Kwong) half and its temperature sweep. Replaced: the deliverable is the results.csv output interface this benchmark grades, not the example's printed value and plots. Kept, deliberately: the closed constant-volume adiabatic reactor, the O2/N2 air model and the step-through-the-integrator loop -- the perturbation is in the operating point, not in the numerics."

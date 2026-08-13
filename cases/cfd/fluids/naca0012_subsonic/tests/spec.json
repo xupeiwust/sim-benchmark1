@@ -1,0 +1,25 @@
+{
+  "case_id": "naca0012_subsonic",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "CL_at_alpha_10",
+      "CD_at_alpha_10"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "CL_at_alpha_10": {
+      "derive": "single_row",
+      "value": "CL_at_alpha_10"
+    },
+    "CD_at_alpha_10": {
+      "derive": "single_row",
+      "value": "CD_at_alpha_10"
+    }
+  },
+  "reproduction_timeout_s": 900,
+  "preserve": [
+    "constant/polyMesh"
+  ]
+}

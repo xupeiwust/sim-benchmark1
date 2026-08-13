@@ -1,0 +1,38 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     simpleFoam;
+
+startFrom       startTime;
+startTime       0;
+
+// endTime is an iteration CAP, not the stopping criterion: the run is meant to
+// stop on `residualControl` in fvSolution. run_study.py fails the level if the
+// cap is what ended it, because a level stopped by its cap reports its stopping
+// criterion rather than its discretisation error.
+stopAt          endTime;
+endTime         40000;
+
+deltaT          1;
+
+// Write once, at the end. A refinement study only ever reads the converged
+// field, and intermediate writes on the finest grid are pure I/O cost.
+writeControl    runTime;
+writeInterval   40000;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  12;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable false;

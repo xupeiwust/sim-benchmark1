@@ -1,0 +1,48 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "de_vahl_davis_natural_convection_ra1e4",
+  "oracle_status": "cfd_opensource_fullstack_openfoam_v1_hand",
+  "oracle_provenance": {
+    "host": "rserver (sim-benchmark-cfd-fullstack:latest, OpenFOAM ESI v2412)",
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "calibration_date": "auto",
+    "extract_method": "buoyantBoussinesqSimpleFoam laminar steady Boussinesq solve of a 2D differentially-heated SQUARE cavity (unit side L=1; hot left wall T=1, cold right wall T=0, adiabatic top/bottom; non-dimensional setup nu=8.4261498e-3, Pr=0.71, beta=1, g=1 -> Ra=g*beta*dT*L^3/(nu*alpha)=1e4). wallHeatFlux function object integrates the kinematic heat flow over the hot wall; nu_avg_hot_wall = Q/(alpha*(dT/L)*A) with alpha=nu/Pr, dT=1, L=1, A=0.1 (solution/solve_inner.py).",
+    "evals": "gt_value is the PUBLISHED de Vahl Davis (1983) Table V reference (average Nusselt number 2.243 at Ra=1e4), NOT the oracle's own output; the oracle reproduces it within T_good.",
+    "auto_batch": false,
+    "stopping": {
+      "criterion": "residualControl p_rgh/U/T 1e-6 in solution/case/system/fvSolution",
+      "stops_on": "criterion",
+      "converged_iterations": 6520,
+      "iteration_cap": 14000,
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU, #286",
+      "note": "This oracle stopped on its cap for its whole life: endTime 3000 against a criterion first met at iteration 6520 (#286). Cap raised to above twice the measured cost, which is the repair the criterion's reachability licenses -- on this case's own 96x96 mesh 1e-6 fires in 39 s, well inside the case's own 600 s reproduction budget. gt_value is unchanged at 2.243, the published de Vahl Davis (1983) Table V value; what moved is the oracle's own landing point, 2.342 -> 2.249, i.e. 4.4% -> 0.27% of |gt| against a 5% band. That the capped value was the worse one is luck rather than a rule -- ghia_re100 moved the other way under the same repair (#273) -- which is the whole reason this needed measuring instead of eyeballing: the capped value passed the band comfortably and told nobody anything."
+    },
+    "kpi_quality_note": "PAPER-CHANNEL (Tier 5) reference case. gt = the published benchmark number from de Vahl Davis (1983), Table V (average Nusselt number on the hot wall at Ra=1e4, Pr=0.71 = 2.243). ANTI-SHORTCUT: STRONG. The average Nusselt number of the buoyancy-driven cavity has NO closed form; it is the full coupled Navier-Stokes + energy (Boussinesq) solution of the recirculating natural-convection flow and is THE canonical natural-convection validation quantity. It cannot be hardcoded from any correlation - the conduction-only answer (Nu=1) and any boundary-layer scaling estimate both fall outside the tolerance band. T_good_pct=5 / T_bad_pct=15 (absolute below). OpenFOAM anti-cheat detector requires a real polyMesh + non-zero time-dir artifact with U,p: a reported number with no solve scores 0. gt=published benchmark; anti-shortcut=OpenFOAM artifact gate."
+  },
+  "source": {
+    "primary_url": "https://doi.org/10.1002/fld.1650030305",
+    "data_source": "de Vahl Davis, G. (1983), 'Natural convection of air in a square cavity: A bench mark numerical solution,' International Journal for Numerical Methods in Fluids 3(3):249-264, Table V (extrapolated benchmark solution). The average Nusselt number through the cavity / on the hot wall at Ra=1e4, Pr=0.71 is 2.243.",
+    "reference_value": "2.243 (de Vahl Davis 1983, Table V; average Nusselt number on the differentially-heated hot wall of the square cavity at Ra=10^4, Pr=0.71)",
+    "physics_note": "Ra = g*beta*dT*L^3/(nu*alpha) = 1e4, Pr = nu/alpha = 0.71, unit square cavity, hot left wall (T=1) and cold right wall (T=0), adiabatic top/bottom, gravity in -y, Boussinesq buoyancy. The hot-wall average Nusselt number measures the convective enhancement of heat transfer over pure conduction (Nu=1); at Ra=1e4 convection roughly doubles it to ~2.24."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "nu_avg_hot_wall": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Average Nusselt number on the hot wall (x=0) of the differentially-heated square cavity at Ra=1e4, Pr=0.71. The published de Vahl Davis (1983) Table V benchmark value is 2.243. Computed as the hot-wall heat-flux integral normalised by the conduction reference alpha*(dT/L)*A.",
+      "gt_value": 2.243,
+      "physics_min": 1.5,
+      "physics_max": 3.0,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Unchanged in value — this case already carried 5%. gt = de Vahl Davis (1983) Table V, Nu_avg = 2.243 at Ra = 1e4, and the oracle measures 2.249, 0.27% away. It used to read 2.342 and 4.42%, the tightest margin on the track, and that was not the mesh: the oracle was stopping on its iteration cap rather than on the residualControl it declares, and converging it moved the value four fifths of the way to the published one (#286). The band did not move and must not — the reason to record this is that the capped value passed comfortably, so nothing about the score could have revealed it. The conduction-only answer (Nu = 1) falls far outside.",
+      "kpi_quality_note": "ANTI-SHORTCUT: STRONG. The cavity average Nusselt number has NO closed form; it is the full coupled momentum+energy (Boussinesq) recirculating natural-convection solution and is THE canonical natural-convection validation number. There is nothing to hardcode short of quoting the de Vahl Davis table itself, and the physics window [1.5, 3.0] brackets the value without revealing it (conduction Nu=1 is below the window). The openfoam artifact detector additionally requires a real polyMesh + non-zero time dir with U,p, so a reported number with no solve scores 0. gt=published benchmark; anti-shortcut=OpenFOAM artifact gate.",
+      "pass_tol": 0.11215,
+      "gross_error_tol": 0.33645,
+      "gt_value_source": "Published reference (de Vahl Davis 1983, Table V). T_good=5% T_bad=15% of gt. Author confirmed the conduction-only shortcut (Nu=1) falls outside T_bad."
+    }
+  }
+}

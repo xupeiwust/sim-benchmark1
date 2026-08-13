@@ -1,0 +1,39 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+
+// Boussinesq natural convection, NON-DIMENSIONAL de Vahl Davis (1983) setup.
+//
+//   Ra = g*beta*dT*L^3 / (nu*alpha) = 1e4
+//   Pr = nu/alpha                   = 0.71
+//   L  = 1, dT = T_hot - T_cold = 1 - 0 = 1, g*beta = 1 (g=1, beta=1)
+//
+// => nu*alpha = g*beta*dT*L^3 / Ra = 1 / 1e4 = 1e-4
+//    nu  = sqrt(Pr * nu*alpha) = sqrt(0.71 * 1e-4) = 8.4261498e-3
+//    alpha = nu / Pr           = 1.1868521e-2
+//
+// In OpenFOAM's Boussinesq transportProperties, the thermal diffusivity is
+// derived as alpha_eff = nu/Pr, so we set nu and Pr directly (no separate
+// kappa). The body force uses beta*(T-TRef) with g from constant/g.
+
+transportModel  Newtonian;
+
+// nu = sqrt(Pr) * 1e-2 = sqrt(0.71)*1e-2
+nu              [0 2 -1 0 0 0 0]   8.4261498e-03;
+
+// thermal expansion (1/T): chosen so g*beta = 1 with g = 1 (constant/g).
+beta            [0 0 0 -1 0 0 0]   1.0;
+
+// reference temperature = mean of hot (1) and cold (0) walls
+TRef            [0 0 0 1 0 0 0]    0.5;
+
+// molecular Prandtl number (air)
+Pr              [0 0 0 0 0 0 0]    0.71;
+
+// turbulent Prandtl number (unused in laminar, kept for solver completeness)
+Prt             [0 0 0 0 0 0 0]    0.85;

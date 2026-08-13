@@ -22,12 +22,10 @@ detectors can drive scoring decisions; unvalidated stay diagnostic-only.
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
 
 from sim_benchmark_verifier.detectors import TrialContext, dispatch
 from sim_benchmark_verifier.detectors.openfoam import (
@@ -158,7 +156,7 @@ def _stage_kpi_result_for_fixture(fixture: Fixture) -> dict:
         "kpi_score": 0.0,
         "source_verified": 0.0,
         "physics_pass": 0.0,
-        "t_decay": 0.0,
+        "band_pass": 0.0,
         "why": "source verification failed: source file not found: /tmp/intentional",
     }
 
@@ -176,6 +174,12 @@ def run_fixture(fixture: Fixture, tmp_path: Path) -> tuple[str | None, bool]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # The per-fixture table marks its verdict with U+2713/U+2717, which a Windows
+    # console's cp1252 stdout cannot encode. Untouched, this run prints the table
+    # header and then dies on its first row: the calibration is computed in full
+    # and none of it is readable.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
     ap.add_argument("--tmp-dir", type=Path, default=Path("/tmp/calibration"))
     ap.add_argument("--output-md", type=Path, default=None,
@@ -274,9 +278,9 @@ def _write_evidence_md(path: Path, rows, metrics) -> None:
         "",
         "## Threshold provenance",
         "",
-        f"- `RESIDUAL_TOLERANCE` = `1e-2` "
+        "- `RESIDUAL_TOLERANCE` = `1e-2` "
         "(OpenFOAM detector — last-block max final residual)",
-        f"- `CONTINUITY_TOLERANCE` = `1e-3` "
+        "- `CONTINUITY_TOLERANCE` = `1e-3` "
         "(OpenFOAM detector — max |local| continuity error)",
         "",
         "Fixtures used:",

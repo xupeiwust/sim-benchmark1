@@ -1,0 +1,11 @@
+{
+  "case_id": "nh3_flame_speed_repair_mechanism",
+  "kind": "flame_speed",
+  "mechanism": "example_data/ammonia-CO-H2-Alzueta-2023.yaml",
+  "fuel": "NH3",
+  "phi": 0.94,
+  "T0_K": 328.0,
+  "P0_atm": 1.7,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

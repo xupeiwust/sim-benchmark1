@@ -1,0 +1,63 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "backstep_laminar_armaly_re389",
+  "source": {
+    "primary_url": "https://doi.org/10.1017/S0022112083002839",
+    "data_source": "Armaly, Durst, Pereira & Schoenung, J. Fluid Mech. 127:473 (1983). Laminar 2D backward-facing step, expansion ratio 1.94. Primary recirculation reattachment length xr/S on the bottom wall vs Re (based on 2x step height and mean inlet velocity). At Re=389 the flow is in the steady two-dimensional laminar regime; Armaly's measured/computed primary reattachment is xr/S ~ 8 in this Re range.",
+    "ref_data_source": "Armaly et al. 1983 J. Fluid Mech. 127:473-496, primary reattachment x1/S vs Re (their figure 2 / table). Re=389 sits in the steady 2D laminar branch where 2D simulation matches the experiment well.",
+    "note": "gt_value is this repo's own OpenFOAM oracle at the case's own grid level, NOT Armaly. It was originally written by tools/autocal_kpis.py from a run nobody recorded (calibration_date said 'auto'), and the contract was rewritten after that run (#29), so the number was unprovenanced until it was re-measured under issue #119 — see oracle_provenance. The Armaly anchor (xr/S ~ 8 at this Re) is the magnitude check the value passes, not its source.",
+    "of_signconv_note": "Cf = -2 tau_x / U_ref^2 (negate raw OpenFOAM wallShearStress.x): positive=attached, negative=recirc. Reattachment detector takes the first negative->positive Cf zero crossing past x/S=0.5 (filters spurious step-corner flickers)."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "reattachment_length_xr_over_h": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Primary recirculation reattachment length on the bottom wall, xr/S, from the negative->positive Cf (wall-shear sign) crossing downstream of the step (x_min=0.5 S filter excludes step-corner artifacts; x_max=30 S)",
+      "gt_value": 8.341731,
+      "physics_min": 3.0,
+      "physics_max": 15.0,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Unchanged in value — this case already carried 5%. The band's floor is the measured grid-family spread in oracle_provenance.variants: quartering the cell count moves xr/S by 0.64%, so 5% sits well above what mesh choice alone can produce and the band is not scoring noise. The oracle lands on gt_value. physics_min = 3 / physics_max = 15 bracket the laminar steady-regime reattachment for ER ~ 1.94.",
+      "kpi_quality_note": "ANTI-SHORTCUT STATUS: STRONG. The reattachment length of a laminar separating/reattaching shear layer has NO closed-form solution — it is set by the laminar separation dynamics and is the canonical Armaly experimental/CFD validation quantity. It cannot be inferred from flat-plate or boundary-layer correlations. Under this track's contract the scored number is not the one the agent writes: the evaluator deletes results.csv along with every generated artefact and re-runs the submission's own Allrun, so a recalled 'about 8' cannot score unless the submitted case actually computes it — which is what keeps acceptance.md's second falsifiable check satisfied even though the literature's rough xr/S ~ 8 lies inside the band.",
+      "pass_tol": 0.41708655,
+      "gross_error_tol": 1.25125965,
+      "gt_value_source": "This repo's calibrated oracle for this case at its own grid level (20800 cells), re-measured under issue #119; T_good = 5% and T_bad = 15% of |gt| per the integral tier. The line this replaces credited an 'ngspice/ccx oracle' and 6%/18% bands — the first was a hard-coded template constant in tools/autocal_kpis.py rather than a fact about this case (fixed, #40), the second never matched the T_good / T_bad actually stored here."
+    }
+  },
+  "oracle_provenance": {
+    "method": "solution/solve.sh in sim-benchmark-cfd-fullstack (ESI OpenFOAM v2412): blockMesh on the case's own 3-block graded blockMeshDict (20800 cells), then simpleFoam with simulationType=laminar to the fvSolution residualControl (converged at iteration 2664 of endTime 3000, final Ux residual 1.7e-08). wallShearStress is sampled on the downstream floor patch by the controlDict surfaces function object; Cf = -2 tau_x / U_ref^2 with U_ref = 1 m/s, and xr/S is the first negative-to-positive Cf crossing past x/S = 0.5, linearly interpolated between the two straddling face centres and divided by S = 0.0049 m.",
+    "calibration_date": "2026-08-04",
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "reanchor_commit": "59904f6afbb6b4053ac150d867ffcfba8959ac39",
+    "reanchor_note": "The case tree was materialised with `git archive` at that commit into a scratch directory, because the execution host's rsynced cases/cfd carries pre-#29 leftovers (#159) including an environment/Dockerfile that would change the container identity. The grader was this checkout's lib/sim_benchmark_verifier via PYTHONPATH, not the copy baked into the image — that one is still missing openfoam_interface.py (#105). Both facts are conditions of the number below, so re-measuring on a host whose image has been rebuilt is the way to check it rather than a reason to distrust it.",
+    "reproductions": "Three independent extractions of the same run recipe agree: solve_inner.py's own reattachment.dat gives 8.341731; the track evaluator's clean reproduction (artefacts stripped, Allrun re-run, results.csv read by the submission's extract_reattachment.py, which finds the floor by minimum y rather than by patch name) gives 8.34173129, |error| = 2.9e-07 and score 1.0; a third standalone Allrun gives 8.34173129 again.",
+    "variants": {
+      "coarse": {
+        "cells": 5200,
+        "value": 8.28845347,
+        "blocks": "60x20 / 100x20 / 100x20"
+      },
+      "baseline": {
+        "cells": 20800,
+        "value": 8.34173129,
+        "blocks": "120x40 / 200x40 / 200x40"
+      }
+    },
+    "spread_rel": 0.0064,
+    "pass_tol_basis": "Integral tier (5%) of docs/acceptance.md, floored by the grid-family spread above: 0.64% across a 4x change in cell count, so T_good is ~8x the spread a mesh choice alone produces.",
+    "gross_error_tol_basis": "15% of gt — three times T_good; at that distance the reattachment is grossly wrong (under-resolved, wrong nu, or not the laminar steady regime) rather than a near miss.",
+    "wall_clock": "186 s for solution/solve.sh and 186 s for the evaluator's clean reproduction, at the case's cpus = 2.",
+    "stopping": {
+      "criterion": "residualControl p/U 1e-6 in solution/case/system/fvSolution",
+      "stops_on": "criterion",
+      "converged_iterations": 2664,
+      "iteration_cap": 6000,
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU, #286",
+      "note": "Shipped with endTime 3000 against 2664 measured iterations -- converged, by 13%, on one host, the same thin margin `lid_driven_cavity_ghia_re400` carried before #273. The cap is raised to above twice the measured cost so a slower path to the same criterion still converges rather than silently reporting the cap's answer. The run is unchanged either way: re-measured at endTime 6000 it stops at the same 2664 iterations and reports the same reattachment_length_xr_over_h = 8.341731, which is this case's gt_value, so nothing moves."
+    }
+  }
+}

@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+// Kinematic pressure (incompressible, m^2/s^2). The flow is driven by a fixed
+// pressure difference between inlet and outlet: p_inlet = 3.6, p_outlet = 0.
+// For the fully-developed parabolic profile this drives
+//   u_mean = (dp/dx) * H^2 / (3*nu) = (3.6/30) * 0.25 / (3*0.01) = 1.0,
+// so Re_Dh = u_mean*D_h/nu = 1*1/0.01 = 100 (laminar). Velocity is zeroGradient
+// at inlet/outlet; pressure is zeroGradient at the no-slip walls.
+
+dimensions [0 2 -2 0 0 0 0];
+
+internalField uniform 0;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 3.6;
+    }
+    outlet
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+    bottomWall
+    {
+        type            zeroGradient;
+    }
+    topWall
+    {
+        type            zeroGradient;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

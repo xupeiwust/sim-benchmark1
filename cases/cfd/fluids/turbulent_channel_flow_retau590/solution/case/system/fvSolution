@@ -1,0 +1,71 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        smoother        GaussSeidel;
+        tolerance       1e-09;
+        relTol          0.01;
+    }
+
+    "(U|k|omega)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-09;
+        relTol          0.1;
+    }
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 0;
+    consistent      yes;
+
+    // Pressure is fully periodic (cyclic on inlet/outlet, zeroGradient on
+    // walls), so its level is otherwise undetermined: pin one cell.
+    pRefCell        0;
+    pRefValue       0;
+
+    // NO residualControl, deliberately. This oracle stops on the fixed
+    // iteration budget in controlDict (endTime 5000), and saying so is the
+    // whole point: the block that used to sit here declared p/U/(k|omega)
+    // 1e-7 and was never once satisfied, so the case asserted a stopping rule
+    // that nothing on disk could distinguish from its cap (#294, #336).
+    //
+    // The criterion is not reachable on this mesh rather than merely
+    // expensive. Measured to 60000 iterations: Ux, k and omega all reach 1e-9,
+    // while Uy sits at 3.5e-4 and p at 7.1e-5, both oscillating rather than
+    // descending. `residualControl` takes the max over a vector's components,
+    // so Uy pins U; the channel is cyclic and body-force driven, so Uy is
+    // physically ~0 and p is defined only up to a constant. That is #199's
+    // plane_poiseuille residual floor, not slow convergence -- and a criterion
+    // that can never be met is the same defect as no criterion (#273).
+    //
+    // Running longer does not buy a better answer here: at 5000 iterations the
+    // KPI lands 0.83% from the published DNS anchor and at 60000 it lands
+    // 2.39% -- three times further out. See tests/kpis.json
+    // oracle_provenance.stopping.
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p               0.9;
+    }
+    equations
+    {
+        U               0.7;
+        "(k|omega)"     0.7;
+    }
+}

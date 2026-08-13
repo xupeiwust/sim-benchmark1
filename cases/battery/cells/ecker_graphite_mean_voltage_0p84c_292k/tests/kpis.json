@@ -1,0 +1,69 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "ecker_graphite_mean_voltage_0p84c_292k",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "two constant-current discharges at pinned rates, separated by a constant-current constant-voltage recharge, segmented out of one reproduced trace on the sign of the current; the reference value is the relative charge the second delivers less than the first, so the cell's nominal capacity cancels",
+    "parameter_set": "Ecker2015",
+    "model": "SPMe",
+    "model_options": {},
+    "initial_soc": 1.0,
+    "ambient_temperature_K": 292.15,
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 1.65832,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 1.65833,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 1.65785,
+        "settings": {
+          "rtol": 1e-05,
+          "atol": 1e-05
+        }
+      }
+    },
+    "spread_abs": 0.00046999999999997044,
+    "spread_rel": 0.00028341936417577453,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "ocv_envelope": {
+      "n_samples_checked": 219,
+      "max_abs_overpotential_V": 0.11855029507550308,
+      "max_dissipation_violation_V": -0.059703739216146356,
+      "initial_voltage_error_V": 0.0521542444789862,
+      "Q_span_Ah": 0.1710008569578325
+    },
+    "ocv_max_deviation_basis": "1.4x the reference run's own worst departure from the evaluator's open-circuit-voltage curve, plus 50 mV",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks for what this parameterisation predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "rate_capacity_loss_pct": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Relative capacity the Ecker2015 cell loses between the two discharge rates of two constant-current discharges from a full charge, the first at 0.84C and the second at 2.52C, each stopped when the terminal voltage first reaches 2.5 V, with a constant-current constant-voltage recharge to 4.2 V between them.",
+      "unit": "%",
+      "gt_value": 1.65832,
+      "physics_min": 0.0,
+      "physics_max": 60.0,
+      "pass_tol": 0.082916,
+      "gross_error_tol": 0.331664,
+      "weight": 1.0
+    }
+  }
+}

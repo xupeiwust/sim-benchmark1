@@ -1,0 +1,32 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+
+// Streamwise driving of the periodic channel by a UNIFORM body force (per unit
+// mass, kinematic) in +x. The global x-momentum balance for the full channel
+// (height 2*delta, two walls) is
+//     gradP * (2*delta) = 2 * tau_w   =>   tau_w = gradP * delta = u_tau^2.
+// Choosing gradP = u_tau^2/delta = 1 (with delta = 1) fixes u_tau = 1, so the
+// computed bulk-mean velocity equals U_b/u_tau directly. The viscosity in
+// constant/transportProperties (nu = 1/590) then sets Re_tau = 590.
+//
+// vectorSemiImplicitSource adds an explicit volumetric source to the U
+// equation; injectionRateSuSp = ((Su) (Sp)) with Su the explicit vector and
+// Sp the implicit scalar (0 here). Units of Su are m/s^2 (kinematic force).
+
+momentumSource
+{
+    type            vectorSemiImplicitSource;
+    selectionMode   all;
+
+    volumeMode      specific;          // per unit volume (kinematic) source
+    injectionRateSuSp
+    {
+        U           ((1 0 0) 0);       // gradP = u_tau^2/delta = 1 in +x
+    }
+}

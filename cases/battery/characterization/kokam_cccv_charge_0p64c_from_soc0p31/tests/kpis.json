@@ -1,0 +1,69 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "kokam_cccv_charge_0p64c_from_soc0p31",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "constant-current charge to the voltage limit followed by a constant-voltage hold to the termination current",
+    "parameter_set": "Marquis2019",
+    "model": "DFN",
+    "model_options": {},
+    "initial_soc": 0.31,
+    "ambient_temperature_K": 298.15,
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 6548.74,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 6548.9,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 6548.38,
+        "settings": {
+          "rtol": 1e-05,
+          "atol": 1e-05
+        }
+      }
+    },
+    "spread_abs": 0.3599999999996726,
+    "spread_rel": 5.497240690570592e-05,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "ocv_envelope": {
+      "n_samples_checked": 302,
+      "max_abs_overpotential_V": 0.10626363787409687,
+      "max_dissipation_violation_V": -0.06411489574183227,
+      "initial_voltage_error_V": 0.06601462372885436,
+      "Q_span_Ah": 0.8728401064556884
+    },
+    "ocv_max_deviation_basis": "1.4x the reference run's own worst departure from the evaluator's open-circuit-voltage curve, plus 50 mV",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks for what this parameterisation predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "charge_time_s": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Total charge time of the Marquis2019 cell over a constant-current charge at 0.64C from 31% state of charge up to 4.1 V, followed by a constant-voltage hold at 4.1 V until the current falls to 10 mA.",
+      "unit": "s",
+      "gt_value": 6548.74,
+      "physics_min": 100.0,
+      "physics_max": 60000.0,
+      "pass_tol": 327.437,
+      "gross_error_tol": 1309.748,
+      "weight": 1.0
+    }
+  }
+}

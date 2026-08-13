@@ -1,0 +1,9 @@
+{
+  "case_id": "nmc_pouch_pulse_resistance_4p1a_soc0p55",
+  "kind": "pulse",
+  "parameter_set": "Mohtat2020",
+  "initial_soc": 0.55,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.1094,
+  "reproduction_timeout_s": 600
+}

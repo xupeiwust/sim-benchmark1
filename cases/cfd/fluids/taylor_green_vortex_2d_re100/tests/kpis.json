@@ -1,0 +1,41 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "taylor_green_vortex_2d_re100",
+  "oracle_status": "cfd_opensource_fullstack_openfoam_v1_hand",
+  "oracle_provenance": {
+    "host": "rserver (sim-benchmark-cfd-fullstack:latest, OpenFOAM ESI v2412)",
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "calibration_date": "auto",
+    "extract_method": "pisoFoam laminar transient solve of the Taylor-Green (1937) decaying vortex on a doubly-periodic 2*pi x 2*pi box (nu=0.01 -> Re=100), with the exact t=0 Taylor-Green velocity field imposed via setExprFields and all four side patches cyclic; the field is evolved to t-star=5 and u_peak_at_tstar = max over the domain of |Ux| read from the latest-time U field (solution/solve_inner.py).",
+    "evals": "gt_value is the PUBLISHED Taylor-Green (1937) exact analytical value: the vortex amplitude decays uniformly as exp(-2*nu*t), so the peak x-velocity magnitude at t-star=5, Re=100 is exp(-2*0.01*5)=exp(-0.1)=0.904837, NOT the oracle's own output; the oracle reproduces it within T_good.",
+    "auto_batch": false,
+    "kpi_quality_note": "PAPER-CHANNEL (Tier 5) reference case. gt = the published analytical benchmark number from Taylor & Green (1937): the exact unsteady 2D incompressible Navier-Stokes solution Ux = -cos(x) sin(y) exp(-2 nu t), whose peak magnitude decays as exp(-2 nu t). At t-star=5, Re=100 the peak |Ux| = exp(-0.1) = 0.904837. ANTI-SHORTCUT: the Taylor-Green field IS closed-form, so the decay formula MUST NOT be revealed in the instruction (it is not) and the OpenFOAM artifact detector is the hard gate: a reported number with no real polyMesh + non-zero time-dir (U,p) artifact scores 0. The naive shortcut of reporting the undecayed initial amplitude (|Ux|=1.0) differs from gt by 0.0952 > T_bad (0.0814), so it fails the physics/T band too: the agent must actually time-march the transient decay. T_good_pct=3 / T_bad_pct=9 (absolute below). The instruction states only the geometry, Re, periodic BCs, the initial vortex field, and the time at which the peak is read; the agent must build the case and integrate in time."
+  },
+  "source": {
+    "primary_url": "https://doi.org/10.1098/rspa.1937.0036",
+    "data_source": "Taylor, G. I. & Green, A. E. (1937), 'Mechanism of the production of small eddies from large ones,' Proceedings of the Royal Society of London A 158(895):499-521. Exact unsteady 2D incompressible Navier-Stokes solution (nondimensional): Ux = -cos(x) sin(y) exp(-2 nu t), Uy = sin(x) cos(y) exp(-2 nu t); the whole vortex amplitude decays as exp(-2 nu t).",
+    "reference_value": "0.904837 (Taylor-Green 1937 exact solution; peak x-velocity magnitude max|Ux| at t-star=5 for Re=100, nu=0.01, where the amplitude decay factor is exp(-2*nu*5)=exp(-0.1))",
+    "physics_note": "Re = U_ref*L_ref/nu = 1*1/0.01 = 100, so nu = 0.01. On a doubly-periodic 2*pi x 2*pi box the exact field Ux = -cos(x) sin(y) exp(-2 nu t) has amplitude exactly exp(-2 nu t) (|cos|=|sin|=1 at the peak). At t-star=5 this is exp(-0.1) = 0.9048374. The undecayed initial peak (t=0) is 1.0; the decay over t-star=5 separates a genuine transient solve (0.9048) from reporting the initial amplitude (1.0)."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "u_peak_at_tstar": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "The peak x-velocity magnitude max over the domain of |Ux|/U_ref at t-star=5 for the Taylor-Green Re=100 decaying vortex. The published Taylor-Green (1937) exact value is exp(-0.1) = 0.904837: the initial unit-amplitude vortex has decayed by exp(-2 nu t).",
+      "gt_value": 0.904837,
+      "physics_min": 0.7,
+      "physics_max": 1.05,
+      "pass_tol_source": "Flat 5% of |gt_value| — the single band every live track carries (#190, after #188 set it for combustion and battery). The band exists to catch a wrong configuration, not to grade numerical precision, and scoring inside it is binary. Widened from 3%. gt is the Taylor-Green (1937) exact analytical peak |Ux| at t* = 5 for Re = 100, exp(-0.1) = 0.904837, and the oracle lands 0.6% away. The check the widening had to survive is the undecayed-amplitude shortcut |Ux| = 1.0: it sits 0.0952 from gt, which is 2.1 band-widths, so it still scores zero. As with plane Poiseuille, the standing objection is the closed form in the KPI rather than the band around it.",
+      "pass_tol": 0.04524185,
+      "gross_error_tol": 0.0814354,
+      "kpi_quality_note": "ANTI-SHORTCUT: the Taylor-Green field is an EXACT closed-form solution, so the decay formula is deliberately NOT given in the instruction (the agent is told only the geometry, Re, the periodic BCs, the initial vortex velocity field, and the time at which the peak is read). Two gates: (1) the openfoam artifact detector requires a real polyMesh + non-zero time dir with U,p, so a reported number with no solve scores 0; (2) the decay over t-star=5 puts the no-time-marching shortcut (report the initial peak 1.0) outside T_bad and the physics window is [0.70,1.05] (1.0 is inside the window but fails the T band, forcing a genuine transient integration). gt = the published analytical benchmark number; anti-shortcut = OpenFOAM artifact gate + transient-decay separation.",
+      "known_weakness": "THE KPI IS A RECALLABLE CLOSED-FORM VALUE, and withholding the formula from the prompt does not fix that. exp(-2*nu*t) is the decay of the Taylor-Green field; a model that recognises the field at all can produce exp(-0.1) = 0.904837 without integrating anything, and the prompt has to state the initial field because it is the initial condition. CLAUDE.md's analytical-shortcut section says the answer to that is to score the RELATION between runs (an observed order) rather than the value. #199 measured whether that works here and it does not, so the KPI stands as-is and this is recorded rather than quietly left: on 16/32/64 the oracle's own correct solution fits an observed order of 2.01, and on 32/64/128 the SAME correct solution fits 3.01 -- 2.40/3.63 pairwise with `backward` and dt proportional to h, 2.14/3.71 with Euler at fixed dt. Recomputing the norm against exact cell averages rather than cell-centre point values made it worse (3.32/3.43), so it is not the cell-average offset; two error terms of opposite sign cancel at the fine end and WHICH grid triple that happens on moves the fit. So gt could not be the theoretical 2.0 the way `kovasznay_flow_re40` and `plane_poiseuille_friction_factor` have it -- it would have to be one triple's own fitted number, which writes our choice of grid triple into the answer. In the three-condition test in CLAUDE.md's analytical-shortcut section this case fails (ii): pinning a grid triple is not enough when the fitted order depends on which triple was pinned. The live consequence is that this case measures recall as much as simulation, and nothing here claims otherwise. How its stored trials actually came out is a question for the store (`tools/power_analysis.py --shape`, `tools/board_store.py`) and not for this file: a case directory cannot read a store, so a cell count written here is an assertion no check can falsify and one that goes stale on the next sweep.",
+      "gt_value_source": "Published reference (Taylor & Green 1937 exact solution, peak |Ux| = exp(-2*nu*t-star) = exp(-0.1) = 0.904837 at Re=100, t-star=5). T_good=3% T_bad=9% of |gt|. Author confirmed the no-decay shortcut (|Ux|=1.0) falls outside T_bad."
+    }
+  }
+}

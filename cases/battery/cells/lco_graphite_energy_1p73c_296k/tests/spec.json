@@ -1,0 +1,9 @@
+{
+  "case_id": "lco_graphite_energy_1p73c_296k",
+  "kind": "discharge",
+  "parameter_set": "Ai2020",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.6159,
+  "reproduction_timeout_s": 600
+}

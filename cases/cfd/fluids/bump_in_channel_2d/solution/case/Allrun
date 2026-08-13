@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Reference entry point. The whole workflow -- mesh, solve, extraction and
+# results.csv -- is in run_case.py, which operates on this directory.
+set -euo pipefail
+cd "$(dirname "$(realpath "$0")")"
+if ! command -v blockMesh >/dev/null 2>&1 && [ -f /usr/lib/openfoam/openfoam2412/etc/bashrc ]; then
+    set +e; set +u
+    # shellcheck disable=SC1091
+    source /usr/lib/openfoam/openfoam2412/etc/bashrc
+    set -e; set -u
+fi
+test -d constant/polyMesh || { echo "FAIL: supplied mesh missing at constant/polyMesh" >&2; exit 1; }
+export ORACLE_CASE="$PWD"
+export SIM_BENCH_SUBMISSION="$PWD"
+exec python3 run_case.py

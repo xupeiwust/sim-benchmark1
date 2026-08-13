@@ -1,0 +1,58 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        smoother        GaussSeidel;
+        tolerance       1e-9;
+        relTol          0.01;
+    }
+
+    "(U|k|omega)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-9;
+        relTol          0.1;
+    }
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 0;
+    consistent      yes;
+    // Fully periodic/closed pressure system (cyclic + zeroGradient walls,
+    // body-force driven): the p matrix is singular, so pin a reference cell.
+    pRefCell        0;
+    pRefValue       0;
+
+    // No residualControl: this case is solved under the fixed iteration budget
+    // in controlDict, and that budget is part of the problem statement -- see
+    // the task description. A residualControl block used to sit here declaring
+    // p/U/k/omega 1e-6; it was never satisfied within the budget, so the case
+    // announced a stopping rule it did not use. Declaring nothing is the
+    // honest form of the same run.
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p               0.9;
+    }
+    equations
+    {
+        U               0.7;
+        k               0.7;
+        omega           0.7;
+    }
+}

@@ -1,0 +1,69 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "nmc_pouch_energy_2p4c_299k",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "constant-current discharge to the voltage cut-off, integrated from the reproduced current and voltage trace",
+    "parameter_set": "Mohtat2020",
+    "model": "DFN",
+    "model_options": {},
+    "initial_soc": 1.0,
+    "ambient_temperature_K": 299.15,
+    "pybamm_version": "26.7.1.0",
+    "variants": {
+      "baseline": {
+        "value": 16.9562,
+        "settings": {
+          "rtol": 1e-06,
+          "atol": 1e-06
+        }
+      },
+      "tight": {
+        "value": 16.9563,
+        "settings": {
+          "rtol": 1e-08,
+          "atol": 1e-08
+        }
+      },
+      "loose": {
+        "value": 16.9561,
+        "settings": {
+          "rtol": 1e-05,
+          "atol": 1e-05
+        }
+      }
+    },
+    "spread_abs": 9.999999999976694e-05,
+    "spread_rel": 5.897547799611172e-06,
+    "pass_tol_basis": "flat 5% of the reference value. The band exists to catch a wrong configuration, not to grade numerical precision; the nearest wrong configuration for this track lands ~68% away, and the structural failures are caught by the gates.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "ocv_envelope": {
+      "n_samples_checked": 369,
+      "max_abs_overpotential_V": 0.6783221962469916,
+      "max_dissipation_violation_V": -0.12085187651552731,
+      "initial_voltage_error_V": 0.13093333132844354,
+      "Q_span_Ah": 4.969133212165701
+    },
+    "ocv_max_deviation_basis": "1.4x the reference run's own worst departure from the evaluator's open-circuit-voltage curve, plus 50 mV",
+    "gt_type_note": "Parameter-set-specific solver reference, not a measurement on a physical cell: the task asks for what this parameterisation predicts."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "discharge_energy_Wh": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Energy delivered by the Mohtat2020 cell over a constant-current discharge at 2.4C from a full charge, stopped when the terminal voltage first reaches 2.8 V.",
+      "unit": "W.h",
+      "gt_value": 16.9562,
+      "physics_min": 2.0,
+      "physics_max": 40.0,
+      "pass_tol": 0.84781,
+      "gross_error_tol": 3.39124,
+      "weight": 1.0
+    }
+  }
+}

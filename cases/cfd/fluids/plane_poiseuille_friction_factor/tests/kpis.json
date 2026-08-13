@@ -1,0 +1,64 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "plane_poiseuille_friction_factor",
+  "oracle_status": "cfd_openfoam_interface_hand",
+  "oracle_provenance": {
+    "host": "sim-benchmark-cfd-fullstack:latest, OpenFOAM ESI v2412, x86-64, run at the 2 cpus task.toml declares",
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "calibration_date": "auto",
+    "extract_method": "solution/case/Allrun runs run_study.py: three uniform grids (60x20, 120x40, 240x80) on a 30 x 1 plane channel, simpleFoam laminar steady, driven by a fixed inlet/outlet kinematic-pressure difference with U zeroGradient at both ends and noSlip walls. Cell centres come from writeCellCentres, not from arithmetic on the spacing. At the station x = 20 the wall-normal column of cell centres is taken, its bulk mean u_mean formed by the trapezoidal rule closed at the walls, and l2_error is the grid-normalised L2 norm of (u_j/u_mean - 1.5*(1 - (2*y_j/D)^2)). grid_convergence.csv carries one row per grid and the evaluator fits the slope itself.",
+    "evals": "observed_order_u's gt is 2.0, the THEORETICAL order of a second-order spatial discretisation -- a published property of the method, not the oracle's output. The oracle fits 1.9985 (pairwise 1.9977 and 1.9994) on l2_error = 2.5562561498e-03 / 6.4009173213e-04 / 1.6008899043e-04, measured by solution/solve.sh on the domain image at 2 cpus in 569 s. That confirms all three grids sit in the asymptotic range; it is a check on the reference, not the reference itself. The fitted value is 0.0015 from gt, so the 0.25 band clears a correct solve by a factor of 170. Cleaner than kovasznay_flow_re40, which fits 1.9866 against the same gt.",
+    "oracle_wall_sec": 569,
+    "auto_batch": false,
+    "stopping": {
+      "criterion": "residualControl p 1e-12 in solution/case/system/fvSolution, applied to each of the study's three grids. U is deliberately absent: Uy is physically ~0 in this channel so its normalised residual floors at 0.06 and no run length reaches any tolerance (#199)",
+      "stops_on": "criterion",
+      "converged_iterations": 10565,
+      "iteration_cap": 40000,
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU, #286",
+      "note": "Three grids share one controlDict, so the recorded cost is the WORST level: 1365 / 3638 / 10565 iterations at 60x20 / 120x40 / 240x80, reproducing #199's measurement. All three stop on the criterion, the finest at 3.8x headroom. This is the one cfd oracle that already refused to report a capped run before #286 -- run_study.py raises if `SIMPLE solution converged` is absent from any level's log -- which is why it is also the one that never needed finding."
+    },
+    "kpi_quality_note": "Switched from f*Re to the observed order of accuracy (#199). The previous KPI was f*Re = 96, an exact closed-form constant for an infinite parallel-plate channel that a model can produce without solving anything -- CLAUDE.md's analytical-shortcut section names a clean closed form as a signal to change the KPI rather than to defend it, and this case was one of the three it named. The KPI is now a RELATION BETWEEN RUNS: an observed order is not a property of the operating point, has nothing to recall, and cannot be produced without solving every refinement level. That is also what makes the exact parabola safe to state in the prompt -- which it must be, because it is the reference the error is measured against. Three measurements from #199 that this case rests on, all at 2 cpus on the domain image: (1) the fitted order is 1.9985, pairwise 1.9977 / 1.9994, so the theoretical 2.0 is available as gt and the oracle's own output is not needed as the answer; (2) the norm is invariant to how the channel is driven -- imposing the exact parabola at the inlet instead of a pressure difference reproduces all three l2_error values to 7 significant figures -- which is why normalising by the profile's own bulk mean is the right definition and a raw norm is not, the raw one scoring the flow-rate error instead; (3) residualControl on U is structurally unreachable here, because with a developing entrance region Uy is physically almost zero and its NORMALISED residual floors at 0.06-0.19 whatever the algorithm or relaxation, while Ux sits at 7.5e-15 and p at 1e-12. The criterion is therefore on p, and run_study.py fails a level that stopped on its iteration cap instead."
+  },
+  "source": {
+    "primary_url": "https://www.google.com/books/edition/Viscous_Fluid_Flow/_8FQAAAAMAAJ",
+    "data_source": "F. M. White, 'Viscous Fluid Flow,' 3rd ed., McGraw-Hill, 2006 (fully-developed laminar flow between parallel plates). Corroborated by R. K. Shah and A. L. London, 'Laminar Flow Forced Convection in Ducts,' Academic Press, 1978.",
+    "reference_value": "The exact fully-developed profile u(y) = (3/2)*u_mean*(1 - (2y/D)^2) is the reference FIELD; the scored quantity is the order at which a discretisation converges to it, whose reference is the theoretical 2 of a second-order spatial scheme.",
+    "physics_note": "For an infinite parallel-plate channel of full gap D, fully-developed laminar flow has u(y) = u_max*(1-(2y/D)^2) with u_max = 1.5*u_mean. Here D = 1, nu = 0.01 and the pressure difference is sized for u_mean ~ 1. The bulk mean the channel actually settles at is grid-dependent -- 1.00125 / 1.00031 / 1.00008 on the three grids, itself converging at second order -- which is why the scored norm is taken on the profile normalised by its own bulk mean rather than against a unit-mean parabola. The entrance length for this Reynolds number is roughly 10, so x = 20 is fully developed with margin; the profile is x-invariant there, so which cell column is taken as the station does not move the number."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    },
+    "diagnostic": {
+      "weight": 0.0
+    }
+  },
+  "kpis": {
+    "observed_order_u": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Observed order of spatial accuracy: the least-squares slope of log(l2_error) against log(h) over the three grids the task fixes, where l2_error is the grid-normalised L2 norm of the error in the bulk-normalised velocity profile at x = 20. 2.0 for a genuinely second-order discretisation.",
+      "gt_value": 2.0,
+      "physics_min": 0.5,
+      "physics_max": 3.5,
+      "pass_tol": 0.25,
+      "gross_error_tol": 0.75,
+      "pass_tol_source": "The second KPI exempted from the flat 5% band, on the same grounds as kovasznay_flow_re40 / observed_order_u and with the same number: pass_tol = 0.25 stays ABSOLUTE rather than becoming a percentage, because the question is which order the discretisation achieved, and 0.25 is what separates 1 from 2 from 3. Theory-anchored GT: a second-order spatial discretisation converges at 2.0. A correct second-order solve lands at 1.9985 (error 0.0015), so 0.25 clears it by a factor of 170 while still admitting the 1.9-2.1 spread of a different-but-legitimate second-order scheme. 5% of 2.0 would be 0.10, which would start failing legitimate second-order schemes for fitting noise. The band is not what defends this case against a recalled answer -- there is nothing to recall -- so neither falsifiable check in docs/acceptance.md argues for a narrower one.",
+      "kpi_quality_note": "The KPI that makes a closed-form problem scorable, and the case CLAUDE.md's analytical-shortcut section now cites as the one of its three named cases where the switch worked. An order is a property of the discretisation rather than of the operating point, so it is absent from any training corpus and cannot be recalled, and it cannot be produced without actually solving all three levels. What it does NOT buy is discrimination: `kovasznay_flow_re40` is the repo's only other observed-order KPI and the stored trials for it are saturated, so expect this one saturated too until measured otherwise. How saturated, and on which models, is read from the store (`tools/power_analysis.py --shape`) rather than asserted here -- a case file cannot see a store, and a score copied into one is stale from the commit that writes it. physics_min = 0.5 deliberately keeps a genuinely first-order solve INSIDE the window, so it decays through gross_error_tol instead of being called unphysical -- it is a real convergent solve that answered the wrong question. The failure mode this contract is built to catch is the one measured on two other cases in #199: stopping every grid at the same fixed iteration count produces a confident and wrong slope, and the old f*Re KPI could not feel it at all (a fourfold refinement moved f*Re by 0.094%).",
+      "gt_value_source": "Theoretical order of a second-order spatial discretisation (2.0). Confirmed to be in the asymptotic range by the oracle's pairwise orders 1.9977 (20->40) and 1.9994 (40->80), fitting 1.9985."
+    },
+    "f_times_re": {
+      "group": "diagnostic",
+      "shape": "scalar",
+      "description": "DIAGNOSTIC, WEIGHT 0, NOT SCORED. The hydraulic-diameter Darcy friction factor times Reynolds number for fully-developed laminar plane-channel flow; the published exact value for an infinite parallel-plate channel is 96.",
+      "gt_value": 96.0,
+      "physics_min": 60.0,
+      "physics_max": 130.0,
+      "pass_tol": 4.8,
+      "gross_error_tol": 8.64,
+      "pass_tol_source": "Retained exactly as it stood when this KPI was the scored one (flat 5% of |gt_value|, #190). It is recorded rather than maintained: nothing derives this KPI any more, so the band is here to say what the stored rows were judged against, not to judge anything.",
+      "kpi_quality_note": "KEPT AND NOT SCORED (#199). tests/spec.json does not derive it, so it never reaches the scorer; the weight-0 group says the same thing declaratively. It is not deleted because 23 stored trials were scored against it and a deleted KPI leaves those rows unexplainable -- the number they carry would have no definition to point at. What is removed is its effect on the score, which is the whole problem it had: f*Re = 96 is a recallable closed-form constant, so a model that never ran a solver could land inside the band. The instruction no longer asks for it and no submission is expected to produce it."
+    }
+  }
+}

@@ -1,0 +1,39 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      alphat;
+}
+
+// Turbulent thermal diffusivity (kinematic) for buoyantBoussinesqSimpleFoam.
+// LAMINAR de Vahl Davis cavity: there is no turbulent contribution, so alphat=0
+// everywhere and the walls are simply `calculated`. The field still must be
+// present because buoyantBoussinesqSimpleFoam reads alphat at construction.
+dimensions [0 2 -1 0 0 0 0];
+
+internalField uniform 0;
+
+boundaryField
+{
+    hotWall
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    coldWall
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    adiabaticWalls
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

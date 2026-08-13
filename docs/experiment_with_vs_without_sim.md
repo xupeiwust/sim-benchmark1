@@ -1,5 +1,8 @@
 # Experiment — does the sim ecosystem affect the agent's CAE benchmark score?
 
+> **Historical snapshot, not maintained.** This is a one-off experiment from the v17-v19 era, run on the self-built runner that no longer exists.
+> Kept for the reasoning; do not read it as current state.
+
 **Status**: deferred from the public v0 launch path.
 
 This document is retained as an appendix design note. The public benchmark is

@@ -1,0 +1,52 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "bump_in_channel_2d",
+  "solver": "openfoam",
+  "revalidation_2026_06_07": {
+    "host": "rserver — sim-benchmark-cfd-fullstack:latest (OpenFOAM ESI v2412)",
+    "oracle_score": 1.0,
+    "anti_cheat": "openfoam artifact detector active (polyMesh + time dir), solver_evidence=True",
+    "note": "All KPIs score 1.0 on the declared image — GT holds on OpenFOAM ESI v2412 post domain-migration."
+  },
+  "source": {
+    "primary_url": "https://tmbwg.github.io/turbmodels/bump.html",
+    "grid": "NASA TMR official grid family, level 3 (177x81 nodes = 14,080 cells), from bumpgrids-grids.zip, converted with plot3dToFoam and patched from NASA's own bump_3levelsdown_177x81.nmf. Supplied to the agent in environment/, which the runner uploads into the working directory.",
+    "reference_values": "Bump/SST/force_convergence_sst.dat: CFL3D C_D=0.0037071442412, FUN3D C_D=0.0036105640 at N=14080."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "cd_total": {
+      "group": "outputs",
+      "shape": "scalar",
+      "unit": "",
+      "description": "Total drag coefficient on the no-slip plate (x in [0, 1.5]) for the NASA TMR 2D bump-in-channel at Re=3e6, k-omega SST, on the supplied official 177x81 grid. Normalised by 0.5*rho*U^2*A_ref with A_ref=1.5.",
+      "gt_value": 0.003658854,
+      "physics_min": 0.001,
+      "physics_max": 0.02,
+      "pass_tol": 0.0003658854,
+      "gross_error_tol": 0.0010976562,
+      "weight": 1.0,
+      "pass_tol_source": "10%, RULED — not held. docs/acceptance.md carries this as the second of its two live exceptions, beside kovasznay_flow_re40's observed_order_u (#190, ruled 2026-08-05). What the exception rests on is NOT the argument that was current when it was proposed. That argument was that this repo's own reference run sat +7.31% from gt_value, so a 5% band would score it zero; issue #223 falsified it. The oracle had been solving Re = 2e6, because constant/transportProperties read NASA's body reference length of 1.5 as the Reynolds length (nu = 5e-7 against the instruction's 3.3333333e-7). With that corrected (#224) every known-correct value on this case sits inside 1.7% of gt_value = 0.003658854: this repo's oracle 0.0036601169 (+0.03%), gpt-5.6-sol 0.0036060 (-1.44%), k3 0.0035992 (-1.63%), CFL3D 0.0037071 (+1.32%), FUN3D 0.0036106 (-1.32%). So 5% would now zero nothing, and 10% is here because it was ruled — not because tightening would hurt a known-correct answer. What the fix did NOT change, and what the exception is actually worth writing down for, is acceptance.md's check 2: 'is a value the agent could recall from the literature inside the band?' It fails here AT EVERY WIDTH, and no band can rescue it. gt_value IS the mean of CFL3D and FUN3D, so a model that recalls the two published numbers and averages them lands exactly on gt whatever the band; recalling either one alone lands at +-1.32%, inside any band from 1.4% up. All five known-correct values above lie in a window 2.95 percentage points wide centred on gt, so narrowing the band far enough to exclude a recalled value would exclude the correctly computed ones with it. THE BAND BUYS NO 'THE AGENT HAD TO RUN THE SOLVER' ON THIS CASE, at 10% or at any other width. What buys it is the evaluator: openfoam_interface copies the submission's source into a clean directory, deletes every generated artifact including results.csv, re-runs the submission's own ./Allrun, and gates on detectors.openfoam.has_mesh_and_solution — a polyMesh/ plus a non-zero time directory holding a field, checked in the evaluator's own copy after the re-run (#211). A recalled number never reaches the band at all. Unchanged: physics_min = 0.001 and physics_max = 0.02 still exclude a run that never developed a boundary layer and a mis-normalised force. The measurement history behind these numbers is in `supersedes` and in issue #223."
+    }
+  },
+  "oracle_provenance": {
+    "method": "simpleFoam + kOmegaSST, wall-resolved on the supplied official grid, at the operating point the instruction states: nu = 3.3333333e-7, i.e. Re = 3e6 on length 1, which is NASA's own definition ('Re = 3 million based on length \"1\" of the grid'). NASA's OTHER length -- 'the body reference length is 1.5 units' -- normalises the force and nothing else: forceCoeffs Aref = 1.5, magUInf = 1, rhoInf = 1, dragDir (1 0 0), patches (wall). Free-stream k and omega come from the two numbers the instruction states -- I = 0.077% gives k = 1.5*(I*U)^2 = 8.8935e-7, and nut/nu = 0.009 gives omega = k/(0.009*nu) = 296.45. Convection is div(phi,U) bounded Gauss linearUpwindV grad(U); that choice is the oracle's and is worth naming, because it is worth +1.38% against the plain linearUpwind that the model trials chose, and it is a legal difference rather than a defect.",
+    "our_value": 0.0036601169,
+    "agreement": "0.03% from the CFL3D/FUN3D mean of 0.0036589 on the supplied grid, inside a cross-code spread of 2.64%. The component split is the stronger check and it agrees too: cd_pressure 5.198e-4 and cd_viscous 3.140e-3 against CFL3D 5.5434e-4 / 3.15280e-3 and FUN3D 5.2807e-4 / 3.08249e-3, and cf at x=0.75 is 5.711e-3 against 5.62216e-3 / 5.61260e-3. NASA's warning that OpenFOAM's SA/SST did not reproduce TMR's equations (openfoam_issues.html, AIAA 2014-2087) is recorded as provenance; at this grid level nothing beyond code-to-code scatter is visible.",
+    "gt_type_note": "gt_value is the mean of two published reference codes on this exact grid, not an experimental value. This is a verification case: the question is whether the equations are solved correctly, not whether the closure matches reality.",
+    "supersedes": "Three earlier numbers are retired here, and they are one fault seen three times. (1) `our_value` sat at 0.0036149 from before commit e841b1a3: that run had BOTH a self-built 49,400-cell mesh silently rebuilt over the supplied grid AND the Reynolds error below, two errors of opposite sign that cancelled to something that looked like agreement with FUN3D. (2) Deleting the blockMeshDict removed one of them and the oracle jumped to 0.00393720366 -- read at the time as the documented OpenFOAM/TMR cross-code gap. (3) That value carried free-stream conditions contradicting the instruction (k from I = 0.1% instead of 0.077%, omega from a mixing length instead of the stated eddy-viscosity ratio, free-stream nut/nu ~300 against the stated 0.009); fixing them moved cd_total -0.27% to 0.00392641225 and left 8.4% between the oracle and every model trial. Issue #223 measured that residue one variable at a time: nu 5e-07 -> 3.3333333e-07 is -6.78% and div(phi,U) linearUpwindV -> linearUpwind is a further -1.38%, together -8.07% against the -8.16% / -8.33% the trials sat at; the wall treatment, the prime suspect, is 0.000001% because nutkWallFunction and nutUSpaldingWallFunction coincide on a wall-resolved grid. The nu error entered at commit a2929479, which rewrote the instruction's condition table from 'Reynolds number based on L_ref = 1.5 m' to 'reference length 1 / nu 3.3333333e-7' and did not update constant/transportProperties; 0/omega's comment and this block's `method` had already been rewritten to the correct nu, which is why the file disagreed with itself for three commits.",
+    "openfoam_version": "ESI OpenFOAM v2412",
+    "stopping": {
+      "criterion": "residualControl p/U/k/omega 1e-5 in solution/case/system/fvSolution",
+      "stops_on": "criterion",
+      "converged_iterations": 1390,
+      "iteration_cap": 5000,
+      "measured_on": "sim-benchmark-cfd-fullstack:latest (ESI OpenFOAM v2412), 2 CPU, #286",
+      "note": "Stops on its criterion, at 3.6x headroom. Recorded because the number is not otherwise knowable without re-running: simpleFoam exits 0 either way and leaves the same fields behind, so a cap that had drifted below the criterion would look exactly like this one (#273, #286)."
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "case_id": "flatplate_zpg_subsonic",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "cf_x097",
+      "drag_coefficient"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "cf_x097": {
+      "derive": "single_row",
+      "value": "cf_x097"
+    },
+    "drag_coefficient": {
+      "derive": "single_row",
+      "value": "drag_coefficient"
+    }
+  },
+  "reproduction_timeout_s": 1700
+}

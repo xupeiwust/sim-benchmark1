@@ -1,0 +1,68 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "ch4_air_idt_sensitivity_ch3ho2_phi0p87_1390k",
+  "oracle_status": "local_tolerance_study_calibrated",
+  "oracle_provenance": {
+    "method": "constant-volume adiabatic ignition at the unperturbed rates for the delay, and a rate-multiplier perturbation study on one named reaction, refined until the logarithmic derivative stops moving, for the sensitivity",
+    "mechanism": "gri30.yaml",
+    "reaction": "CH3 + HO2 <=> CH3O + OH",
+    "phi": 0.87,
+    "T0_K": 1390.0,
+    "P0_atm": 2.4,
+    "cantera_version": "3.2.0",
+    "variants": {
+      "perturbation_0p10": {
+        "value": -0.225057
+      },
+      "perturbation_0p05": {
+        "value": -0.224647
+      },
+      "perturbation_0p02": {
+        "value": -0.224524
+      },
+      "perturbation_0p01": {
+        "value": -0.224531
+      }
+    },
+    "spread_abs": 0.000533,
+    "spread_rel": 0.0023738,
+    "pass_tol_basis": "flat 5% of the reference value. The perturbation study above is the spread that matters here and it is 0.24% end to end, so the band sits more than an order of magnitude above it. What the band grades is whether the derivative was computed at all, not how carefully the perturbation was chosen.",
+    "gross_error_tol_basis": "20% of the reference value; diagnostic only, not part of the score",
+    "reaction_choice_note": "The reaction is deliberately NOT the chain-branching H + O2 <=> O + OH. That reaction's sensitivity here is about -0.29, and 'roughly -0.3' for chain branching is folklore rather than a computed number, so a guess would land inside a 5% band. A flat relative band protects a value whose magnitude is not common knowledge; for a dimensionless quantity of order unity, moving the operating point does not make it unrecallable, which is the same hole the ghia cases have arriving by a different route. CH3 + HO2 <=> CH3O + OH is an important route in methane ignition that nobody quotes a sensitivity for, and the round guesses miss it: -0.2 is 10.9% out and -0.25 is 11.3% out, both outside the band. The full ranking at this condition is in the case's demand record.",
+    "operating_point_note": "1390 K rather than the 1365 K this case was first calibrated at, because at 1365 K the delay came out 2.287 ms and the instruction states a pressure of 2.4 atm -- a number inside that KPI's own 5% band, which tools/lint_agent_visible.py W1 caught. An agent reading 2.4 off the prompt and reporting it would have scored the delay. Moving the temperature moved the delay to 1.718 ms; the nearest number appearing anywhere in the prompt now sits 39.7% away.",
+    "gt_type_note": "Mechanism-specific solver reference, not a measurement: the task asks what GRI-Mech 3.0 predicts at this operating point."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "s_ch3_ho2": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Converged logarithmic sensitivity dln(tau)/dln(k) of the ignition delay to the rate constant of CH3 + HO2 <=> CH3O + OH, for lean methane/air at phi = 0.87, 1390 K and 2.4 atm on GRI-Mech 3.0.",
+      "unit": "dimensionless",
+      "gt_value": -0.224531,
+      "physics_min": -2.0,
+      "physics_max": 0.5,
+      "pass_tol": 0.01122655,
+      "gross_error_tol": 0.0449062,
+      "weight": 0.5,
+      "kpi_quality_note": "ANTI-SHORTCUT: a derivative is not a property of any single integration, so no trace contains it and the solver has to be run several times. What defends it is the evaluator's strip-and-re-run -- the column is deleted before the submission's own entry point is re-executed. The reaction was chosen so that a plausible round guess misses the band; see oracle_provenance.reaction_choice_note for the measurement behind that choice."
+    },
+    "ignition_delay_ms": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Ignition delay of the unperturbed mixture, defined as the time of maximum dT/dt, re-derived by the evaluator from the reproduced trace.",
+      "unit": "ms",
+      "gt_value": 1.718304,
+      "physics_min": 0.1,
+      "physics_max": 100.0,
+      "pass_tol": 0.0859152,
+      "gross_error_tol": 0.3436608,
+      "weight": 0.5,
+      "kpi_quality_note": "This is the KPI that pins the operating point, and it is the one that may leak: the family already carries 31 ignition-delay cases, so a model that interpolates them well could land here without solving. It is scored anyway because it is what catches a sensitivity computed for the wrong mixture -- a correct derivative of the wrong problem. The evaluator re-derives it from the trace rather than reading a reported column, which is why it cannot be asserted."
+    }
+  }
+}

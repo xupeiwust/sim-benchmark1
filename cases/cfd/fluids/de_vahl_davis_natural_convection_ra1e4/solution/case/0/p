@@ -1,0 +1,37 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+// Total kinematic pressure, derived by the solver from p_rgh and rho*g*h.
+// calculated on all boundaries.
+dimensions [0 2 -2 0 0 0 0];
+
+internalField uniform 0;
+
+boundaryField
+{
+    hotWall
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    coldWall
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    adiabaticWalls
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

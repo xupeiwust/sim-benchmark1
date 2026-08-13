@@ -1,0 +1,34 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     pisoFoam;
+
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+endTime         5;
+
+// CFL-safe fixed step on a 64x64 box (dx = 2*pi/64 ~ 0.098, |U|max ~ 1):
+// Co = |U|*dt/dx ~ 0.005/0.098 ~ 0.05, comfortably stable.
+deltaT          0.005;
+
+writeControl    runTime;
+writeInterval   1;
+
+purgeWrite      2;
+
+writeFormat     ascii;
+writePrecision  10;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;

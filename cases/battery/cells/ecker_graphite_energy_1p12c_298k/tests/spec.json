@@ -1,0 +1,9 @@
+{
+  "case_id": "ecker_graphite_energy_1p12c_298k",
+  "kind": "discharge",
+  "parameter_set": "Ecker2015",
+  "initial_soc": 1.0,
+  "ocv_check": true,
+  "ocv_max_deviation_V": 0.2142,
+  "reproduction_timeout_s": 600
+}

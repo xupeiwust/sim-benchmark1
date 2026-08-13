@@ -113,6 +113,15 @@ def _is_ltspice_log(text: str) -> bool:
     return bool(_LTSPICE_FINGERPRINT_RE.search(text))
 
 
+def has_solver_evidence(ctx: TrialContext) -> bool:
+    """Return True iff there's an LTspice ``.log`` (fingerprint-matched)
+    in the agent's workspace. Used by score.py's hard-zero anti-cheat
+    gate to reject analytical-shortcut trials that hand-calculated KPIs
+    without invoking LTspice.
+    """
+    return _find_ltspice_log(ctx.case_dir) is not None
+
+
 class LTspiceDetector:
     name = "ltspice"
     # Survey conclusion: universal stages are sufficient. This detector

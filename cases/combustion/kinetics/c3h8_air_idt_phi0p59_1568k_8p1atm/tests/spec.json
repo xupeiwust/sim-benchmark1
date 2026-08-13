@@ -1,0 +1,11 @@
+{
+  "case_id": "c3h8_air_idt_phi0p59_1568k_8p1atm",
+  "kind": "idt",
+  "mechanism": "gri30.yaml",
+  "fuel": "C3H8",
+  "phi": 0.59,
+  "T0_K": 1568.0,
+  "P0_atm": 8.1,
+  "phase": null,
+  "reproduction_timeout_s": 900
+}

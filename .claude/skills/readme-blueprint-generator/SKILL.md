@@ -1,6 +1,6 @@
 ---
 name: readme-blueprint-generator
-description: Use when the user asks for a polished, eye-catching GitHub README for a software project. Project-local fork specialized for visually striking READMEs in the style of github.com/ConardLi/easy-dataset and github.com/HKUDS/CLI-Anything — centered hero, banner image, colorful shields, emoji section headers, News timeline, demo GIF placeholder.
+description: Use when the user asks for a polished, eye-catching GitHub README for a software project. Project-local fork specialized for visually striking READMEs in the style of github.com/ConardLi/easy-dataset and github.com/HKUDS/CLI-Anything — centered text hero, colorful shields, emoji section headers, News timeline, demo GIF placeholder. Does not author image assets.
 ---
 
 # README Blueprint Generator (visual-impact fork)
@@ -20,7 +20,7 @@ This fork is tuned to match the visual language of high-traffic agent / dev-tool
 4. `src/` tree — confirm subcommands and modules actually exist
 5. Existing `README.md` — preserve good wording, do not regress
 6. Sibling repos referenced from CLAUDE.md (cross-link them)
-7. `assets/` directory — if logo / banner / diagram SVGs exist, USE them; if not, CREATE them as part of the task
+7. `assets/` directory — if logo / banner / diagram images exist, USE them. **Do not create any.** See "Assets" below
 
 **Iron rule:** never invent a feature, command, badge, link, version number, contributor count, or screenshot path that isn't backed by one of the above. Empty graphs and 404 image links are worse than no image at all.
 
@@ -29,42 +29,38 @@ This fork is tuned to match the visual language of high-traffic agent / dev-tool
 ```
 1.  Centered hero block
     - <div align="center"> ... </div>
-    - Logo or banner (SVG/PNG from assets/)
-    - H1 with project name (or image-as-h1)
+    - H1 with the project name, as text
     - Bold one-liner tagline (≤ 14 words)
     - Two-line poetic subtitle if it fits the project's voice
     - Shield wall: 4–8 badges in `style=for-the-badge` for the headline metrics,
       then a row of `style=flat` badges for secondary metrics
     - Language selector if docs/README.<lang>.md exist
     - Section nav: [Features] · [Quick Start] · [Demo] · [Contributing]
-2.  Banner / teaser image  (assets/banner.svg or .png) — full-width, centered
-3.  News timeline (optional, only if there are real dated events)
+2.  News timeline (optional, only if there are real dated events)
     - Most recent 5 items inline, older entries inside <details>
-4.  "Why <project>?" — bullet list with bolded leads, each ≤ 1 sentence
-5.  Architecture diagram — SVG centered, with caption
-6.  Quick Start — copy-pasteable, ≤ 12 lines, must work end-to-end
-7.  Demo — embedded GIF/MP4 (assets/demo.gif) OR a placeholder block
-    that says exactly which scenario to record
-8.  Features at a glance — emoji-led bullet grid OR feature table
-9.  Commands / API surface — table with `command | what | analogy`
-10. Comparison ("Why not X?") — only with a real incumbent
-11. Supported backends / integrations — table with honest status column
-12. Development — clone, install, test, lint
-13. Project structure — pruned tree
-14. Companion / related projects
-15. Contributing / Star History note (only if repo has contributors)
-16. License
+3.  "Why <project>?" — bullet list with bolded leads, each ≤ 1 sentence
+4.  Architecture — a fenced ASCII diagram, or an existing SVG if the repo
+    already ships one
+5.  Quick Start — copy-pasteable, ≤ 12 lines, must work end-to-end
+6.  Demo — an existing GIF/MP4 OR a placeholder block that says exactly
+    which scenario to record
+7.  Features at a glance — emoji-led bullet grid OR feature table
+8.  Commands / API surface — table with `command | what | analogy`
+9.  Comparison ("Why not X?") — only with a real incumbent
+10. Supported backends / integrations — table with honest status column
+11. Development — clone, install, test, lint
+12. Project structure — pruned tree
+13. Companion / related projects
+14. Contributing / Star History note (only if repo has contributors)
+15. License
 ```
 
 ## Hero block recipes
 
-### Recipe A — image-as-h1 (CLI-Anything style)
+### Recipe A — h1-with-tagline (CLI-Anything style)
 
 ```markdown
-<h1 align="center">
-  <img src="assets/logo.svg" alt="" width="72" style="vertical-align: middle;">
-  &nbsp;<project-name>: <punchy-tagline>
-</h1>
+<h1 align="center"><project-name>: <punchy-tagline></h1>
 
 <p align="center">
   <strong>Line one of the poetic subtitle.<br>
@@ -72,12 +68,10 @@ This fork is tuned to match the visual language of high-traffic agent / dev-tool
 </p>
 ```
 
-### Recipe B — banner-then-h1 (easy-dataset style)
+### Recipe B — centered text hero (easy-dataset style)
 
 ```markdown
 <div align="center">
-
-<img src="assets/banner.svg" alt="<project> banner" width="820">
 
 # <project-name>
 
@@ -85,6 +79,10 @@ This fork is tuned to match the visual language of high-traffic agent / dev-tool
 
 </div>
 ```
+
+If the repo already ships a banner or logo, put it above the H1 in Recipe B —
+`<img src="assets/banner.svg" alt="<project> banner" width="820">`. If it does
+not, leave the hero as text.
 
 ### Shield wall template
 
@@ -104,24 +102,26 @@ This fork is tuned to match the visual language of high-traffic agent / dev-tool
 </p>
 ```
 
-## Asset generation
+## Assets — use what exists, author nothing
 
-**If `assets/` is empty, create it as part of the task. Do not leave broken image links.**
+**Do not create `assets/`, and do not hand-write an SVG.** An earlier version of
+this skill did, and this repo paid for it: a banner SVG whose whole content was
+the project's name in a nice font had to be redrawn the first time the project
+was renamed, for a picture that told a reader nothing the H1 did not. Text
+renames itself with `sed`, is greppable, and is what people came for.
 
-You can author the following without any external image-generation API:
+So:
 
-| Asset | Tool | Notes |
-|---|---|---|
-| `assets/logo.svg` | hand-write SVG | Geometric, monochrome or 2-color. Width ~96 px. |
-| `assets/banner.svg` | hand-write SVG | Width ~820 px. Project name + tagline + subtle motif. |
-| `assets/architecture.svg` | hand-write SVG | Boxes + arrows. Beats ASCII for the README, but keep ASCII inline as fallback for terminals. |
-| `assets/demo.gif` | leave placeholder | Real terminal recording (vhs / asciinema). Document the exact command sequence the user should record. |
+- `assets/` already has a banner / logo / diagram → use it (banner ~820 px wide,
+  logo ~72 px inline with the H1).
+- It does not → the hero is text, the architecture section is a fenced ASCII
+  diagram, and the README ships with no images beyond shields.
+- A demo GIF is the one thing worth asking for, because a screen recording
+  carries information prose cannot. Leave a placeholder block naming the exact
+  command sequence to record, and say so in the final report.
 
-**SVG style guidelines:**
-- Use the project's monochrome or 2-color palette consistently
-- No raster images embedded inside SVG (keep them text-only and grep-able)
-- Always set `viewBox` so they scale on GitHub
-- Add `<title>` for accessibility
+Shields are the exception to all of this: they are generated by
+img.shields.io from a URL, so nobody maintains them.
 
 ## Style rules
 
@@ -137,7 +137,7 @@ You can author the following without any external image-generation API:
 ## Process
 
 1. **Read sources** in priority order. Stop when every required section can be filled without guessing.
-2. **Audit `assets/`.** If missing, draft the SVGs needed for hero + architecture and write them under `assets/`.
+2. **Audit `assets/`.** Use whatever is there; if it is empty, plan a text hero and an ASCII architecture diagram. Do not author images.
 3. **Draft section by section.**
 4. **Self-review against the checklist below.**
 5. **Write README.md** with the Write tool, replacing the existing file.
@@ -145,9 +145,8 @@ You can author the following without any external image-generation API:
 
 ## Self-review checklist (must pass before writing)
 
-- [ ] Centered hero block with image + tagline + shield wall
-- [ ] At least one real SVG asset committed under `assets/`
-- [ ] No image link points to a file that doesn't exist
+- [ ] Centered hero block with name + tagline + shield wall
+- [ ] No image authored by this run; every image link points to a file that already existed
 - [ ] Quick Start ≤ 12 lines, runnable from clean clone
 - [ ] Every command verified against `cli.py` (or equivalent)
 - [ ] Every backend in the support table exists in the driver registry
@@ -161,7 +160,8 @@ You can author the following without any external image-generation API:
 
 | Don't | Why |
 |---|---|
-| Reference `./assets/foo.png` without creating it | Broken image kills credibility worse than no image |
+| Reference `./assets/foo.png` when no such file exists | Broken image kills credibility worse than no image |
+| Hand-write a wordmark SVG of the project's name | It is the H1 in a nicer font, and it has to be redrawn every rename |
 | Use `style=for-the-badge` for >8 badges in the headline row | Visual noise; reserve it for the top metrics |
 | Claim "1,000+ stars" / "trusted by N teams" without data | Easily falsifiable, immediate trust collapse |
 | Add a Trendshift / ProductHunt badge to a brand-new repo | Empty referral = obvious padding |

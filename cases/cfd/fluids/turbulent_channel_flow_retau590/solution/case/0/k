@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      k;
+}
+
+dimensions [0 2 -2 0 0 0 0];
+
+// Turbulent kinetic energy. In wall units the channel peak is k+ ~ 4.5, i.e.
+// k ~ 4.5*u_tau^2 = 4.5 near the wall; a uniform interior guess of ~1 (order
+// u_tau^2) is adequate as a starting field and converges to the SST profile.
+internalField uniform 1.0;
+
+boundaryField
+{
+    inlet
+    {
+        type            cyclic;
+    }
+    outlet
+    {
+        type            cyclic;
+    }
+    bottomWall
+    {
+        type            kqRWallFunction;
+        value           uniform 1e-10;
+    }
+    topWall
+    {
+        type            kqRWallFunction;
+        value           uniform 1e-10;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}

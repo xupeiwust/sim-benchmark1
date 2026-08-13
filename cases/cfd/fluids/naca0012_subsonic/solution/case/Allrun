@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Reference entry point. The supplied 225x65 C-grid is already in
+# constant/polyMesh; run_case.py writes the rest of the case, solves, and
+# extracts. The evaluator preserves that mesh across its clean copy because
+# tests/spec.json declares it as a task-supplied input.
+set -euo pipefail
+cd "$(dirname "$(realpath "$0")")"
+if ! command -v simpleFoam >/dev/null 2>&1 && [ -f /usr/lib/openfoam/openfoam2412/etc/bashrc ]; then
+    set +e; set +u
+    # shellcheck disable=SC1091
+    source /usr/lib/openfoam/openfoam2412/etc/bashrc
+    set -e; set -u
+fi
+test -d constant/polyMesh || { echo "FAIL: supplied mesh missing at constant/polyMesh" >&2; exit 1; }
+export ORACLE_CASE="$PWD"
+export SIM_BENCH_SUBMISSION="$PWD"
+export ORACLE_HERE="$PWD"
+exec python3 run_case.py
