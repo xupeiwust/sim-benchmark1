@@ -8,9 +8,9 @@ schema_version = "1.3"
 artifacts = ["/tmp/agent/submission"]
 
 [task]
-name        = "hwe-bench/bump-in-channel-2d"
+name        = "sim-benchmark/bump-in-channel-2d"
 description = "2D bump-in-channel at M=0.2, Re=3e6 on length 1, fully turbulent. CD vs the CFL3D/FUN3D k-omega SST TMR reference on the supplied 177x81 grid."
-authors     = [{name = "SVD AI Lab"}]
+authors     = [{name = "sim-benchmark"}]
 keywords    = ["cfd", "rans", "turbulent", "bump", "channel", "2d", "vv", "openfoam"]
 
 [environment]

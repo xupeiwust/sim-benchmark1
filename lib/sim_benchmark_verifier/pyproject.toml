@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sim-benchmark-verifier"
 version = "0.1.0"
-description = "Shared evaluators for HWE-bench CAE tasks"
+description = "Solver-neutral grader for sim-benchmark"
 requires-python = ">=3.10"
 dependencies = []
 

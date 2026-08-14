@@ -36,7 +36,7 @@ This proxy sits between ccr and the real upstream. It:
      SSE event framing — so it's transparent to ccr's stream parser.
 
 Usage:
-  UPSTREAM_BASE=https://<gateway-host>/v1/chat/completions \\
+  UPSTREAM_BASE=https://<your-openai-compatible-host>/v1/chat/completions \\
   UPSTREAM_KEY=sk-... \\
   UPSTREAM_PROXY_PORT=3457 \\
   USAGE_LOG=/logs/agent/proxy-usage.jsonl \\
@@ -56,7 +56,7 @@ from aiohttp import ClientSession, ClientTimeout, web
 # Claude Code injects a per-request random `cch=<5-hex>` token into the
 # `x-anthropic-billing-header` line of the first system message. On Anthropic
 # native that's harmless (caching uses cache_control markers). But on
-# OpenAI-compat upstreams caching is pure prefix matching — and
+# OpenAI-compat upstream caching is pure prefix matching — and
 # the cch breaks the prefix at byte ~143 of every request, killing all
 # downstream cache potential. Empirically this turned a 0% hit rate into
 # 90%+ on cavity_re100 trials. Stripping is safe: cch is metadata for

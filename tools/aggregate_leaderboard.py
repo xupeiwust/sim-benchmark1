@@ -8,7 +8,7 @@ optionally `verifier/reward_detail.json` (four-tier breakdown), and prints
 a table: rows = models, cols = tasks, cells = score.
 
 Usage:
-    python3 tools/aggregate_leaderboard.py jobs/matrix/2026-04-21__HH-MM-SS/
+    python3 tools/aggregate_leaderboard.py jobs/<matrix-run>/2026-04-21__HH-MM-SS/
 
 Run with `--details` for a per-case four-tier breakdown.
 """

@@ -1,0 +1,90 @@
+# sim-benchmark-oss case allowlist — the shop window's guest list.
+#
+# One <track>/<subdomain>/<case-id> per line, relative to `cases/`. Lines
+# starting with # are comments; blank lines are ignored. `publish_oss.py`
+# reads this and nothing else to decide which case directories reach the
+# public mirror.
+#
+# ---------------------------------------------------------------------------
+# What this file is FOR (CLAUDE.md, "Why this exists")
+#
+# The public sample is a shop window, not a measurement: it exists so a
+# prospect can see what a case looks like. **This file is the only measure of
+# what is in it, and it has no target size** (#395): it grows when a prospect's
+# question exposes something the sample cannot show, and never toward a number.
+# That is the gate that spends resale value, so it opens one case at a time and
+# a human signs each opening.
+#
+# `release_status = "public_runnable"` is NOT that decision and does not mean a
+# case is public. It records publish-*readiness* — the oracle scores 1.0, the
+# anti-cheat is live, the solver is open source — which most live cases satisfy
+# (#350). Eligible and published are two states, this file is the boundary
+# between them, and the older reading — "private is the default, hold the window
+# near ~20" — is void.
+#
+# ---------------------------------------------------------------------------
+# Rules, and the two that are now enforced by code
+#
+#  - Only open-source-solver cases. Commercial-solver cases (COMSOL, Fluent,
+#    CFX, Abaqus, ...) NEVER go here — they are Path B.
+#  - A case under an underscore-prefixed directory (`_pending/`, `_phase2/`,
+#    `_deferred/`, `_template/`) is not live and never goes here.
+#  - ENFORCED: every entry must resolve to an existing case directory, on a
+#    live track, whose task.toml says `release_status = "public_runnable"`.
+#  - ENFORCED: `public-runnable-budget` below caps how many live cases may
+#    carry `release_status = "public_runnable"` at all.
+#
+# Check both without touching the mirror:
+#     python tools/publish_oss.py --check
+# CI runs exactly that. To publish, after the check is green:
+#     python tools/publish_oss.py            # from the private repo root
+#
+# ---------------------------------------------------------------------------
+# public-runnable-budget: 51
+#
+# A tripwire on the ELIGIBLE set, not a shop-window size. #350 ruled that the
+# readiness criterion is the right one and that the markers already set are not
+# being reclaimed, so a count in the dozens is the intended state and this
+# number is not a target to shrink toward — the sample's size is the entry list
+# below, and that has no target either (#395).
+#
+# What it still buys is that a bulk flip cannot be silent: raising it is a line
+# somebody has to write and a reviewer can see, which is exactly what the day
+# that moved 50 markers in two commits did not have (2026-07-26, `413310a5` +
+# `73952a55`, #339). Raising it in step with a case that genuinely became ready
+# is ordinary bookkeeping; raising it by tens in one commit is the thing to
+# stop and read. Deleting it fails the check.
+# ---------------------------------------------------------------------------
+
+# --- cfd / fluids ---
+#
+# These three, and only these three, survive the 2026-05-12 list. That list
+# named 39 cases under `openfoam/fluids/` and `ltspice/circuits/`; both trees
+# were renamed away in June 2026 and every entry has pointed at nothing since,
+# so the mirror published zero cases for two months and nothing said so (#339).
+#
+# The repair rule was **repath only, never add**: an entry survives when git
+# can follow its case, by rename, into a live track. Everything else was
+# dropped rather than re-pointed at a lookalike, because choosing a *new* case
+# for the window is a publishing decision and this was a path repair.
+#
+# Dropped, with the reason each: 20 `ltspice/circuits/*` and 9 legacy
+# `openfoam/fluids/*` now sit under `_phase2/` / `_pending/`; 2 dash-spelled
+# cavity duplicates and 2 underscore-spelled ones were deleted outright in
+# `4bbdfb7e` (the `..._ghia_...` cases that replaced them are new directories
+# with their own oracle and band — a shared task_id is not an inherited
+# publishing decision); `naca4412_trailing_edge_separation` is a `_pending/`
+# draft; `nasa_hump_separated` is `_deferred/`; and
+# `backstep_driver_seegmiller_turbulent` repaths cleanly but is already ruled
+# for takedown to `_pending/` (#299, #336), so re-listing it would publish a
+# case on its way out.
+#
+# Rebuilding this list under the readiness criterion is DEFERRED, and that is a
+# ruling rather than a backlog item (#350): the public mirror has not been
+# pushed since before the June 2026 tree rename, so nothing is public today
+# whatever `release_status` says, and choosing the guest list is work for the
+# moment somebody decides to push. The push itself is a hard-blocked decision
+# — it goes public — and gets signed then.
+cfd/fluids/bump_in_channel_2d
+cfd/fluids/flatplate_zpg_subsonic
+cfd/fluids/naca0012_subsonic
