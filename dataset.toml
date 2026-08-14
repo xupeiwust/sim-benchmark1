@@ -4,8 +4,8 @@
 
 [dataset]
 name = "hwe-bench/hwe-bench"
-description = "HWE-bench evaluates LLM agents on engineering-simulation tasks. This CAE edition covers combustion, battery and CFD modeling."
-keywords = ["hardware-engineering", "CAE", "combustion", "battery", "CFD"]
+description = "HWE-bench evaluates LLM agents on engineering-simulation tasks: the agent drives a real solver and is scored on whether the number it reports lands inside a defensible tolerance band, by a deterministic verifier rather than an LLM judge. This CAE edition covers combustion, battery, CFD and 2.5D packaging."
+keywords = [ "hardware-engineering", "CAE", "combustion", "battery", "CFD", "packaging", "OpenFOAM", "Cantera", "PyBaMM", "CalculiX",]
 [[dataset.authors]]
 name = "SVD AI Lab"
 email = "contact@svdailab.com"
@@ -282,3 +282,40 @@ digest = "sha256:c6c09261ec25438fef331028e34c5a621643219ee45ee01542f4826244f8264
 [[tasks]]
 name = "hwe-bench/nhexane-air-idt-phi0p79-1442k-4p6atm"
 digest = "sha256:6a9e65aa2adbf5fa8ee4ac8be86dbc32eb620404d4a9d9a22820ed1c8f40253a"
+
+[[tasks]]
+name = "hwe-bench/pkg25d-thermal-tim118um-k4p7-h22600"
+digest = "sha256:5517d1f52c96e733b88988df730db88c0fc90887acd6ea4e13602e00f0d0daeb"
+
+[[tasks]]
+name = "hwe-bench/pkg25d-thermal-tim142um-k3p6-h14200"
+digest = "sha256:f8063466e66c353f05d91bc199edbacf3f9f23cef9a7f71cf8bedeacc6132afc"
+
+[[tasks]]
+name = "hwe-bench/pkg25d-thermal-tim32um-k8p4-h19000"
+digest = "sha256:88f2cfa122f03a277e8a2dc03e45c753b45a8b18cf284a9444327ccd848a5f92"
+
+[[tasks]]
+name = "hwe-bench/pkg25d-thermal-tim58um-k9p1-h9400"
+digest = "sha256:b136dc0a2547e5844c698071b29d5f5fd58c83de26882aa25462ba9ece9af8f1"
+
+[[tasks]]
+name = "hwe-bench/pkg25d-thermal-tim85um-k6p2-h11500"
+digest = "sha256:5a0dd309855c4a6427ae30b75dbf357265f20c2a0f5df30065ad3dfc7067b070"
+
+[[tasks]]
+name = "hwe-bench/pkg25d-thermal-tim-delta-118to32-h22600"
+digest = "sha256:ae6155d918bd0f894f1afbc1cf0433963bcc7466ccce6a1f994fc4f673d4d708"
+
+[[tasks]]
+name = "hwe-bench/pkg25d-warpage-tim126um-k3p9-h8700"
+digest = "sha256:80b434154b518078f689a416ef8e82384591e1cc7b441c6047fd13282441e52e"
+
+[[tasks]]
+name = "hwe-bench/pkg25d-warpage-tim41um-k9p8-h24500"
+digest = "sha256:9afbb4c192f09c327c1bfc445b092cc2ae914f48aff968f4f5980b1b286e203c"
+
+[[tasks]]
+name = "hwe-bench/pkg25d-warpage-tim72um-k6p6-h16300"
+digest = "sha256:1762e5dfaa378a43dad2ad3932af4941c0dae25775b6f511673db532676e70ef"
+
