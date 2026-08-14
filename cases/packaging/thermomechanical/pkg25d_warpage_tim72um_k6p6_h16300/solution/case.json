@@ -1,0 +1,10 @@
+{
+  "case_id": "pkg25d_warpage_tim72um_k6p6_h16300",
+  "kind": "thermomechanical",
+  "tim_thickness_mm": 0.072,
+  "tim_conductivity": 6.6,
+  "h_lid": 16300.0,
+  "p_asic_w": 228.0,
+  "p_hbm_w_w": 13.1,
+  "p_hbm_e_w": 10.7
+}

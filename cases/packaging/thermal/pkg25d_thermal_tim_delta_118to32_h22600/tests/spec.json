@@ -1,0 +1,25 @@
+{
+  "case_id": "pkg25d_thermal_tim_delta_118to32_h22600",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "t_asic_max_c",
+      "t_hbm_w_max_c",
+      "t_hbm_e_max_c"
+    ],
+    "labels": [
+      "config"
+    ],
+    "min_rows": 2
+  },
+  "kpis": {
+    "delta_t_asic_c": {
+      "derive": "pair_delta",
+      "key": "config",
+      "a": "baseline",
+      "b": "modified",
+      "value": "t_asic_max_c"
+    }
+  },
+  "reproduction_timeout_s": 1220
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "pkg25d_thermal_tim118um_k4p7_h22600",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "t_asic_max_c",
+      "t_hbm_w_max_c",
+      "t_hbm_e_max_c"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "t_asic_max_c": {
+      "derive": "single_row",
+      "value": "t_asic_max_c"
+    },
+    "t_hbm_w_max_c": {
+      "derive": "single_row",
+      "value": "t_hbm_w_max_c"
+    },
+    "t_hbm_e_max_c": {
+      "derive": "single_row",
+      "value": "t_hbm_e_max_c"
+    }
+  },
+  "reproduction_timeout_s": 1220
+}

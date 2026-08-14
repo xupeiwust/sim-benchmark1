@@ -1,0 +1,10 @@
+{
+  "case_id": "pkg25d_thermal_tim32um_k8p4_h19000",
+  "kind": "thermal",
+  "tim_thickness_mm": 0.032,
+  "tim_conductivity": 8.4,
+  "h_lid": 19000.0,
+  "p_asic_w": 265.0,
+  "p_hbm_w_w": 14.2,
+  "p_hbm_e_w": 11.3
+}

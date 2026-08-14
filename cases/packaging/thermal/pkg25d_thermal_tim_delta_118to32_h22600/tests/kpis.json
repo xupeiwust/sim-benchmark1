@@ -1,0 +1,74 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "pkg25d_thermal_tim_delta_118to32_h22600",
+  "oracle_status": "packaging_calculix_interface_hand",
+  "oracle_provenance": {
+    "method": "structured hex mesh over the stated stack, solved twice; steady conduction with orthotropic laminate and film boundaries. The reported quantity is the difference between the two solves.",
+    "calculix_version": "2.17",
+    "reference_grid": "1.0 mm in-plane, 16 elements through the stack",
+    "variants": {
+      "baseline_grid_1p0": {
+        "values": {
+          "t_asic_max_c": 99.42533
+        }
+      },
+      "modified_grid_1p0": {
+        "values": {
+          "t_asic_max_c": 72.23371
+        }
+      },
+      "baseline_grid_0p7": {
+        "values": {
+          "t_asic_max_c": 99.45654
+        }
+      },
+      "modified_grid_0p7": {
+        "values": {
+          "t_asic_max_c": 72.23559
+        }
+      },
+      "baseline_grid_1p4": {
+        "values": {
+          "t_asic_max_c": 99.69432
+        }
+      },
+      "modified_grid_1p4": {
+        "values": {
+          "t_asic_max_c": 72.38563
+        }
+      }
+    },
+    "delta_by_grid": {
+      "1.0mm": -27.19162,
+      "0.7mm": -27.22095,
+      "1.4mm": -27.30869
+    },
+    "spread_rel": {
+      "delta_t_asic_c": 0.004305
+    },
+    "repro_method": "both configurations at 1.0, 0.7 and 1.4 mm in-plane grids",
+    "pass_tol_basis": "5% of the delta, which binds: 2x the measured grid spread is 0.234 K, well inside it. The HBM deltas were measured too and are NOT scored -- their grid spread (4.35% and 7.24%) exceeds the absolutes they are built from, so their bands would have to be 8.7% and 14.5% of the quantity, which is a band widened until a right and a wrong answer both score (#487)",
+    "gross_error_tol_basis": "4x pass_tol",
+    "gt_type_note": "The reference is what a competently-driven conduction solve of this stated package predicts for the change. The package is synthetic; there is no measurement of it and none is claimed."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "delta_t_asic_c": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Change in the logic die's peak steady temperature when the TIM is upgraded from 118 um / 4.7 W/m/K to 32 um / 8.4 W/m/K at an unchanged load. Negative: the better TIM cools it.",
+      "unit": "K",
+      "physics_min": -200.0,
+      "physics_max": 0.0,
+      "weight": 1.0,
+      "gt_value": -27.19162,
+      "pass_tol": 1.359581,
+      "gross_error_tol": 5.438324,
+      "gt_value_source": "THIS REPO'S OWN ORACLE, AND NOTHING EXTERNAL CHECKS THE SETUP THAT PRODUCED IT. gt_value is the difference between what solution/pkg25d.py computes for the two configurations on the 1.0 mm reference grid: modified (TIM 32 um, k 8.4) minus baseline (TIM 118 um, k 4.7), with the load and both film coefficients identical. The package is synthetic (source_type = novel_variant), so no published source reports a value for it and moving the operating point cannot produce one. What makes this a RELATION rather than a second absolute is that the two runs share every input except the TIM -- and the measured spread below shows how far that falls short of cancelling: the delta's grid spread is 0.43%, against 0.36% for the absolute it is built from, so the cancellation a relation is supposed to buy is worth almost nothing here. It is NOT free, and the reason is the constraint recorded on #487: a relation cancels common mode only when the two runs share the thing that varies, and a TIM thickness change moves the through-thickness element distribution. The KPI survives on the other property instead -- a pair_delta sits 20 band widths from its null answer, and a 1-D resistance estimate of it spans -4.3 K to -75.4 K depending on the spreading area assumed, the closest being 25% low."
+    }
+  }
+}

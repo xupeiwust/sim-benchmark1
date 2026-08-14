@@ -1,0 +1,10 @@
+{
+  "case_id": "pkg25d_thermal_tim142um_k3p6_h14200",
+  "kind": "thermal",
+  "tim_thickness_mm": 0.142,
+  "tim_conductivity": 3.6,
+  "h_lid": 14200.0,
+  "p_asic_w": 192.0,
+  "p_hbm_w_w": 10.4,
+  "p_hbm_e_w": 7.8
+}

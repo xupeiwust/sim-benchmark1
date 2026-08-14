@@ -1,0 +1,10 @@
+{
+  "case_id": "pkg25d_thermal_tim85um_k6p2_h11500",
+  "kind": "thermal",
+  "tim_thickness_mm": 0.085,
+  "tim_conductivity": 6.2,
+  "h_lid": 11500.0,
+  "p_asic_w": 248.0,
+  "p_hbm_w_w": 12.6,
+  "p_hbm_e_w": 9.4
+}

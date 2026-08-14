@@ -40,7 +40,7 @@
 #     python tools/publish_oss.py            # from the private repo root
 #
 # ---------------------------------------------------------------------------
-# public-runnable-budget: 51
+# public-runnable-budget: 60
 #
 # A tripwire on the ELIGIBLE set, not a shop-window size. #350 ruled that the
 # readiness criterion is the right one and that the markers already set are not
@@ -88,3 +88,24 @@
 cfd/fluids/bump_in_channel_2d
 cfd/fluids/flatplate_zpg_subsonic
 cfd/fluids/naca0012_subsonic
+
+# --- packaging / 2.5D thermal + thermomechanical ---
+#
+# Nine cases, opened deliberately on 2026-08-14: 「packaging can be public」.
+# They meet the readiness criterion this file demands rather than merely being
+# wanted — the oracle scores 1.000 on all nine (measured in the board v1 free
+# bracket, alongside `nop` at 0.000), CalculiX is open source, and the
+# anti-cheat gate is the strict `has_result_database` predicate #304/#377
+# hardened, which four cheaper forgery routes score 0.000 against.
+#
+# The budget above moved 51 -> 60 in the same change, which is what that
+# tripwire is for: a bulk flip should be a line a reviewer can see.
+packaging/thermal/pkg25d_thermal_tim118um_k4p7_h22600
+packaging/thermal/pkg25d_thermal_tim142um_k3p6_h14200
+packaging/thermal/pkg25d_thermal_tim32um_k8p4_h19000
+packaging/thermal/pkg25d_thermal_tim58um_k9p1_h9400
+packaging/thermal/pkg25d_thermal_tim85um_k6p2_h11500
+packaging/thermal/pkg25d_thermal_tim_delta_118to32_h22600
+packaging/thermomechanical/pkg25d_warpage_tim126um_k3p9_h8700
+packaging/thermomechanical/pkg25d_warpage_tim41um_k9p8_h24500
+packaging/thermomechanical/pkg25d_warpage_tim72um_k6p6_h16300

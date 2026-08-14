@@ -1,0 +1,10 @@
+{
+  "case_id": "delta_baseline",
+  "kind": "thermal",
+  "tim_thickness_mm": 0.118,
+  "tim_conductivity": 4.7,
+  "h_lid": 22600.0,
+  "p_asic_w": 214.0,
+  "p_hbm_w_w": 11.8,
+  "p_hbm_e_w": 13.4
+}

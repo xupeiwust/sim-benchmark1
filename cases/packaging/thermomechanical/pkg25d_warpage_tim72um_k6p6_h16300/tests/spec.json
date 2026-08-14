@@ -1,0 +1,27 @@
+{
+  "case_id": "pkg25d_warpage_tim72um_k6p6_h16300",
+  "interface": {
+    "file": "results.csv",
+    "columns": [
+      "t_asic_max_c",
+      "warpage_um",
+      "sigma_xx_interposer_under_asic_mpa"
+    ],
+    "min_rows": 1
+  },
+  "kpis": {
+    "t_asic_max_c": {
+      "derive": "single_row",
+      "value": "t_asic_max_c"
+    },
+    "warpage_um": {
+      "derive": "single_row",
+      "value": "warpage_um"
+    },
+    "sigma_xx_interposer_under_asic_mpa": {
+      "derive": "single_row",
+      "value": "sigma_xx_interposer_under_asic_mpa"
+    }
+  },
+  "reproduction_timeout_s": 1305
+}

@@ -1,0 +1,10 @@
+{
+  "case_id": "pkg25d_warpage_tim41um_k9p8_h24500",
+  "kind": "thermomechanical",
+  "tim_thickness_mm": 0.041,
+  "tim_conductivity": 9.8,
+  "h_lid": 24500.0,
+  "p_asic_w": 258.0,
+  "p_hbm_w_w": 14.8,
+  "p_hbm_e_w": 12.1
+}

@@ -1,0 +1,10 @@
+{
+  "case_id": "pkg25d_thermal_tim58um_k9p1_h9400",
+  "kind": "thermal",
+  "tim_thickness_mm": 0.058,
+  "tim_conductivity": 9.1,
+  "h_lid": 9400.0,
+  "p_asic_w": 236.0,
+  "p_hbm_w_w": 15.6,
+  "p_hbm_e_w": 8.2
+}

@@ -1,0 +1,91 @@
+{
+  "schema_version": "neutral-v0.3",
+  "case_id": "pkg25d_thermal_tim85um_k6p2_h11500",
+  "oracle_status": "packaging_calculix_interface_hand",
+  "oracle_provenance": {
+    "method": "structured hex mesh over the stated stack; steady conduction with orthotropic laminate and film boundaries",
+    "calculix_version": "2.17",
+    "reference_grid": "1.0 mm in-plane, 16 elements through the stack",
+    "variants": {
+      "baseline": {
+        "values": {
+          "t_asic_max_c": 112.1497,
+          "t_hbm_w_max_c": 52.74104,
+          "t_hbm_e_max_c": 47.7135
+        },
+        "wall_sec": 3.5
+      },
+      "fine": {
+        "values": {
+          "t_asic_max_c": 112.1837,
+          "t_hbm_w_max_c": 52.45427,
+          "t_hbm_e_max_c": 47.68949
+        },
+        "wall_sec": 7.6
+      },
+      "coarse": {
+        "values": {
+          "t_asic_max_c": 112.3997,
+          "t_hbm_w_max_c": 52.75719,
+          "t_hbm_e_max_c": 47.70054
+        },
+        "wall_sec": 1.5
+      }
+    },
+    "spread_rel": {
+      "t_asic_max_c": 0.002868627201241083,
+      "t_hbm_w_max_c": 0.01033739182092658,
+      "t_hbm_e_max_c": 0.0010570805908382275
+    },
+    "repro_method": "1.0 mm vs 0.7 mm in-plane grid, and a 1.4 mm grid",
+    "pass_tol_basis": "the looser of 5% of the quantity (rise above the 25 degC ambient) and 2x the measured spread above",
+    "gross_error_tol_basis": "4x T_good",
+    "gt_type_note": "The reference is what a competently-driven conduction solve of this stated package predicts. The package is synthetic; there is no measurement of it and none is claimed."
+  },
+  "kpi_groups": {
+    "outputs": {
+      "weight": 1.0
+    }
+  },
+  "kpis": {
+    "t_asic_max_c": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Peak steady temperature anywhere in the logic die.",
+      "unit": "degC",
+      "physics_min": 30.0,
+      "physics_max": 400.0,
+      "weight": 0.3333,
+      "gt_value": 112.1497,
+      "pass_tol": 4.357485,
+      "gross_error_tol": 17.42994,
+      "gt_value_source": "THIS REPO'S OWN ORACLE, AND NOTHING EXTERNAL CHECKS THE SETUP THAT PRODUCED IT. gt_value is what solution/pkg25d.py computes on the 1.0 mm reference grid; oracle_provenance records the method and the grid / element variants it was compared against, and that study is an internal consistency check rather than an external one. The package is synthetic -- source_type = novel_variant, its geometry, material stack and operating point authored here -- so no published source reports a value for it at this or at any other condition, and moving the operating point cannot produce one. Running CalculiX against a standard suite (NAFEMS thermal and thermo-mechanical benchmarks) is the strongest EXTERNAL check available to this family, and #344 ruled it the accepted ceiling: it establishes that the solver is sound, never that this case's mesh, film coefficients, material assignment or extracted quantity are what the stated package needs. Setup is where every oracle defect this repo has paid for actually lived -- a Reynolds length taken from the wrong reference length (#223), a declared stopping criterion that never fired (#273, #286), a steady solution sampled off a trajectory that never settled (#299) -- and a solver-suite pass would have caught none of them. So an oracle run reproducing this number shows the scoring chain is self-consistent and nothing more: an oracle wrong in the same way reproduces it just as well."
+    },
+    "t_hbm_w_max_c": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Peak steady temperature in the west HBM stack -- the lateral coupling from the logic die is what sets it.",
+      "unit": "degC",
+      "physics_min": 26.0,
+      "physics_max": 350.0,
+      "weight": 0.3333,
+      "gt_value": 52.74104,
+      "pass_tol": 1.387052,
+      "gross_error_tol": 5.548208,
+      "gt_value_source": "THIS REPO'S OWN ORACLE, AND NOTHING EXTERNAL CHECKS THE SETUP THAT PRODUCED IT. gt_value is what solution/pkg25d.py computes on the 1.0 mm reference grid; oracle_provenance records the method and the grid / element variants it was compared against, and that study is an internal consistency check rather than an external one. The package is synthetic -- source_type = novel_variant, its geometry, material stack and operating point authored here -- so no published source reports a value for it at this or at any other condition, and moving the operating point cannot produce one. Running CalculiX against a standard suite (NAFEMS thermal and thermo-mechanical benchmarks) is the strongest EXTERNAL check available to this family, and #344 ruled it the accepted ceiling: it establishes that the solver is sound, never that this case's mesh, film coefficients, material assignment or extracted quantity are what the stated package needs. Setup is where every oracle defect this repo has paid for actually lived -- a Reynolds length taken from the wrong reference length (#223), a declared stopping criterion that never fired (#273, #286), a steady solution sampled off a trajectory that never settled (#299) -- and a solver-suite pass would have caught none of them. So an oracle run reproducing this number shows the scoring chain is self-consistent and nothing more: an oracle wrong in the same way reproduces it just as well."
+    },
+    "t_hbm_e_max_c": {
+      "group": "outputs",
+      "shape": "scalar",
+      "description": "Peak steady temperature in the east HBM stack, which sits a wider gap away from the logic die than the west one.",
+      "unit": "degC",
+      "physics_min": 26.0,
+      "physics_max": 350.0,
+      "weight": 0.3333,
+      "gt_value": 47.7135,
+      "pass_tol": 1.1356750000000002,
+      "gross_error_tol": 4.542700000000001,
+      "gt_value_source": "THIS REPO'S OWN ORACLE, AND NOTHING EXTERNAL CHECKS THE SETUP THAT PRODUCED IT. gt_value is what solution/pkg25d.py computes on the 1.0 mm reference grid; oracle_provenance records the method and the grid / element variants it was compared against, and that study is an internal consistency check rather than an external one. The package is synthetic -- source_type = novel_variant, its geometry, material stack and operating point authored here -- so no published source reports a value for it at this or at any other condition, and moving the operating point cannot produce one. Running CalculiX against a standard suite (NAFEMS thermal and thermo-mechanical benchmarks) is the strongest EXTERNAL check available to this family, and #344 ruled it the accepted ceiling: it establishes that the solver is sound, never that this case's mesh, film coefficients, material assignment or extracted quantity are what the stated package needs. Setup is where every oracle defect this repo has paid for actually lived -- a Reynolds length taken from the wrong reference length (#223), a declared stopping criterion that never fired (#273, #286), a steady solution sampled off a trajectory that never settled (#299) -- and a solver-suite pass would have caught none of them. So an oracle run reproducing this number shows the scoring chain is self-consistent and nothing more: an oracle wrong in the same way reproduces it just as well."
+    }
+  }
+}

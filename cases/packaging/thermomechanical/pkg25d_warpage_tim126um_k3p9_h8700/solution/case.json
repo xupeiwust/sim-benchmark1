@@ -1,0 +1,10 @@
+{
+  "case_id": "pkg25d_warpage_tim126um_k3p9_h8700",
+  "kind": "thermomechanical",
+  "tim_thickness_mm": 0.126,
+  "tim_conductivity": 3.9,
+  "h_lid": 8700.0,
+  "p_asic_w": 176.0,
+  "p_hbm_w_w": 11.2,
+  "p_hbm_e_w": 8.6
+}
