@@ -284,38 +284,38 @@ name = "hwe-bench/nhexane-air-idt-phi0p79-1442k-4p6atm"
 digest = "sha256:6a9e65aa2adbf5fa8ee4ac8be86dbc32eb620404d4a9d9a22820ed1c8f40253a"
 
 [[tasks]]
-name = "hwe-bench/pkg25d-thermal-tim118um-k4p7-h22600"
-digest = "sha256:5517d1f52c96e733b88988df730db88c0fc90887acd6ea4e13602e00f0d0daeb"
+name = "sim-benchmark/pkg25d-thermal-tim118um-k4p7-h22600"
+digest = "sha256:0f3e8e149788ac2560173de1c463d42ab2d0024bd1bf647883fe806ca2406869"
 
 [[tasks]]
-name = "hwe-bench/pkg25d-thermal-tim142um-k3p6-h14200"
-digest = "sha256:f8063466e66c353f05d91bc199edbacf3f9f23cef9a7f71cf8bedeacc6132afc"
+name = "sim-benchmark/pkg25d-thermal-tim142um-k3p6-h14200"
+digest = "sha256:36153bce4b4e67e531b7c9f8f5bb29b5ada14c70978af2b010f5165388c200ec"
 
 [[tasks]]
-name = "hwe-bench/pkg25d-thermal-tim32um-k8p4-h19000"
-digest = "sha256:88f2cfa122f03a277e8a2dc03e45c753b45a8b18cf284a9444327ccd848a5f92"
+name = "sim-benchmark/pkg25d-thermal-tim32um-k8p4-h19000"
+digest = "sha256:aeda3e5bee126507eb31d3288951f4fec57dc23e2412851862f6c8c744ecdfa3"
 
 [[tasks]]
-name = "hwe-bench/pkg25d-thermal-tim58um-k9p1-h9400"
-digest = "sha256:b136dc0a2547e5844c698071b29d5f5fd58c83de26882aa25462ba9ece9af8f1"
+name = "sim-benchmark/pkg25d-thermal-tim58um-k9p1-h9400"
+digest = "sha256:971c6fbef99090c4810f0c53d30c56dd8b82e9dc29535339054b72accdac2e54"
 
 [[tasks]]
-name = "hwe-bench/pkg25d-thermal-tim85um-k6p2-h11500"
-digest = "sha256:5a0dd309855c4a6427ae30b75dbf357265f20c2a0f5df30065ad3dfc7067b070"
+name = "sim-benchmark/pkg25d-thermal-tim85um-k6p2-h11500"
+digest = "sha256:b94a841315536db365301daab1d727d12aa0dc74c9e2c6e85b5147c7803faa6a"
 
 [[tasks]]
-name = "hwe-bench/pkg25d-thermal-tim-delta-118to32-h22600"
-digest = "sha256:ae6155d918bd0f894f1afbc1cf0433963bcc7466ccce6a1f994fc4f673d4d708"
+name = "sim-benchmark/pkg25d-thermal-tim-delta-118to32-h22600"
+digest = "sha256:6440e894d32ce46155024b2dcc5ab58efe736616f475c11727e6b774b1434913"
 
 [[tasks]]
-name = "hwe-bench/pkg25d-warpage-tim126um-k3p9-h8700"
-digest = "sha256:80b434154b518078f689a416ef8e82384591e1cc7b441c6047fd13282441e52e"
+name = "sim-benchmark/pkg25d-warpage-tim126um-k3p9-h8700"
+digest = "sha256:9fae50f34d95020fa27005fc48b9aa9f1bcaf2cfc4d146d93686ee2d1b1a7d48"
 
 [[tasks]]
-name = "hwe-bench/pkg25d-warpage-tim41um-k9p8-h24500"
-digest = "sha256:9afbb4c192f09c327c1bfc445b092cc2ae914f48aff968f4f5980b1b286e203c"
+name = "sim-benchmark/pkg25d-warpage-tim41um-k9p8-h24500"
+digest = "sha256:5dfec803dbb09beddcfe26d6224dd7438878b091a3bd705b046611c77e0b9b36"
 
 [[tasks]]
-name = "hwe-bench/pkg25d-warpage-tim72um-k6p6-h16300"
-digest = "sha256:1762e5dfaa378a43dad2ad3932af4941c0dae25775b6f511673db532676e70ef"
+name = "sim-benchmark/pkg25d-warpage-tim72um-k6p6-h16300"
+digest = "sha256:1b634b0a7f94830186acc729b4298afebb3290cac9b8e8fe49e5d45e23b0e2b2"
 
